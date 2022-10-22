@@ -1,0 +1,14 @@
+{{ extends 'global/Page.html' }}
+{{ block title }}
+Supergame {{ subsession.sg }}, Round {{ subsession.period }}
+Results{{ endblock }}
+
+{{ block content }}
+
+Your contribution was {{player.contribution_local}}.
+Your group's total contribution was {{group.total_contribution_local}}, resulting in an individual share of {{group.individual_share_local}}.
+Therefore, your final payoff is {{player.payoff}}.
+
+{% next_button %}
+
+{{ endblock }}
