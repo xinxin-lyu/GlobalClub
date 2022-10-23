@@ -1,0 +1,19 @@
+{{ extends 'global/Page.html' }}
+{{ block title }}
+
+    Supergame {{ subsession.sg }}, Round {{ subsession.period }}
+
+Join the club{{ endblock }}
+
+{{ block content }}
+
+This is a public goods game with {{local_size}} players per group, 
+an endowment of {{player.endowment}} points, and a multiplier of {{multiplier }}.
+
+Join the club?
+
+{% formfields %}
+
+{% next_button %}
+
+{{ endblock }}

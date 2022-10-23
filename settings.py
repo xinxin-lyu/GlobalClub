@@ -10,6 +10,7 @@ SESSION_CONFIGS = [
         localPG_size = 4,
         K = 2 ,
         FC = 2, 
+        homo_endowment = 1,
         # m_l = 0.6,
         # m_g = 0.6,
         
@@ -21,6 +22,7 @@ SESSION_CONFIGS = [
             <br> <b>'multiplier' </b> total multiplier = localPG_size * m_l = m_g (for now)  </br>
             <br> <b>'m_l' </b> MPCR for local PG </br>
             <br> <b>'m_g' </b> MPCR for global Club </br>
+            <br> <b>'homo_endowment' </b> Whether the local community has homogenous endowments </br>
             """
     ),
     
