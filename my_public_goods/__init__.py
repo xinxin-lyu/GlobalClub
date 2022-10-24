@@ -41,7 +41,7 @@ class C(BaseConstants):
     NAME_IN_URL = 'my_public_goods'
     PLAYERS_PER_GROUP =  8
     # MULTIPLIER = 2.4
-    # block_dierolls_template = 'block_random_termination/block_dierolls.html'
+    block_dierolls_template = 'block_random_termination/block_dierolls.html'
     DELTA = 0.75  # discount factor equals to 0.75
     BLOCK_SIZE = int(1 / (1 - DELTA))
     # print(BLOCK_SIZE)
@@ -152,12 +152,6 @@ def creating_session(subsession: Subsession):
 class Group(BaseGroup):
     matchNumber = models.IntegerField(initial=0)
     roundNumber = models.IntegerField(initial = 0)
-    
-    # For the local PG
-    total_contribution_local = models.CurrencyField(initial=0)
-    individual_share_local = models.CurrencyField(initial=0)    
-
-    
     # For the global PG
     global_formed = models.IntegerField(initial=0, min=0, max=1)
     total_contribution_global = models.CurrencyField(initial=0)
@@ -172,18 +166,27 @@ def get_role(group: Group):
 
      shuffle_group = int(total_sub/local_size) # total number of local communities
      # When the endowment is randomly assigned, let the first two be the rich
+     # Number inflate to avoid rounding issues
      if homo_endowment==1:
         for p in players:
-            p.endowment = 20
+            p.endowment = 200
             p.local_community = p.id_in_subsession % shuffle_group # again, only true for the random grouping
      else :
         for p in players:
             p.local_community = p.id_in_subsession % shuffle_group # again, only true for the random grouping
             if p.id_in_group <= int(local_size/2):
-                p.endowment=30
+                p.endowment=300
             else :
-                p.endowment=10
-    
+                p.endowment=100
+                
+def check_club_formed(group: Group):
+    players = group.get_players()
+    join_club = [p.join_club for p in players]
+    join_number = sum(join_club)
+    if join_number <2 :
+        for p in players:
+            p.join_club = 0
+            
 def set_payoffs(group: Group):
     players = group.get_players()
     multiplier = group.session.config['multiplier']
@@ -192,23 +195,20 @@ def set_payoffs(group: Group):
     contribution_local = np.zeros(community_num)
     contribution_global = 0
     for p in players:
-        # local 
+        # local needs to be specified because it's supposed to be half of the group size  
         contribution_local[p.local_community] += p.contribution_local
         contribution_global += p.contribution_global
-        
-        
-    # local needs to be specified because it's supposed to be half of the group size 
-    contributions = [p.contribution_local for p in players]
-    group.total_contribution_local = sum(contributions)
-    group.individual_share_local = group.total_contribution_local *  multiplier/ local_size
+    individual_share_local = contribution_local *  multiplier/ local_size
+    group.total_contribution_global = contribution_global
+    group.individual_share_global = group.total_contribution_global * multiplier / local_size
     # note: for mg=ml, just use the players per local PG group
     # for the congestion case, can use the number of players in each club 
-    contributions = [p.contribution_global for p in players]
-    group.total_contribution_global = sum(contributions)
-    group.individual_share_global = group.total_contribution_global * multiplier / local_size
     fixed_cost = group.session.config['FC']
+    print(fixed_cost)
     for p in players:
-        p.payoff = p.endowment - p.contribution_local + group.individual_share_local +  p.join_club* (- p.contribution_global - fixed_cost + group.individual_share_global)
+        p.total_contribution_local = contribution_local[p.local_community]
+        p.individual_share_local = individual_share_local[p.local_community]
+        p.payoff = p.endowment - p.contribution_local + p.individual_share_local +  p.join_club* (- p.contribution_global - fixed_cost + group.individual_share_global)
 
 Group.set_payoffs = set_payoffs
 
@@ -218,6 +218,9 @@ class Player(BasePlayer):
     local_community = models.IntegerField(initial=0) # indicate the local community number
     contribution_local = models.CurrencyField(initial=0, label='What is your contribution to local PG?', min=0)
     contribution_global = models.CurrencyField(initial=0, label='What is your contribution to global CL?', min=0)
+    # For the local PG
+    total_contribution_local = models.CurrencyField(initial=0)
+    individual_share_local = models.CurrencyField(initial=0)    
 
 # def my_method(player: Player):
     # group = player.group
@@ -260,6 +263,10 @@ class JoinClub(Page):
         return dict(local_size = player.session.config['localPG_size'],
                        multiplier = player.session.config['multiplier'])
 
+class ClubWaitPage(WaitPage):
+    after_all_players_arrive = check_club_formed
+    body_text = 'Waiting for other players to choose to join the club or not'
+
 
                    
 class Contribution(Page):
@@ -275,7 +282,8 @@ class Contribution(Page):
     
     def vars_for_template(player: Player):
         return dict(local_size = player.session.config['localPG_size'],
-                       multiplier = player.session.config['multiplier'])
+                       multiplier = player.session.config['multiplier'],
+                       join_club = player.join_club==1)
     
 class ResultsWaitPage(WaitPage):
     after_all_players_arrive = set_payoffs
@@ -305,4 +313,4 @@ class BlockEnd(Page):
                     block_history=get_block_dierolls(player),
                     end_period=end_period
                     )
-page_sequence = [SuperGameWaitPage, NewSupergame, JoinClub, Contribution, ResultsWaitPage, Results, BlockEnd  ]
+page_sequence = [SuperGameWaitPage, NewSupergame, JoinClub, ClubWaitPage, Contribution, ResultsWaitPage, Results, BlockEnd  ]
