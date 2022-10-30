@@ -1,0 +1,239 @@
+{% load otree_tags %}
+
+<script>
+
+
+	
+
+
+    document.addEventListener('keydown', function (event) {
+        if ((event.code == 'KeyR' || event.code == 'KeyF' || event.code == 'KeyS') && (event.ctrlKey || event.metaKey)) {
+            event.preventDefault();
+        }
+        if ((event.code == 'F5')) {
+            event.preventDefault();
+        }
+        if ((event.code == 'Tab')) {
+            event.preventDefault();
+        }
+        if ((event.code == 'Enter')) {
+            event.preventDefault();
+        }
+        if ((event.code == 'NumpadEnter')) {
+            event.preventDefault();
+        }
+        <!-- if ((event.code == 'Space')) { -->
+            <!-- event.preventDefault(); -->
+        <!-- } -->
+        if ((event.code == 'ArrowLeft' || event.code == 'ArrowRight') && (event.code == 'AltLeft' || event.code == 'altRight' || event.altKey || event.metaKey)) {
+            event.preventDefault();
+        }
+    });
+
+<!-- This is used to re-order the tables in each page -->
+<!-- var x = js_vars.Table_Rearrange; -->
+
+<!-- This function is to define the whole table at the begining of each round -->
+    function ShowTable_Local(offset=0) {
+	<!-- Use the period (round) number to decide  -->
+		<!-- If Round == 1:  only Show the current table  -->
+		var Card = document.getElementById("InformationTable_local");
+		var Card_div = document.createElement('div');
+		Card_div.className = "row";
+		Card_div.style = "align-content: center";
+		Card.appendChild(Card_div);	
+		
+		
+		var div_c1 =  document.createElement('div');
+		div_c1.className = "closeTable";
+		<!-- div_c1.style.width = "50px"; -->
+		div_c1.id = "column1_l";
+		ShowFirstColumn(div_c1,'local');
+		Card_div.appendChild(div_c1);
+
+		
+
+    };
+	
+	  function ShowTable_Global(offset=0) {
+	<!-- Use the period (round) number to decide  -->
+		<!-- If Round == 1:  only Show the current table  -->
+		var Card = document.getElementById("InformationTable_global");
+		var Card_div = document.createElement('div');
+		Card_div.className = "row";
+		Card.appendChild(Card_div);	
+		
+		
+		var div_c1 =  document.createElement('div');
+		div_c1.className = "closeTable";
+		<!-- div_c1.style.width = "50px"; -->
+		div_c1.id = "column1_g";
+		ShowFirstColumn(div_c1,'global');
+		Card_div.appendChild(div_c1);
+
+		
+
+    };
+	
+	
+	function ShowFirstColumn(element, level) {
+		var tbl = document.createElement('table');
+
+		tbl.className = "table";
+		var tr = document.createElement('tr');
+		tr.className = "HistoryRound_cell";
+		var th = document.createElement('th');
+		<!-- th.style = " width: 150px"; -->
+		th.innerHTML = "ID";
+		th.style = "background-color: white";
+		tr.appendChild(th);
+		var th = document.createElement('th');
+		th.innerHTML = "Endowment";
+		th.style = "background-color: white";
+		tr.appendChild(th);
+		tbl.appendChild(tr);
+
+		if (level == 'local' ) {
+			var num = js_vars.LocalSize;
+			var e_list = js_vars.E_l; 
+			} 
+		else {
+			var num = js_vars.GlobalSize;
+			var e_list = js_vars.E_g; 
+			}
+		for (var i = 1; i <= num; i++) {
+			var tr = document.createElement('tr');
+			tr.className = "HistoryRound_cell";		
+			var th = document.createElement('th');
+			var th2 = document.createElement('th');
+			if (i ==  1) {
+				th.innerHTML = "You"; 
+				tr.className += " Me";
+				th.style = "font-weight: bold;";
+				
+				th2.innerHTML =  e_list[i-1];
+				th2.style = "font-weight: bold;";
+				
+				}
+			else {
+			th.innerHTML = i ;
+			th2.innerHTML =  e_list[i-1];
+			if (i > js_vars.LocalSize ) {
+				th.style = "background-color: lightgrey";
+				th2.style = "background-color: lightgrey";
+			}	
+			
+			}
+			tr.appendChild(th);
+			tr.appendChild(th2);
+			tbl.appendChild(tr);	
+			}
+		
+		<!-- Only add dice role after the block -->
+		<!-- var tr = document.createElement('tr'); -->
+		<!-- var th = document.createElement('th'); -->
+		<!-- th.className ="DiceLabel"; -->
+		<!-- th.innerHTML = "Dice Roll"; -->
+		<!-- tr.appendChild(th); -->
+		<!-- tbl.appendChild(tr); -->
+		
+		element.appendChild(tbl);
+	
+	};
+	
+	
+	function ShowPrevious(level, component) {
+	
+		if (component == 'total' ) {
+		if (level== 'local') {
+			var column1 = "column1_l";
+			var group_total = js_vars.C_t_l[0];
+			var my_allocation = js_vars.my_cont_l[0] ;
+			var button_id = "ShowLocalPrevious";
+			
+			var button_ind_infor = "individualLocal";
+			<!-- Show Additional Individual Information -->
+			document.getElementById(button_ind_infor).style.visibility = "visible";
+		
+			
+		}
+		else if  (level== 'global') {
+			var column1 = "column1_g";
+			var group_total = js_vars.C_t_g[0];
+			var my_allocation = js_vars.my_cont_g[0] ;
+			var button_id = "ShowGlobalPrevious";
+			var button_ind_infor = "individualGlobal";
+			<!-- Show Additional Individual Information -->
+			if (js_vars.joinedLastRound) {
+			document.getElementById(button_ind_infor).style.visibility = "visible";
+			}
+		
+			
+		}
+		
+		<!-- # Adding last row -->
+		var tbl = document.getElementById(column1).children[0];
+		<!-- var tbl = document.createElement('table'); -->
+		var tr = document.createElement('tr');
+		var th = document.createElement('th');
+		th.className = level+"_Group_Total";
+		th.innerHTML = "Total Account ";
+		tr.appendChild(th);
+		var th = document.createElement('th');
+		th.style="visibility: hidden";
+		tr.appendChild(th);
+		var th = document.createElement('th');
+		th.innerHTML =  group_total; 
+		tr.appendChild(th);
+		tbl.appendChild(tr);
+		
+		var tr = tbl.children[0];
+		var th = document.createElement('th');
+		th.innerHTML = "Previous Round Allocation";
+		th.style="background-color: white";
+		tr.appendChild(th);
+		
+		var tr = tbl.children[1];
+		var th = document.createElement('th');
+		th.innerHTML = my_allocation;
+		tr.appendChild(th);
+		
+		
+		document.getElementById(button_id).innerHTML = group_total; 
+		
+		
+		
+		}
+		
+		else if (component == 'max' ) {
+		
+		if (level == 'local') {
+			var column1 = "column1_l";
+			var rows = js_vars[component+'_'+level];
+			var indiv_cont = js_vars.others_cont_l;
+			console.log(rows);
+			console.log(indiv_cont);
+			}
+		
+		var tbl = document.getElementById(column1).children[0];
+		<!-- # find the right row -->
+		for (var i in rows ) {
+			var row_id = rows[i]+2;
+			console.log(row_id);
+			var tr = tbl.children[row_id]; 
+			console.log(tr);
+			
+			if (tr.childElementCount < 3 ) {
+				var  th = document.createElement('th');
+				th.innerHTML = indiv_cont[i][0];
+				tr.appendChild(th);
+			}
+			}
+		
+		}
+		
+		
+		
+		} 
+
+</script>

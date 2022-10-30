@@ -39,15 +39,17 @@ def group_size():
     
 class C(BaseConstants):
     NAME_IN_URL = 'my_public_goods'
-    PLAYERS_PER_GROUP =  8
+    PLAYERS_PER_GROUP =  None
     # MULTIPLIER = 2.4
     block_dierolls_template = 'block_random_termination/block_dierolls.html'
     DELTA = 0.75  # discount factor equals to 0.75
     BLOCK_SIZE = int(1 / (1 - DELTA))
     # print(BLOCK_SIZE)
     # first supergame lasts 2 rounds, second supergame lasts 3 rounds, etc...
-    # These are the payoff relevants rounds
-    COUNT_ROUNDS_PER_SG = [2, 3, 4, 5]
+    # These are the payoff relevants rounds; 
+    # Note: for my current experiment design, there are only 3 repeated games/matches (ABA or BAA)
+    COUNT_ROUNDS_PER_SG = [5, 7, 6]
+    JOIN_CLUB_SG = [1] # super games where a global club is offered 
     # number of supergames to be played
     NUM_SG = len(COUNT_ROUNDS_PER_SG)
     # Get what the round each supergame ends
@@ -57,13 +59,13 @@ class C(BaseConstants):
     # find out how many rounds players have to go through
     PLAYED_ROUNDS_PER_SG = numblock(COUNT_ROUNDS_PER_SG, BLOCK_SIZE)  
     SG_ENDS = cumsum(PLAYED_ROUNDS_PER_SG)
-    # print('PLAYED_ROUND_END is', SG_ENDS)
+    print('PLAYED_ROUND_END is', SG_ENDS)
     PLAYED_ROUND_STARTS = [0] + SG_ENDS[:-1]
-    # print('PLAY_STARTS is', PLAYED_ROUND_STARTS)
+    print('PLAY_STARTS is', PLAYED_ROUND_STARTS)
     PAY_ROUNDS = find_pay_rounds(COUNT_ROUNDS_PER_SG, PLAYED_ROUND_STARTS)
-    # print('PAY_ROUNDS are', PAY_ROUNDS)
+    print('PAY_ROUNDS are', PAY_ROUNDS)
     PAY_ROUNDS_ENDS = [sum(x) for x in zip(COUNT_ROUNDS_PER_SG, PLAYED_ROUND_STARTS)]
-    # print('PAY_ROUND_ENDS are', PAY_ROUNDS_ENDS)
+    print('PAY_ROUND_ENDS are', PAY_ROUNDS_ENDS)
     NUM_ROUNDS = sum(PLAYED_ROUNDS_PER_SG)
 
 class Subsession(BaseSubsession):
@@ -73,6 +75,7 @@ class Subsession(BaseSubsession):
     period = models.IntegerField()
     # whether a round is the last period of a supergame
     is_sg_last_period = models.BooleanField()
+    is_sg_first_period = models.BooleanField()
     # block = models.IntegerField()
     bk = models.IntegerField()
     # whether a round is the last period of a block
@@ -96,7 +99,8 @@ def creating_session(subsession: Subsession):
             ss.sg = sg
             ss.period = period
             ss.bk = period
-            if (ss_round==1) or (ss_round-1 in C.SG_ENDS):
+            # if (ss_round==1) or (ss_round-1 in C.SG_ENDS):
+            if ss_round==1 :
                 shuffle_list = np.arange(1,int(shuffle_group)+1) # This is when the endowment is assigned randomly 
                 #When a round is the first round or right after a supergame's end, reshuffle
                 np.random.shuffle(shuffle_list)
@@ -171,9 +175,11 @@ def get_role(group: Group):
         for p in players:
             p.endowment = 200
             p.local_community = p.id_in_subsession % shuffle_group # again, only true for the random grouping
+            p.id_in_local =  (p.id_in_subsession-1) // shuffle_group 
      else :
         for p in players:
             p.local_community = p.id_in_subsession % shuffle_group # again, only true for the random grouping
+            p.id_in_local =  (p.id_in_subsession-1)// shuffle_group 
             if p.id_in_group <= int(local_size/2):
                 p.endowment=300
             else :
@@ -204,7 +210,7 @@ def set_payoffs(group: Group):
     # note: for mg=ml, just use the players per local PG group
     # for the congestion case, can use the number of players in each club 
     fixed_cost = group.session.config['FC']
-    print(fixed_cost)
+    # print(fixed_cost)
     for p in players:
         p.total_contribution_local = contribution_local[p.local_community]
         p.individual_share_local = individual_share_local[p.local_community]
@@ -216,6 +222,7 @@ class Player(BasePlayer):
     endowment = models.CurrencyField(initial=0)  
     join_club =  models.IntegerField(initial=0)
     local_community = models.IntegerField(initial=0) # indicate the local community number
+    id_in_local = models.IntegerField(initial=-1) # indicate the individual id in local community
     contribution_local = models.CurrencyField(initial=0, label='What is your contribution to local PG?', min=0)
     contribution_global = models.CurrencyField(initial=0, label='What is your contribution to global CL?', min=0)
     # For the local PG
@@ -243,9 +250,125 @@ def get_block_dierolls(player: Player):
     return block_history
 
 # Page section
+def js_vars(player):
+
+    
+    end_toshow = player.endowment/10
+    endowment_list_l = [end_toshow]
+    endowment_list_g = [end_toshow]
+    
+    current_sp = player.subsession.sg -1 
+    LocalSize = int(player.session.config['localPG_size'])
+    GlobalSize = int(player.session.config['localPG_size'] * player.session.config['K'],)
+    
+    others = player.get_others_in_group()
+    for p in others:
+        end_toshow = p.endowment/10
+        endowment_list_g.append(end_toshow)
+        if p.local_community == player.local_community:
+            endowment_list_l.append(end_toshow)
+        
+    d = dict( matchNumber = player.subsession.sg,
+        Round = player.subsession.period,
+        
+        E_l = endowment_list_l,
+        E_g = endowment_list_g,
+        LocalSize = LocalSize,
+        GlobalSize = GlobalSize)
+    #Everthing here is about history: 
+    if player.subsession.period !=1 :
+        joinedLastRound = player.in_round(player.round_number - 1).join_club
+    
+        all_previous = player.in_rounds(C.PLAYED_ROUND_STARTS[current_sp]+1, player.round_number-1)
+        contribution_l = [int(x.total_contribution_local/10) for x in all_previous ]
+        contribution_g = [int(x.group.total_contribution_global/10) for x in all_previous ]
+        
+        my_cont_l = [int(x.contribution_local/10) for x in all_previous ]
+        my_cont_g = [int(x.contribution_global/10) for x in all_previous ]
+        
+        others_cont_l_lastOnly = []
+        others_cont_l = []
+        others_cont_g_lastOnly = []
+        others_cont_g = []
+        
+        others = player.get_others_in_group()
+        for p in others:
+            p_previous = p.in_rounds( C.PLAYED_ROUND_STARTS[current_sp]+1, player.round_number-1,)
+            # print(p_previous)
+            
+            o_all_g = [int(x.contribution_global/10) for x in p_previous]
+            # print(o_all_g)
+            others_cont_g.append(o_all_g)
+            others_cont_g_lastOnly.append(o_all_g[0])
+            
+            
+            if p.local_community == player.local_community:
+                o_all_l = [int(x.contribution_local/10) for x in p_previous]
+                others_cont_l.append(o_all_l)
+                others_cont_l_lastOnly.append(o_all_l[0])
+        # To find the max and min value's position 
+        all_list = range(LocalSize)
+        max_local = np.argwhere(others_cont_l_lastOnly == np.max(others_cont_l_lastOnly)).flatten().tolist()
+        min_local = np.argwhere(others_cont_l_lastOnly == np.min(others_cont_l_lastOnly)).flatten().tolist()
+        rest_local = [x for x in all_list if ( x not in max_local and x not in min_local) ]
+        
+        all_list = range(GlobalSize)
+        max_global = np.argwhere(others_cont_g_lastOnly == np.max(others_cont_g_lastOnly)).flatten().tolist()
+        min_global = np.argwhere(others_cont_g_lastOnly == np.min(others_cont_g_lastOnly)).flatten().tolist()
+        rest_global = [x for x in all_list if ( x not in max_global and x not in min_global) ]
+    
+        d = dict(d, 
+                joinedLastRound = joinedLastRound, 
+                C_t_l = contribution_l,
+                C_t_g = contribution_g,
+                my_cont_l = my_cont_l,
+                my_cont_g = my_cont_g,
+                others_cont_l = others_cont_l,
+                others_cont_g = others_cont_g,
+                max_local = max_local,
+                min_local = min_local,
+                rest_local = rest_local,
+                max_global = max_global,
+                min_global = min_global,
+                rest_global = rest_global,
+
+        )
+        
+        
+        
+        
+    return dict(
+        d,
+        )
+
+
+
+
+def vars_for_template(player: Player):
+    if player.subsession.period == 1 :
+        earning = 0
+        joined = 0
+        formed_g = 0 
+    else :
+        pre_player = player.in_round(player.round_number - 1)
+        earning = pre_player.payoff / 10
+        joined = pre_player.join_club
+        formed_g = pre_player.group.global_formed
+    return dict(local_size = player.session.config['localPG_size'],
+                local_multiplier = player.session.config['multiplier'] / player.session.config['localPG_size'],
+                global_multiplier =player.session.config['multiplier'] / player.session.config['localPG_size'],
+                FC = int(player.session.config['FC'] / 10),
+                
+                earning = earning, 
+                joined = joined,
+                formed_g = formed_g,
+                
+                )
+
+
 class SuperGameWaitPage(WaitPage):
     after_all_players_arrive = get_role
-    body_text = 'Waiting for other players to start the supergame'
+    body_text = 'Waiting for other players to join the group'
 
 class NewSupergame(Page):
     @staticmethod
@@ -257,11 +380,8 @@ class JoinClub(Page):
     form_model = 'player'
     form_fields = ['join_club']
     
-
-    
-    def vars_for_template(player: Player):
-        return dict(local_size = player.session.config['localPG_size'],
-                       multiplier = player.session.config['multiplier'])
+    js_vars = js_vars
+    vars_for_template = vars_for_template
 
 class ClubWaitPage(WaitPage):
     after_all_players_arrive = check_club_formed
@@ -288,6 +408,7 @@ class Contribution(Page):
 class ResultsWaitPage(WaitPage):
     after_all_players_arrive = set_payoffs
     body_text = 'Waiting for other players to make their contributions'
+    
 class Results(Page):
     form_model = 'player'
     

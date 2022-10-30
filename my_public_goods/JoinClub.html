@@ -1,19 +1,140 @@
 {{ extends 'global/Page.html' }}
 {{ block title }}
 
-    Supergame {{ subsession.sg }}, Round {{ subsession.period }}
-
-Join the club{{ endblock }}
+    Match {{ subsession.sg }}, Round {{ subsession.period }}
+	<br>
+	Join the club? {{ endblock }}
 
 {{ block content }}
 
-This is a public goods game with {{local_size}} players per group, 
-an endowment of {{player.endowment}} points, and a multiplier of {{multiplier }}.
+<!-- Information part: -->
 
-Join the club?
+ <div class="row" 	style=" margin-right:0px;margin-left:0px; ">
+    <div class="col-6"> 
+		<div class="card-body">
+		<center> Your group members
+			<br> You and other 3 participants are in the same group with the following endowments. 
+				 
+			<br> Every token invested in this group account will give {{ local_multiplier }} to every member in the group.
+			{% include 'my_public_goods\commonHTML_LocalInfor.html' %}
+			
+			<p id="individualLocal" style="visibility:hidden" >		</p>
+			<p> Show me more history: Button </p>
+		</center>
+		</div>
+	</div>
+	
+	
+	<div class="col-6"> 
+		<div class="card-body">
+		<center> Potential members in the second group 
+		<br> Members in your and another group can form a second group account.
+		<br>  If formed, every token invested in this group account will give {{ local_multiplier }} to every member who joins this group.
+		
+		 {% include 'my_public_goods\commonHTML_GlobalInfor.html' %}
+		 {{ if formed_g and joined }}
+		 Since you joined the club in last round, you can review the detailed member contribution: 
+		 <p id="individualGlobal" style="visibility:hidden" >		</p>
+		 {{ else }}
+		<p> If you want, you can review a longer history of this group's total contribution. </p>
+			{{ endif }}
+		 </center>
+		</div>
+	</div>
+</div>	
+	
+<br>
 
-{% formfields %}
+ <div class="row" 	style="margin-right:0px;margin-left:0px; ">
+ 
+		<center>
+		
+		{{ if player.subsession.period == 1}} 
+		
+		{{ else }}
+		
+		Last round, you earned {{ earning }}. 
+		<br>
+		The total tokens allocated in your group account are:  
+		<span id="ShowLocalPrevious">
+		<button type="button"   class="button_infor otree-btn-next btn btn-primary" onclick="ShowPrevious('local', 'total')" > Show </button> </span>
+		<br>
+		{{ if formed_g }}
+		The second group was formed. The total tokens allocated to the second group account are: 
+		{{ else }}
+		The second group was not formed. You can still see the previous history here:
+		{{ endif }}
+		<span id="ShowGlobalPrevious" ><button type="button"   class="button_infor otree-btn-next btn btn-primary" onclick="ShowPrevious('global', 'total')" > Show </button></span>
+		
+		
+		{{ if joined }}
+		Since you joined the club, if you want, you can see each member's allocation in the second group:
+		Button: showMeHighestContribution
+		Button: showMeLowestContribution
+		Button: showMeTheRestContribution
+		
+		{{ endif }}
+		{{ endif }}
+		<br>
+		Pay {{ FC}} points and join the club?
 
-{% next_button %}
+		{% formfields %}
+
+		{% next_button %}
+		</center>
+		
+		
+		<!-- </div> -->
+	</div>
+	
+	
 
 {{ endblock }}
+
+
+{% block scripts %}
+
+    {% include 'my_public_goods\commonJS.html' %}
+	<script>
+	<!-- To place the buttons with random positions -->
+	/* Randomize array in-place using Durstenfeld shuffle algorithm */
+	function shuffleArray(array) {
+		for (var i = array.length - 1; i > 0; i--) {
+			var j = Math.floor(Math.random() * (i + 1));
+			var temp = array[i];
+			array[i] = array[j];
+			array[j] = temp;
+		}
+	}
+	
+	<!-- console.log(arr1); -->
+	function RandomButton(pName,level) {
+		var para = document.getElementById(pName);
+		if (level == 'local') {
+		var span1 =  "<span id='Highestlocal'> <button type='button'  class='button_infor otree-btn-next btn btn-primary'  style= 'width: 100px' onclick='ShowPrevious('local', 'max')'> Highest </button>  </span>";
+		var span2 =  "<span id='Lowestlocal'> <button type='button'  class='button_infor otree-btn-next btn btn-primary'  style= 'width: 100px' onclick='ShowPrevious('local', 'min')' > Lowest </button> </span>";
+		var span3 = "<span id='Restlocal'> <button type='button'  class='button_infor otree-btn-next btn btn-primary'  style= 'width: 100px' onclick='ShowPrevious('local', 'rest')' > Rest </button> </span>";
+		}
+		para.innerHTML = "If you want, you can see each member's allocation : ";
+		var arr1 = [span1, span2, span3];
+		shuffleArray(arr1);
+		console.log(arr1);
+		for (var i in arr1) {
+			para.innerHTML +=  arr1[i] ;
+			}
+	}
+	RandomButton('individualLocal','local');
+	ShowTable_Local();
+	ShowTable_Global()
+	</script>
+{{ endblock }}
+
+
+{% block app_styles %}
+	
+    {% include 'my_public_goods\commonCSS.html' %}
+	
+	
+	
+{% endblock %}
+

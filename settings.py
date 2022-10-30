@@ -9,7 +9,7 @@ SESSION_CONFIGS = [
         multiplier = 2.4,
         localPG_size = 4,
         K = 2 ,
-        FC = 20, 
+        FC = 20,  #note: all earnings stored as integer, endowment=200 pnts for homo
         homo_endowment = 1,
         # m_l = 0.6,
         # m_g = 0.6,
@@ -18,7 +18,7 @@ SESSION_CONFIGS = [
             
             <br> <b>'localPG_size' </b> how many people in the local PG </br>
             <br> <b>'K' </b> how many communities connect to form the club good </br>
-            <br> <b>'FC' </b> fixed cost to join the club good </br>
+            <br> <b>'FC' </b> fixed cost to join the club good; 20 vs 100 </br>
             <br> <b>'multiplier' </b> total multiplier = localPG_size * m_l = m_g (for now)  </br>
             <br> <b>'m_l' </b> MPCR for local PG </br>
             <br> <b>'m_g' </b> MPCR for global Club </br>
@@ -26,10 +26,10 @@ SESSION_CONFIGS = [
             """
     ),
     
-    dict(
-        name='block_random_termination',
-        app_sequence=['block_random_termination'],
-        num_demo_participants=2,),
+    # dict(
+        # name='block_random_termination',
+        # app_sequence=['block_random_termination'],
+        # num_demo_participants=2,),
 ]
 
 # if you set a property in SESSION_CONFIG_DEFAULTS, it will be inherited by all configs
