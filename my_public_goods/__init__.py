@@ -290,42 +290,67 @@ def js_vars(player):
         all_previous = player.in_rounds(C.PLAYED_ROUND_STARTS[current_sp]+1, player.round_number-1)
         contribution_l = [int(x.total_contribution_local/10) for x in all_previous ]
         contribution_g = [int(x.group.total_contribution_global/10) for x in all_previous ]
+        contribution_l.reverse()
+        contribution_g.reverse()
         
         my_cont_l = [int(x.contribution_local/10) for x in all_previous ]
-        my_cont_g = [int(x.contribution_global/10) for x in all_previous ]
-        
+        my_cont_g = [ ]
+        for x in all_previous: 
+            if x.join_club == 1:
+                my_cont_g.append(int(x.contribution_global/10))
+            else :
+                my_cont_g.append(np.nan)
+        my_cont_l.reverse()
+        my_cont_g.reverse()
         others_cont_l_lastOnly = []
         others_cont_l = []
         others_cont_g_lastOnly = []
         others_cont_g = []
+        others_join_g = []
+        others_join_g_lastOnly = []
         
         others = player.get_others_in_group()
         for p in others:
             p_previous = p.in_rounds( C.PLAYED_ROUND_STARTS[current_sp]+1, player.round_number-1,)
             # print(p_previous)
             
-            o_all_g = [int(x.contribution_global/10) for x in p_previous]
-            # print(o_all_g)
+            o_all_g = []
+            for x in p_previous:
+                if x.join_club==1 :
+                    o_all_g.append(int(x.contribution_global/10))
+                else :
+                    o_all_g.append(np.nan)
+                    
+            o_join_g = [x.join_club for x in p_previous]
+            o_all_g.reverse()
+            o_join_g.reverse()
             others_cont_g.append(o_all_g)
             others_cont_g_lastOnly.append(o_all_g[0])
-            
+            others_join_g.append(o_join_g)
+            others_join_g_lastOnly.append(o_join_g[0])
             
             if p.local_community == player.local_community:
                 o_all_l = [int(x.contribution_local/10) for x in p_previous]
+                o_all_l.reverse()
                 others_cont_l.append(o_all_l)
                 others_cont_l_lastOnly.append(o_all_l[0])
         # To find the max and min value's position 
-        print(others_cont_l_lastOnly)
+        # print("contr g")
+        # print(others_cont_g_lastOnly)
+        # print(others_join_g_lastOnly)
+        # print(np.multiply(others_cont_g_lastOnly, others_join_g_lastOnly))
         all_list = range(LocalSize-1)
-        max_local = np.argwhere(others_cont_l_lastOnly == np.max(others_cont_l_lastOnly)).flatten().tolist()
-        min_local = np.argwhere(others_cont_l_lastOnly == np.min(others_cont_l_lastOnly)).flatten().tolist()
+        max_local = np.argwhere(others_cont_l_lastOnly == np.nanmax(others_cont_l_lastOnly)).flatten().tolist()
+        min_local = np.argwhere(others_cont_l_lastOnly == np.nanmin(others_cont_l_lastOnly)).flatten().tolist()
         rest_local = [x for x in all_list if ( x not in max_local and x not in min_local) ]
         
+        
         all_list = range(GlobalSize-1)
-        max_global = np.argwhere(others_cont_g_lastOnly == np.max(others_cont_g_lastOnly)).flatten().tolist()
-        min_global = np.argwhere(others_cont_g_lastOnly == np.min(others_cont_g_lastOnly)).flatten().tolist()
+        max_global = np.argwhere(others_cont_g_lastOnly == np.nanmax(others_cont_g_lastOnly)).flatten().tolist()
+        min_global = np.argwhere(others_cont_g_lastOnly == np.nanmin(others_cont_g_lastOnly)).flatten().tolist()
         rest_global = [x for x in all_list if ( x not in max_global and x not in min_global) ]
-    
+        
+        # round_num = range(1, player.round_number-2)
         d = dict(d, 
                 joinedLastRound = joinedLastRound, 
                 C_t_l = contribution_l,
@@ -334,6 +359,7 @@ def js_vars(player):
                 my_cont_g = my_cont_g,
                 others_cont_l = others_cont_l,
                 others_cont_g = others_cont_g,
+                others_join_g = others_join_g,
                 max_local = max_local,
                 min_local = min_local,
                 rest_local = rest_local,
@@ -341,6 +367,7 @@ def js_vars(player):
                 min_global = min_global,
                 rest_global = rest_global,
                 ClubFormedLastRound = ClubFormedLastRound,
+                
         )
         
         

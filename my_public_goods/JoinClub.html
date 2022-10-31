@@ -21,7 +21,7 @@
 			{% include 'my_public_goods\commonHTML_LocalInfor.html' %}
 			
 			<p id="individualLocal" style="visibility:hidden" >		</p>
-			<p id="MoreLocal" style="visibility:hidden" > Show me more history: Button </p>
+			<p id="MoreLocal" style="visibility:hidden" >  You can see the full history in this match by clicking  <button type="button"   class="button_infor otree-btn-next btn btn-primary" onclick="ShowAllHistory('local')" > More </button>  </p>
 		</center>
 		</div>
 	</div>
@@ -37,10 +37,13 @@
 		 {% include 'my_public_goods\commonHTML_GlobalInfor.html' %}
 		 <!-- Note: for future design, if only club members can see detailed contribution; if formed_g and joined  -->
 		 <!-- Since you joined the club in last round:  -->
-		 {{ if formed_g }}
+		 <!-- {{ if formed_g }} -->
+		 
+		 <!-- {{ endif }} -->
+		 
 		 <p id="individualGlobal" style="visibility:hidden" >		</p>
-		 {{ endif }}
-		<p id="MoreGlobal" style="visibility:hidden" >Show me more history:  </p>
+		<p id="MoreGlobal" style="visibility:hidden" >  You can see the full history in this match by clicking  <button type="button"   class="button_infor otree-btn-next btn btn-primary" onclick="ShowAllHistory('global')" > More </button>  </p>
+
 		 </center>
 		</div>
 	</div>
@@ -71,11 +74,12 @@
 		{{ endif }}
 		
 		<br>
-		Pay {{ FC}} points and form the second group?
+		Please decide, for this round: do you want to pay {{ FC}} points and form a second group?
 		<br>
 		<br>
-		<button  name="join_club"  class="btn btn-primary" value=0> No </button>
 		<button  name="join_club" class="btn btn-primary" value=1> Yes </button>
+		<button  name="join_club"  class="btn btn-primary" value=0> No </button>
+		
 		<br> 
 		<!-- <input type="hidden" name="join_club" /> -->
 		 {{ formfield_errors 'join_club' }}
