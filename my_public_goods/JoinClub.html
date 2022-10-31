@@ -3,7 +3,7 @@
 
     Match {{ subsession.sg }}, Round {{ subsession.period }}
 	<br>
-	Form the Second Group? {{ endblock }}
+	Form A Second Group? {{ endblock }}
 
 {{ block content }}
 
@@ -11,48 +11,9 @@
 
  <div class="row" 	style=" margin-right:0px;margin-left:0px; ">
     <div class="col-6"  > 
-		<div class="card-body">
-		<div style="background-color: lightblue">
-		<center> Your group members
-			<br> You and other 3 participants are in the same group with the following endowments. 
-				 
-			<br> Every token invested in this group account will give {{ local_multiplier }} to every member in the group.
-			</div>
-			{% include 'my_public_goods\commonHTML_LocalInfor.html' %}
-			
-			<p id="individualLocal" style="visibility:hidden" >		</p>
-			<p id="MoreLocal" style="visibility:hidden" >  You can see the full history in this match by clicking  <button type="button"   class="button_infor otree-btn-next btn btn-primary" onclick="ShowAllHistory('local')" > More </button>  </p>
-		</center>
-		</div>
-	</div>
+	{% include 'my_public_goods\commonHTML_LocalInfor.html' %}
 	
-	
-	<div class="col-6" style="opacity: 70%;" id="ClubGoodColor" > 
-		<div class="card-body" >
-		<div style="background-color: lightgreen; ">
-		<center> Potential members in the second group 
-		<br> Members in your and another group can form a second group account.
-		<br>  If formed, every token invested in this group account will give {{ local_multiplier }} to every member who joins this group.
-		</div>
-		 {% include 'my_public_goods\commonHTML_GlobalInfor.html' %}
-		 <!-- Note: for future design, if only club members can see detailed contribution; if formed_g and joined  -->
-		 <!-- Since you joined the club in last round:  -->
-		 <!-- {{ if formed_g }} -->
-		 
-		 <!-- {{ endif }} -->
-		 
-		 <p id="individualGlobal" style="visibility:hidden" >		</p>
-		<p id="MoreGlobal" style="visibility:hidden" >  You can see the full history in this match by clicking  <button type="button"   class="button_infor otree-btn-next btn btn-primary" onclick="ShowAllHistory('global')" > More </button>  </p>
-
-		 </center>
-		</div>
-	</div>
-</div>	
-	
-<br>
-
- <div class="row" 	style="margin-right:0px;margin-left:0px; ">
- 
+	<br> 
 		<center>
 		
 		{{ if player.subsession.period == 1}} 
@@ -61,21 +22,21 @@
 		
 		Last round, you earned {{ earning }}. 
 		<br>
-		The total tokens allocated in your group account are:  
+		You can review the last round information: 
 		<span id="ShowLocalPrevious">
-		<button type="button"   class="button_infor otree-btn-next btn btn-primary" onclick="ShowPrevious('local', 'total')" > Show </button> </span>.
-		
+		<button type="button"   class="button_infor_l  btn " onclick="ShowPrevious('local', 'total')" > Show </button> </span>.
+		<br>
 		{{ if formed_g }}
-		The second group was formed. The total tokens allocated to the second group account are: 
+		The second group was formed.
 		{{ else }}
-		The second group was not formed. You can still see the previous history here:
+		The second group was not formed.
 		{{ endif }}
-		<span id="ShowGlobalPrevious" ><button type="button"   class="button_infor otree-btn-next btn btn-primary" onclick="ShowPrevious('global', 'total')" > Show </button></span>
+		You can review the last round information: 
+		<span id="ShowGlobalPrevious" ><button type="button"   class="button_infor_g  btn" onclick="ShowPrevious('global', 'total')" > Show </button></span>
 		{{ endif }}
 		
 		<br>
 		Please decide, for this round: do you want to pay {{ FC}} points and form a second group?
-		<br>
 		<br>
 		<button  name="join_club" class="btn btn-primary" value=1> Yes </button>
 		<button  name="join_club"  class="btn btn-primary" value=0> No </button>
@@ -86,6 +47,17 @@
 		<br> <br>
 		<!-- {% next_button %} -->
 		</center>
+		
+	</div>
+	
+	<div class="col-6" style="opacity: 70%;" id="ClubGoodColor" > 
+		{% include 'my_public_goods\commonHTML_GlobalInfor.html' %}
+
+	</div>	
+</div>
+
+ <div class="row" 	style="margin-right:0px;margin-left:0px; ">
+ 
 		
 		
 		<!-- </div> -->
@@ -100,62 +72,6 @@
 
     {% include 'my_public_goods\commonJS.html' %}
 	<script>
-	<!-- To place the buttons with random positions -->
-	/* Randomize array in-place using Durstenfeld shuffle algorithm */
-	function shuffleArray(array) {
-		for (var i = array.length - 1; i > 0; i--) {
-			var j = Math.floor(Math.random() * (i + 1));
-			var temp = array[i];
-			array[i] = array[j];
-			array[j] = temp;
-		}
-	};
-	
-	
-	function RandomButton(pName,level) {
-
-	  var para = document.getElementById(pName);
-	  
-	  var span1, span2, span3;
-
-	  span1 =  generateButton(level, "max", "Highest");
-	  span2 =  generateButton(level, "min", "Lowest");
-	  span3 = generateButton(level, "rest", "Rest");
-
-	  para.innerHTML = "You can see each member's allocation : ";
-
-	  var arr1 = [span1, span2, span3];
-
-	  shuffleArray(arr1);
-
-	  for (var i in arr1) {
-		para.appendChild(arr1[i]);
-
-	  }
-
-	};
-
-
-	// feature is "max", "local" or "rest"
-	// buttonText is "Highest", "Lowest" or "Rest"
-	function generateButton(feature1,feature2, buttonText) {
-	  var span = document.createElement("span");
-	  var btn = document.createElement("button");
-	  
-	  span.id = feature1 + feature2;
-	  span.appendChild(btn);
-	  
-	  var ShowPreviousModified = ShowPrevious.bind(this, feature1, feature2);
-	  <!-- console.log(ShowPreviousModified); -->
-
-	  btn.type = "button";
-	  btn.className = 'button_infor otree-btn-next btn btn-primary';
-	  btn.style = 'width: 100px';
-	  btn.innerHTML = buttonText;
-	  btn.onclick = ShowPreviousModified;
-	  return span;
-	};
-
 
 
 	

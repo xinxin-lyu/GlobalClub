@@ -34,7 +34,7 @@
 <!-- var x = js_vars.Table_Rearrange; -->
 
 <!-- This function is to define the whole table at the begining of each round -->
-    function ShowTable_Local(offset=0) {
+    function ShowTable_Local(page=0) {
 	<!-- Use the period (round) number to decide  -->
 		<!-- If Round == 1:  only Show the current table  -->
 		var Card = document.getElementById("InformationTable_local");
@@ -48,14 +48,14 @@
 		div_c1.className = "closeTable";
 		<!-- div_c1.style.width = "50px"; -->
 		div_c1.id = "column1_l";
-		ShowFirstColumn(div_c1,'local');
+		ShowFirstColumn(div_c1,'local', page);
 		Card_div.appendChild(div_c1);
 
 		
 
     };
 	
-	  function ShowTable_Global(offset=0) {
+	  function ShowTable_Global(page=0) {
 	<!-- Use the period (round) number to decide  -->
 		<!-- If Round == 1:  only Show the current table  -->
 		var Card = document.getElementById("InformationTable_global");
@@ -68,15 +68,18 @@
 		div_c1.className = "closeTable";
 		<!-- div_c1.style.width = "50px"; -->
 		div_c1.id = "column1_g";
-		ShowFirstColumn(div_c1,'global');
+		ShowFirstColumn(div_c1,'global', page);
 		Card_div.appendChild(div_c1);
 
 		
 
     };
 	
-	
-	function ShowFirstColumn(element, level) {
+
+
+
+
+	function ShowFirstColumn(element, level, page=0) {
 		var tbl = document.createElement('table');
 
 		tbl.className = "table";
@@ -88,7 +91,10 @@
 		th.style = "background-color: white";
 		tr.appendChild(th);
 		var th = document.createElement('th');
-		th.innerHTML = "Endowment";
+		if (page==0) {th.innerHTML = "Endowment";}
+		else if (page==1) {th.innerHTML = "Endowment To Allocate";
+		if (js_vars.Formed && js_vars.MeJoin) { 
+				document.getElementById("ClubGoodColor").style.opacity = "100%"; }}
 		th.style = "background-color: white";
 		tr.appendChild(th);
 		tbl.appendChild(tr);
@@ -96,10 +102,12 @@
 		if (level == 'local' ) {
 			var num = js_vars.LocalSize;
 			var e_list = js_vars.E_l; 
+			var groupColor = "lightblue";
 			} 
-		else {
+		else if (level == 'global' ) {
 			var num = js_vars.GlobalSize;
 			var e_list = js_vars.E_g; 
+			var groupColor = "lightgreen";
 			}
 		for (var i = 1; i <= num; i++) {
 			var tr = document.createElement('tr');
@@ -112,7 +120,11 @@
 				th.style = "font-weight: bold;";
 				
 				th2.innerHTML =  e_list[i-1];
-				th2.style = "font-weight: bold;";
+				if (page==1 && js_vars.MeJoin && level=="global") {
+					th.innerHTML += " (Joined)" ; 
+					th.style.backgroundColor=groupColor;
+					th2.style.backgroundColor=groupColor;}
+				th2.style.fontWeight= "bold";
 				
 				}
 			else {
@@ -122,6 +134,11 @@
 				th.style = "background-color: lightgrey";
 				th2.style = "background-color: lightgrey";
 			}	
+			if (page==1 && js_vars.OtherJoin[i-2] && level=="global") {
+				th.innerHTML += " (Joined)" ; 
+				th.style.backgroundColor=groupColor;
+				th2.style.backgroundColor=groupColor;
+				}
 			
 			}
 			tr.appendChild(th);
@@ -156,7 +173,7 @@
 				document.getElementById(button_ind_infor).style.visibility = "visible";
 				<!-- Show More History Information -->
 				document.getElementById("MoreLocal").style.visibility = "visible";
-				
+				var groupName = "Group total was ";
 			}
 			else if  (level== 'global') {
 				var column1 = "column1_g";
@@ -174,6 +191,7 @@
 				<!-- } -->
 				<!-- Show More History Information -->
 				document.getElementById("MoreGlobal").style.visibility = "visible";
+				var groupName = "Second group total was ";
 				<!-- Change colors according to the join status -->
 				<!-- if (js_vars.ClubFormedLastRound ) {  -->
 				
@@ -214,10 +232,9 @@
 		if ( !isNaN(my_allocation)) { th.style.backgroundColor=groupColor;}
 		tr.appendChild(th);
 		
-		
-		document.getElementById(button_id).innerHTML = group_total; 
-		
-		
+		var replace = document.getElementById(button_id);
+		replace.innerHTML = groupName + group_total + " points"; 
+		replace.style.backgroundColor=groupColor;
 		
 		}
 		
@@ -357,5 +374,64 @@
 	
 	};
 		
+		<!-- To place the buttons with random positions -->
+	/* Randomize array in-place using Durstenfeld shuffle algorithm */
+	function shuffleArray(array) {
+		for (var i = array.length - 1; i > 0; i--) {
+			var j = Math.floor(Math.random() * (i + 1));
+			var temp = array[i];
+			array[i] = array[j];
+			array[j] = temp;
+		}
+	};
 	
+	
+	function RandomButton(pName,level) {
+
+	  var para = document.getElementById(pName);
+	  
+	  var span1, span2, span3;
+
+	  span1 =  generateButton(level, "max", "Highest");
+	  span2 =  generateButton(level, "min", "Lowest");
+	  span3 = generateButton(level, "rest", "Rest");
+
+	  para.innerHTML = "You can see each member's allocation : ";
+
+	  var arr1 = [span1, span2, span3];
+
+	  shuffleArray(arr1);
+
+	  for (var i in arr1) {
+		para.appendChild(arr1[i]);
+
+	  }
+
+	};
+
+
+	// feature is "max", "local" or "rest"
+	// buttonText is "Highest", "Lowest" or "Rest"
+	function generateButton(feature1,feature2, buttonText) {
+	  var span = document.createElement("span");
+	  var btn = document.createElement("button");
+	  
+	  span.id = feature1 + feature2;
+	  span.appendChild(btn);
+	  
+	  var ShowPreviousModified = ShowPrevious.bind(this, feature1, feature2);
+	  <!-- console.log(ShowPreviousModified); -->
+
+	  btn.type = "button";
+	  if (feature1=="local") {
+	  btn.className = 'button_infor_l '; }
+	  else {btn.className = 'button_infor_g '; }
+	  btn.className += 'btn ';
+	  btn.style = 'width: 100px';
+	  btn.innerHTML = buttonText;
+	  btn.onclick = ShowPreviousModified;
+	  return span;
+	};
+
+
 </script>

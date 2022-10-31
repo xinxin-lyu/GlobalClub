@@ -1,9 +1,18 @@
 <style type="text/css">
-	.button_infor {
+	.button_infor_g {
 	left:5px; bottom:2px;
 	height: 21px; 
-	width: 50px; 
-	line-height: 15px; padding: 3px; background-color: #1e8f27; border-color: #1e8f27;
+	width: 100px; 
+	line-height: 15px; padding: 3px;
+	background-color: lightgreen; border-color: #1e8f27;
+	}
+	
+	.button_infor_l {
+	left:5px; bottom:2px;
+	height: 21px; 
+	width: 100px; 
+	line-height: 15px; padding: 3px;
+	background-color: lightblue; border-color: #1e8f27;
 	}
     :root {
         --C-color: #f9ff87;
@@ -31,6 +40,7 @@
 	  border: 1px solid black;
 	  border-collapse: collapse;
 	  table-layout : fixed; 
+	  width: inherit;
 	}
 	
 	<!-- .current_table{ -->
@@ -48,8 +58,11 @@
 	.table_belief {
 		border: hidden;
 		border-collapse: collapse;
+		border-spacing: 0px;
 		width: 100%;
 	}	
+	<!-- th_noBorder { -->
+	<!-- } -->
 	.CurrentRound_row {
 	}
 	.CurrentRound_cell {
@@ -96,7 +109,7 @@
     }
 
 	.HistoryRound_cell {
-		width: 15px;
+		width: 100px;
 		height: 50px;
 		text-orientation: upright;
 		color: black;
@@ -139,7 +152,7 @@
 		border: 3px solid black;
 	}
 	th {
-		width: 50px;
+		width: 100px;
         height: 50px;
 		text-align: center;
 		font-weight: normal;

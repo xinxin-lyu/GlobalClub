@@ -207,8 +207,9 @@ def set_payoffs(group: Group):
     contribution_global = 0
     for p in players:
         # local needs to be specified because it's supposed to be half of the group size  
-        contribution_local[p.local_community] += p.contribution_local
-        contribution_global += p.contribution_global
+        # individual contribution is recorded on the 0-20 base
+        contribution_local[p.local_community] += p.contribution_local * 10
+        contribution_global += p.contribution_global * 10
     individual_share_local = contribution_local *  multiplier/ local_size
     group.total_contribution_global = contribution_global
     group.individual_share_global = group.total_contribution_global * multiplier / local_size
@@ -220,8 +221,7 @@ def set_payoffs(group: Group):
         p.total_contribution_local = contribution_local[p.local_community]
         p.individual_share_local = individual_share_local[p.local_community]
         # p.payoff = p.endowment - p.contribution_local + p.individual_share_local +  p.join_club* (- p.contribution_global - fixed_cost + group.individual_share_global)
-        p.payoff = p.endowment - p.contribution_local + p.individual_share_local +  p.join_club* (- p.contribution_global + group.individual_share_global)
-
+        p.payoff = p.endowment - p.contribution_local*10 + p.individual_share_local +  p.join_club* (- p.contribution_global*10 + group.individual_share_global)
 Group.set_payoffs = set_payoffs
 
 class Player(BasePlayer):
@@ -293,16 +293,17 @@ def js_vars(player):
         contribution_l.reverse()
         contribution_g.reverse()
         
-        my_cont_l = [int(x.contribution_local/10) for x in all_previous ]
+        # Individual contribution is stored as proper points
+        my_cont_l = [int(x.contribution_local) for x in all_previous ]
         my_cont_g = [ ]
         for x in all_previous: 
             if x.join_club == 1:
-                my_cont_g.append(int(x.contribution_global/10))
+                my_cont_g.append(int(x.contribution_global))
             else :
                 my_cont_g.append(np.nan)
         my_cont_l.reverse()
         my_cont_g.reverse()
-        others_cont_l_lastOnly = []
+        others_cont_l_lastOnly = [] 
         others_cont_l = []
         others_cont_g_lastOnly = []
         others_cont_g = []
@@ -317,7 +318,7 @@ def js_vars(player):
             o_all_g = []
             for x in p_previous:
                 if x.join_club==1 :
-                    o_all_g.append(int(x.contribution_global/10))
+                    o_all_g.append(int(x.contribution_global))
                 else :
                     o_all_g.append(np.nan)
                     
@@ -330,7 +331,7 @@ def js_vars(player):
             others_join_g_lastOnly.append(o_join_g[0])
             
             if p.local_community == player.local_community:
-                o_all_l = [int(x.contribution_local/10) for x in p_previous]
+                o_all_l = [int(x.contribution_local) for x in p_previous]
                 o_all_l.reverse()
                 others_cont_l.append(o_all_l)
                 others_cont_l_lastOnly.append(o_all_l[0])
@@ -394,11 +395,13 @@ def vars_for_template(player: Player):
                 local_multiplier = player.session.config['multiplier'] / player.session.config['localPG_size'],
                 global_multiplier =player.session.config['multiplier'] / player.session.config['localPG_size'],
                 FC = int(player.session.config['FC'] / 10),
+                endow = int(player.endowment/10),
                 
                 earning = earning, 
                 joined = joined,
                 formed_g = formed_g,
-                
+               multiplier = player.session.config['multiplier'],
+               join_club = player.join_club==1
                 )
 
 
@@ -434,12 +437,19 @@ class Contribution(Page):
             return ['contribution_local', 'contribution_global']
         else:
             return ['contribution_local']
-
     
-    def vars_for_template(player: Player):
-        return dict(local_size = player.session.config['localPG_size'],
-                       multiplier = player.session.config['multiplier'],
-                       join_club = player.join_club==1)
+    def js_vars(player: Player):
+        d = js_vars(player)
+        others = player.get_others_in_group()
+        OtherJoin = [x.join_club for x in others]
+        return dict(d, 
+                MeJoin = player.join_club,
+                OtherJoin = OtherJoin,
+                Formed = player.group.global_formed,
+                
+                )
+    vars_for_template = vars_for_template
+
     
 class ResultsWaitPage(WaitPage):
     after_all_players_arrive = set_payoffs

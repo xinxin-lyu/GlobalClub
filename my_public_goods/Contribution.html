@@ -7,11 +7,144 @@ Contribute{{ endblock }}
 
 {{ block content }}
 
-This is a public goods game with {{local_size}} players per group, 
-an endowment of {{player.endowment}} points, and a multiplier of {{multiplier }}.
 
-{% formfields %}
 
+ <div class="row" 	style=" margin-right:0px;margin-left:0px; ">
+    <div class="col-6"  > 
+	{% include 'my_public_goods\commonHTML_LocalInfor.html' %}
+
+	<br> 
+	
+			<center>
+	In this round, the second group account is 
+	{{ if player.group.global_formed }} 
+	formed. 
+	<br> You {{ if player.join_club }} paid {{ FC }} points and joined the second group. {{ else }} didn't join the second group. {{  endif }}
+	{{ else }} 
+	not formed. 
+	{{ endif }}
+	
+	<br> You have <strong> {{ endow }} </strong>  points.
+	<!-- {{ if player.join_club }} -->
+	<!-- <br> You have {{ endow }} points to allocate among your private and the two group accounts.   -->
+	<!-- {{ else }}  -->
+	<!-- <br> You have {{ endow }} points to allocate  between your private and the group account.   -->
+	<!-- {{ endif }} -->
+	
+	{{ if player.subsession.period != 1}} 
+	<br> You can review the last round information: 
+		<span id="ShowLocalPrevious"> <button type="button"   class="button_infor_l btn " onclick="ShowPrevious('local', 'total')" > Group </button> </span>
+		{{ if player.group.global_formed }} 
+		<span id="ShowGlobalPrevious" ><button type="button"   class="button_infor_g btn " onclick="ShowPrevious('global', 'total')" > Second Group </button></span>
+		{{ endif }}
+	{{ endif }}
+
+<!-- {% formfields %} -->
+ <!-- <div class="row" 	style="margin-right:400px;margin-left:400px; "> -->
+ <table class="table table_belief" style="width:500px;"> 
+<tr> <th> Private Account: </th> <th> <input type="number"  id='privateAcc' readonly > </th> </tr>
+<tr style="background-color:lightblue;"> <th > Group Account: </th> 
+	<th> <input id="contribution_local" name="contribution_local"   type="number" min="0"  oninput="Allocation(this)"  /> 
+	<!-- value=Number(js_vars.E_l[0]) -->
+	</th> </tr>
+{{ if player.join_club }}
+<tr style="background-color:lightgreen;"> <th> Second Group Account: </th> 
+<th> <input  id="contribution_global" name="contribution_global"   type="number"   min="0"  oninput="Allocation(this)"  /> </th></tr>
+<!-- value=null -->
+{{ endif }}
+</table>
+<p id="contribution_local_e" style="color:red"> 
+<p id="contribution_global_e" style="color:red"> 
 {% next_button %}
+</center>
 
+	</div>
+	
+	{{ if player.group.global_formed }} 
+	<div class="col-6" style="opacity: 70%;" id="ClubGoodColor" > 
+		{% include 'my_public_goods\commonHTML_GlobalInfor.html' %}
+
+	</div>	
+	{{ endif }}
+</div>
+
+ <div class="row" 	style="margin-right:0px;margin-left:0px; ">
+ 
+
+
+ </div>
+ 
+		
 {{ endblock }}
+
+{% block scripts %}
+
+    {% include 'my_public_goods\commonJS.html' %}
+	<script>
+	<!-- To calculate the endowment allocation  -->
+	document.getElementById('privateAcc').value = js_vars.E_l[0];
+	
+	function Allocation(ele) {
+		
+	var prvtAcc = document.getElementById("privateAcc");
+	if (ele.id.includes("local") ) {
+	var grpAcc =  document.getElementById("contribution_global");}
+	else if (ele.id.includes("global") ) {
+	var grpAcc =  document.getElementById("contribution_local");}
+	
+	<!-- If I joined the club, I need to allocate three accounts -->
+	<!-- 1) whether the ele.value is within range;  -->
+	var myEndow = js_vars.E_l[0];
+	if ( ele.value >= 0 && ele.value <= myEndow ) {
+		if ( js_vars.MeJoin ) {
+			<!-- 2) the other account has a specified value -->
+			if (grpAcc.value != null) {
+				var tot = Number(grpAcc.value) + Number(ele.value);
+				if ( tot > myEndow  ) {
+				var error = document.getElementById(ele.id+"_e");
+					error.innerHTML = "Your total allocation must be less than " + myEndow +"."
+					ele.focus()
+					return false
+				}
+				prvtAcc.value = myEndow - ele.value - grpAcc.value ; 
+			}
+		
+		}
+		else {
+		prvtAcc.value = myEndow - ele.value;
+		}
+		var error = document.getElementById(ele.id+"_e");
+
+		error.innerHTML = ""
+	}
+	else {
+		var error = document.getElementById(ele.id+"_e");
+		error.innerHTML = "Your allocation must be an integer between 0 and " + myEndow +"."
+		ele.focus()
+		return false
+	}
+
+	}
+	
+
+
+	
+	
+	RandomButton('individualLocal','local');
+	
+
+	ShowTable_Local(1);
+	ShowTable_Global(1);
+	
+
+	</script>
+{{ endblock }}
+
+
+{% block app_styles %}
+	
+    {% include 'my_public_goods\commonCSS.html' %}
+	
+	
+	
+{% endblock %}
