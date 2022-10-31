@@ -192,6 +192,11 @@ def check_club_formed(group: Group):
     if join_number <2 :
         for p in players:
             p.join_club = 0
+    else :
+        group.global_formed = 1
+        for p in players:
+            if p.join_club:
+                p.endowment -= p.session.config['FC']
             
 def set_payoffs(group: Group):
     players = group.get_players()
@@ -214,7 +219,8 @@ def set_payoffs(group: Group):
     for p in players:
         p.total_contribution_local = contribution_local[p.local_community]
         p.individual_share_local = individual_share_local[p.local_community]
-        p.payoff = p.endowment - p.contribution_local + p.individual_share_local +  p.join_club* (- p.contribution_global - fixed_cost + group.individual_share_global)
+        # p.payoff = p.endowment - p.contribution_local + p.individual_share_local +  p.join_club* (- p.contribution_global - fixed_cost + group.individual_share_global)
+        p.payoff = p.endowment - p.contribution_local + p.individual_share_local +  p.join_club* (- p.contribution_global + group.individual_share_global)
 
 Group.set_payoffs = set_payoffs
 
@@ -274,11 +280,13 @@ def js_vars(player):
         E_l = endowment_list_l,
         E_g = endowment_list_g,
         LocalSize = LocalSize,
-        GlobalSize = GlobalSize)
+        GlobalSize = GlobalSize,
+        )
+       
     #Everthing here is about history: 
     if player.subsession.period !=1 :
         joinedLastRound = player.in_round(player.round_number - 1).join_club
-    
+        ClubFormedLastRound = player.in_round(player.round_number - 1).group.global_formed
         all_previous = player.in_rounds(C.PLAYED_ROUND_STARTS[current_sp]+1, player.round_number-1)
         contribution_l = [int(x.total_contribution_local/10) for x in all_previous ]
         contribution_g = [int(x.group.total_contribution_global/10) for x in all_previous ]
@@ -307,12 +315,13 @@ def js_vars(player):
                 others_cont_l.append(o_all_l)
                 others_cont_l_lastOnly.append(o_all_l[0])
         # To find the max and min value's position 
-        all_list = range(LocalSize)
+        print(others_cont_l_lastOnly)
+        all_list = range(LocalSize-1)
         max_local = np.argwhere(others_cont_l_lastOnly == np.max(others_cont_l_lastOnly)).flatten().tolist()
         min_local = np.argwhere(others_cont_l_lastOnly == np.min(others_cont_l_lastOnly)).flatten().tolist()
         rest_local = [x for x in all_list if ( x not in max_local and x not in min_local) ]
         
-        all_list = range(GlobalSize)
+        all_list = range(GlobalSize-1)
         max_global = np.argwhere(others_cont_g_lastOnly == np.max(others_cont_g_lastOnly)).flatten().tolist()
         min_global = np.argwhere(others_cont_g_lastOnly == np.min(others_cont_g_lastOnly)).flatten().tolist()
         rest_global = [x for x in all_list if ( x not in max_global and x not in min_global) ]
@@ -331,7 +340,7 @@ def js_vars(player):
                 max_global = max_global,
                 min_global = min_global,
                 rest_global = rest_global,
-
+                ClubFormedLastRound = ClubFormedLastRound,
         )
         
         

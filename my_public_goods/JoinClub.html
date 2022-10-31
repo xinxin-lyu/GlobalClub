@@ -3,41 +3,44 @@
 
     Match {{ subsession.sg }}, Round {{ subsession.period }}
 	<br>
-	Join the club? {{ endblock }}
+	Form the Second Group? {{ endblock }}
 
 {{ block content }}
 
 <!-- Information part: -->
 
  <div class="row" 	style=" margin-right:0px;margin-left:0px; ">
-    <div class="col-6"> 
+    <div class="col-6"  > 
 		<div class="card-body">
+		<div style="background-color: lightblue">
 		<center> Your group members
 			<br> You and other 3 participants are in the same group with the following endowments. 
 				 
 			<br> Every token invested in this group account will give {{ local_multiplier }} to every member in the group.
+			</div>
 			{% include 'my_public_goods\commonHTML_LocalInfor.html' %}
 			
 			<p id="individualLocal" style="visibility:hidden" >		</p>
-			<p> Show me more history: Button </p>
+			<p id="MoreLocal" style="visibility:hidden" > Show me more history: Button </p>
 		</center>
 		</div>
 	</div>
 	
 	
-	<div class="col-6"> 
-		<div class="card-body">
+	<div class="col-6" style="opacity: 70%;" id="ClubGoodColor" > 
+		<div class="card-body" >
+		<div style="background-color: lightgreen; ">
 		<center> Potential members in the second group 
 		<br> Members in your and another group can form a second group account.
 		<br>  If formed, every token invested in this group account will give {{ local_multiplier }} to every member who joins this group.
-		
+		</div>
 		 {% include 'my_public_goods\commonHTML_GlobalInfor.html' %}
-		 {{ if formed_g and joined }}
-		 Since you joined the club in last round, you can review the detailed member contribution: 
+		 <!-- Note: for future design, if only club members can see detailed contribution; if formed_g and joined  -->
+		 <!-- Since you joined the club in last round:  -->
+		 {{ if formed_g }}
 		 <p id="individualGlobal" style="visibility:hidden" >		</p>
-		 {{ else }}
-		<p> If you want, you can review a longer history of this group's total contribution. </p>
-			{{ endif }}
+		 {{ endif }}
+		<p id="MoreGlobal" style="visibility:hidden" >Show me more history:  </p>
 		 </center>
 		</div>
 	</div>
@@ -50,37 +53,34 @@
 		<center>
 		
 		{{ if player.subsession.period == 1}} 
-		
+		This is the beginning of a new match. 
 		{{ else }}
 		
 		Last round, you earned {{ earning }}. 
 		<br>
 		The total tokens allocated in your group account are:  
 		<span id="ShowLocalPrevious">
-		<button type="button"   class="button_infor otree-btn-next btn btn-primary" onclick="ShowPrevious('local', 'total')" > Show </button> </span>
-		<br>
+		<button type="button"   class="button_infor otree-btn-next btn btn-primary" onclick="ShowPrevious('local', 'total')" > Show </button> </span>.
+		
 		{{ if formed_g }}
 		The second group was formed. The total tokens allocated to the second group account are: 
 		{{ else }}
 		The second group was not formed. You can still see the previous history here:
 		{{ endif }}
 		<span id="ShowGlobalPrevious" ><button type="button"   class="button_infor otree-btn-next btn btn-primary" onclick="ShowPrevious('global', 'total')" > Show </button></span>
-		
-		
-		{{ if joined }}
-		Since you joined the club, if you want, you can see each member's allocation in the second group:
-		Button: showMeHighestContribution
-		Button: showMeLowestContribution
-		Button: showMeTheRestContribution
-		
 		{{ endif }}
-		{{ endif }}
+		
 		<br>
-		Pay {{ FC}} points and join the club?
-
-		{% formfields %}
-
-		{% next_button %}
+		Pay {{ FC}} points and form the second group?
+		<br>
+		<br>
+		<button  name="join_club"  class="btn btn-primary" value=0> No </button>
+		<button  name="join_club" class="btn btn-primary" value=1> Yes </button>
+		<br> 
+		<!-- <input type="hidden" name="join_club" /> -->
+		 {{ formfield_errors 'join_club' }}
+		<br> <br>
+		<!-- {% next_button %} -->
 		</center>
 		
 		
@@ -105,27 +105,64 @@
 			array[i] = array[j];
 			array[j] = temp;
 		}
-	}
+	};
 	
-	<!-- console.log(arr1); -->
+	
 	function RandomButton(pName,level) {
-		var para = document.getElementById(pName);
-		if (level == 'local') {
-		var span1 =  "<span id='Highestlocal'> <button type='button'  class='button_infor otree-btn-next btn btn-primary'  style= 'width: 100px' onclick='ShowPrevious('local', 'max')'> Highest </button>  </span>";
-		var span2 =  "<span id='Lowestlocal'> <button type='button'  class='button_infor otree-btn-next btn btn-primary'  style= 'width: 100px' onclick='ShowPrevious('local', 'min')' > Lowest </button> </span>";
-		var span3 = "<span id='Restlocal'> <button type='button'  class='button_infor otree-btn-next btn btn-primary'  style= 'width: 100px' onclick='ShowPrevious('local', 'rest')' > Rest </button> </span>";
-		}
-		para.innerHTML = "If you want, you can see each member's allocation : ";
-		var arr1 = [span1, span2, span3];
-		shuffleArray(arr1);
-		console.log(arr1);
-		for (var i in arr1) {
-			para.innerHTML +=  arr1[i] ;
-			}
-	}
+
+	  var para = document.getElementById(pName);
+	  
+	  var span1, span2, span3;
+
+	  span1 =  generateButton(level, "max", "Highest");
+	  span2 =  generateButton(level, "min", "Lowest");
+	  span3 = generateButton(level, "rest", "Rest");
+
+	  para.innerHTML = "You can see each member's allocation : ";
+
+	  var arr1 = [span1, span2, span3];
+
+	  shuffleArray(arr1);
+
+	  for (var i in arr1) {
+		para.appendChild(arr1[i]);
+
+	  }
+
+	};
+
+
+	// feature is "max", "local" or "rest"
+	// buttonText is "Highest", "Lowest" or "Rest"
+	function generateButton(feature1,feature2, buttonText) {
+	  var span = document.createElement("span");
+	  var btn = document.createElement("button");
+	  
+	  span.id = feature1 + feature2;
+	  span.appendChild(btn);
+	  
+	  var ShowPreviousModified = ShowPrevious.bind(this, feature1, feature2);
+	  <!-- console.log(ShowPreviousModified); -->
+
+	  btn.type = "button";
+	  btn.className = 'button_infor otree-btn-next btn btn-primary';
+	  btn.style = 'width: 100px';
+	  btn.innerHTML = buttonText;
+	  btn.onclick = ShowPreviousModified;
+	  return span;
+	};
+
+
+
+	
+	
 	RandomButton('individualLocal','local');
+	
+
 	ShowTable_Local();
-	ShowTable_Global()
+	ShowTable_Global();
+	
+
 	</script>
 {{ endblock }}
 
