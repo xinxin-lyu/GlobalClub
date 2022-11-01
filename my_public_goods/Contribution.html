@@ -47,7 +47,7 @@ Contribute{{ endblock }}
 	<th> <input id="contribution_local" name="contribution_local"   type="number" min="0"  oninput="Allocation(this)"  /> 
 	<!-- value=Number(js_vars.E_l[0]) -->
 	</th> </tr>
-{{ if player.join_club }}
+{{ if player.join_club and player.group.global_formed }}
 <tr style="background-color:lightgreen;"> <th> Second Group Account: </th> 
 <th> <input  id="contribution_global" name="contribution_global"   type="number"   min="0"  oninput="Allocation(this)"  /> </th></tr>
 <!-- value=null -->
@@ -55,7 +55,9 @@ Contribute{{ endblock }}
 </table>
 <p id="contribution_local_e" style="color:red"> 
 <p id="contribution_global_e" style="color:red"> 
-{% next_button %}
+<p id = "next_btn" style="visibility:hidden" >  {% next_button %} </p>
+{{ formfield_errors 'contribution_local' }} 
+
 </center>
 
 	</div>
@@ -106,12 +108,15 @@ Contribute{{ endblock }}
 					ele.focus()
 					return false
 				}
+
 				prvtAcc.value = myEndow - ele.value - grpAcc.value ; 
+				document.getElementById("next_btn").style.visibility="visible";
 			}
 		
 		}
 		else {
 		prvtAcc.value = myEndow - ele.value;
+		document.getElementById("next_btn").style.visibility="visible";
 		}
 		var error = document.getElementById(ele.id+"_e");
 
@@ -134,8 +139,9 @@ Contribute{{ endblock }}
 	
 
 	ShowTable_Local(1);
+	if (js_vars.Formed) {
 	ShowTable_Global(1);
-	
+	}
 
 	</script>
 {{ endblock }}

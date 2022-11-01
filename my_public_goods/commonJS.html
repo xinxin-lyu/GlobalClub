@@ -91,7 +91,7 @@
 		th.style = "background-color: white";
 		tr.appendChild(th);
 		var th = document.createElement('th');
-		if (page==0) {th.innerHTML = "Endowment";}
+		if (page==0 ) {th.innerHTML = "Endowment";}
 		else if (page==1) {th.innerHTML = "Endowment To Allocate";
 		if (js_vars.Formed && js_vars.MeJoin) { 
 				document.getElementById("ClubGoodColor").style.opacity = "100%"; }}
@@ -280,7 +280,7 @@
 		
 		} ;
 
-	function ShowAllHistory(level) {
+	function ShowAllHistory(level, includeCurrent=0) {
 		
 		if (level == 'local') {
 			var column1 = "column1_l";
@@ -298,7 +298,13 @@
 			var groupColor = "lightgreen";
 			var size = js_vars.GlobalSize;
 			}	
-			
+		if 	(includeCurrent==1) {
+			var columnNum = js_vars.Round+2; 
+			var beginPos= 0;
+		}
+		else {var columnNum = js_vars.Round+1; 
+			var beginPos= 1;}
+		
 		var element = document.getElementById(column1);
 		<!-- Change to allow scroll -->
 		element.className = "inner";
@@ -307,8 +313,11 @@
 		
 		<!-- First Line is about round number  -->
 		var tr = tbl.children[0];
-		var pr_2 = js_vars.Round - 2;
-		while (tr.childElementCount < js_vars.Round+1) {
+		if 	(includeCurrent==1) { 
+			tr.children[2].innerHTML = "Current Round";
+		}
+		var pr_2 = js_vars.Round - 2 + includeCurrent ;
+		while (tr.childElementCount < columnNum) {
 			var  th = document.createElement('th');
 			th.innerHTML = "Round " + pr_2; 
 			th.style.backgroundColor = "white";
@@ -318,8 +327,8 @@
 			}
 		<!-- Second line is my own history -->
 		var tr = tbl.children[1];
-		var i = 1;
-		while (tr.childElementCount < js_vars.Round+1 && tr.childElementCount>2 ) {
+		var i = beginPos;
+		while (tr.childElementCount < columnNum && tr.childElementCount>2 ) {
 			var  th = document.createElement('th');
 			var myall = my_allocation[i] ;
 			if ( !isNaN(myall) ) {
@@ -336,8 +345,8 @@
 		for (let r = 2; r <= size ; r++ ) {
 			
 			var tr = tbl.children[r];
-			var i = 1;
-			while (tr.childElementCount < js_vars.Round+1 && tr.childElementCount>2 ) {
+			var i = beginPos;
+			while (tr.childElementCount < columnNum && tr.childElementCount>2 ) {
 				var  th = document.createElement('th');
 				var otherall = indiv_cont[r-2][i] ;
 				if ( !isNaN(otherall) ) {
@@ -358,8 +367,8 @@
 			
 		<!-- Last line is total account history	 -->
 		var tr = tbl.children[size+1];
-		var i = 1;
-		while (tr.childElementCount < js_vars.Round+1 && tr.childElementCount>2 ) {
+		var i = beginPos;
+		while (tr.childElementCount < columnNum && tr.childElementCount>2 ) {
 			var  th = document.createElement('th');
 			var total_n = group_total[i] ;
 			if ( !isNaN(total_n) ) {

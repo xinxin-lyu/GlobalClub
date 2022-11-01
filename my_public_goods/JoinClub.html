@@ -20,19 +20,20 @@
 		This is the beginning of a new match. 
 		{{ else }}
 		
-		Last round, you earned {{ earning }}. 
-		<br>
-		You can review the last round information: 
-		<span id="ShowLocalPrevious">
-		<button type="button"   class="button_infor_l  btn " onclick="ShowPrevious('local', 'total')" > Show </button> </span>.
+		Last round, you earned {{ earning }} points. 
+		
+		
+		
 		<br>
 		{{ if formed_g }}
-		The second group was formed.
+		The second group was formed. {{ if joined }} You joined the second group. {{ else }} You didn't join the second group. {{ endif }}
 		{{ else }}
 		The second group was not formed.
 		{{ endif }}
-		You can review the last round information: 
-		<span id="ShowGlobalPrevious" ><button type="button"   class="button_infor_g  btn" onclick="ShowPrevious('global', 'total')" > Show </button></span>
+		<br> You can review the last round information: 
+		<span id="ShowLocalPrevious">
+		<button type="button"   class="button_infor_l  btn " onclick="ShowPrevious('local', 'total')" > Group </button> </span>
+		<span id="ShowGlobalPrevious" ><button type="button"   class="button_infor_g  btn" onclick="ShowPrevious('global', 'total')" > Second Group	 </button></span>
 		{{ endif }}
 		
 		<br>

@@ -2,6 +2,7 @@
 from otree.api import *
 import random
 import numpy as np
+from json import dumps as json_dumps, loads as json_loads
 
 doc = '''Based on Otree Studio public good. 
         This program is designed to implement a local public good vs a global club good
@@ -89,7 +90,8 @@ def creating_session(subsession: Subsession):
     total_sub = subsession.session.num_participants
     shuffle_group = int(total_sub/local_size) # total number of local communities
     group_n = int(shuffle_group/ community_num)
-    
+    # for p in subsession.get_players():
+        # p.participant.vars['payoffs'] = 0
     if subsession.round_number == 1:
         sg = 1
         period = 1
@@ -152,7 +154,8 @@ def creating_session(subsession: Subsession):
             else:
 
                 ss.dieroll = random.randint(continuation_chance + 1, 100)
-
+    
+    
 class Group(BaseGroup):
     matchNumber = models.IntegerField(initial=0)
     roundNumber = models.IntegerField(initial = 0)
@@ -160,6 +163,9 @@ class Group(BaseGroup):
     global_formed = models.IntegerField(initial=0, min=0, max=1)
     total_contribution_global = models.CurrencyField(initial=0)
     individual_share_global = models.CurrencyField(initial=0) 
+    # json fields (for wait_page_from_scratch)
+    wait_for_ids = models.LongStringField(initial='[]')
+    arrived_ids = models.LongStringField(initial='[]')
    
 def get_role(group: Group):
      players = group.get_players()
@@ -176,6 +182,7 @@ def get_role(group: Group):
             p.endowment = 200
             p.local_community = p.id_in_subsession % shuffle_group # again, only true for the random grouping
             p.id_in_local =  (p.id_in_subsession-1) // shuffle_group 
+            
      else :
         for p in players:
             p.local_community = p.id_in_subsession % shuffle_group # again, only true for the random grouping
@@ -216,14 +223,23 @@ def set_payoffs(group: Group):
     # note: for mg=ml, just use the players per local PG group
     # for the congestion case, can use the number of players in each club 
     fixed_cost = group.session.config['FC']
-    # print(fixed_cost)
+    payRelevant = group.subsession.is_pay_relevant
     for p in players:
         p.total_contribution_local = contribution_local[p.local_community]
         p.individual_share_local = individual_share_local[p.local_community]
         # p.payoff = p.endowment - p.contribution_local + p.individual_share_local +  p.join_club* (- p.contribution_global - fixed_cost + group.individual_share_global)
         p.payoff = p.endowment - p.contribution_local*10 + p.individual_share_local +  p.join_club* (- p.contribution_global*10 + group.individual_share_global)
+        # if payRelevant :
+            # p.participant.payoffs = p.payoff
 Group.set_payoffs = set_payoffs
 
+def unarrived_players(group: Group):
+    return set(json_loads(group.wait_for_ids)) - set(json_loads(group.arrived_ids))
+    
+def ClearWaitPageHistory(group: Group):
+    group.wait_for_ids = '[]'
+    group.arrived_ids = '[]'
+    
 class Player(BasePlayer):
     endowment = models.CurrencyField(initial=0)  
     join_club =  models.IntegerField(initial=0)
@@ -247,18 +263,24 @@ class Player(BasePlayer):
 # Player.my_method = my_method
     
 def get_block_dierolls(player: Player):
-    block_first_round = player.round_number - C.BLOCK_SIZE + 1
+    current_sp = player.subsession.sg -1 
+    
+    # block_first_round = player.round_number - C.BLOCK_SIZE + 1
+    block_first_round = C.PLAYED_ROUND_STARTS[current_sp] +1    # I want the full history
+    print(block_first_round)
     block = player.in_rounds(block_first_round, player.round_number)
     block_history = []
     for b in block:
-        block_round = dict(round_number=b.subsession.period, dieroll=b.subsession.dieroll)
-        block_history.append(block_round)
+        if b.subsession.is_pay_relevant == 1 :
+            block_round = dict(round_number=b.subsession.period, earning=int(b.payoff)/10, dieroll=b.subsession.dieroll)
+            block_history.append(block_round)
+        else :
+            block_round = dict(round_number=b.subsession.period, earning=int(b.payoff)/10, dieroll='' )
+            block_history.append(block_round)
     return block_history
 
 # Page section
 def js_vars(player):
-
-    
     end_toshow = player.endowment/10
     endowment_list_l = [end_toshow]
     endowment_list_g = [end_toshow]
@@ -270,10 +292,14 @@ def js_vars(player):
     others = player.get_others_in_group()
     for p in others:
         end_toshow = p.endowment/10
-        endowment_list_g.append(end_toshow)
         if p.local_community == player.local_community:
             endowment_list_l.append(end_toshow)
-        
+            endowment_list_g.append(end_toshow)
+    for p in others:
+        end_toshow = p.endowment/10
+        if p.local_community != player.local_community:
+            endowment_list_g.append(end_toshow)
+            
     d = dict( matchNumber = player.subsession.sg,
         Round = player.subsession.period,
         
@@ -312,34 +338,50 @@ def js_vars(player):
         
         others = player.get_others_in_group()
         for p in others:
-            p_previous = p.in_rounds( C.PLAYED_ROUND_STARTS[current_sp]+1, player.round_number-1,)
-            # print(p_previous)
-            
-            o_all_g = []
-            for x in p_previous:
-                if x.join_club==1 :
-                    o_all_g.append(int(x.contribution_global))
-                else :
-                    o_all_g.append(np.nan)
-                    
-            o_join_g = [x.join_club for x in p_previous]
-            o_all_g.reverse()
-            o_join_g.reverse()
-            others_cont_g.append(o_all_g)
-            others_cont_g_lastOnly.append(o_all_g[0])
-            others_join_g.append(o_join_g)
-            others_join_g_lastOnly.append(o_join_g[0])
-            
+            # First, loop over all others in the same local 
             if p.local_community == player.local_community:
+                p_previous = p.in_rounds( C.PLAYED_ROUND_STARTS[current_sp]+1, player.round_number-1,)
                 o_all_l = [int(x.contribution_local) for x in p_previous]
                 o_all_l.reverse()
                 others_cont_l.append(o_all_l)
                 others_cont_l_lastOnly.append(o_all_l[0])
-        # To find the max and min value's position 
-        # print("contr g")
-        # print(others_cont_g_lastOnly)
-        # print(others_join_g_lastOnly)
-        # print(np.multiply(others_cont_g_lastOnly, others_join_g_lastOnly))
+
+                o_all_g = []
+                for x in p_previous:
+                    if x.join_club==1 :
+                        o_all_g.append(int(x.contribution_global))
+                    else :
+                        o_all_g.append(np.nan)
+                        
+                o_join_g = [x.join_club for x in p_previous]
+                o_all_g.reverse()
+                o_join_g.reverse()
+                others_cont_g.append(o_all_g)
+                others_cont_g_lastOnly.append(o_all_g[0])
+                others_join_g.append(o_join_g)
+                others_join_g_lastOnly.append(o_join_g[0])
+            
+        for p in others:
+            # Second, loop over all others not in the same local 
+            if p.local_community != player.local_community:
+                p_previous = p.in_rounds( C.PLAYED_ROUND_STARTS[current_sp]+1, player.round_number-1,)
+
+                o_all_g = []
+                for x in p_previous:
+                    if x.join_club==1 :
+                        o_all_g.append(int(x.contribution_global))
+                    else :
+                        o_all_g.append(np.nan)
+                        
+                o_join_g = [x.join_club for x in p_previous]
+                o_all_g.reverse()
+                o_join_g.reverse()
+                others_cont_g.append(o_all_g)
+                others_cont_g_lastOnly.append(o_all_g[0])
+                others_join_g.append(o_join_g)
+                others_join_g_lastOnly.append(o_join_g[0])
+                
+
         all_list = range(LocalSize-1)
         max_local = np.argwhere(others_cont_l_lastOnly == np.nanmax(others_cont_l_lastOnly)).flatten().tolist()
         min_local = np.argwhere(others_cont_l_lastOnly == np.nanmin(others_cont_l_lastOnly)).flatten().tolist()
@@ -388,7 +430,7 @@ def vars_for_template(player: Player):
         formed_g = 0 
     else :
         pre_player = player.in_round(player.round_number - 1)
-        earning = pre_player.payoff / 10
+        earning = int(pre_player.payoff) / 10
         joined = pre_player.join_club
         formed_g = pre_player.group.global_formed
     return dict(local_size = player.session.config['localPG_size'],
@@ -405,15 +447,73 @@ def vars_for_template(player: Player):
                 )
 
 
+def wait_page_live_method(player: Player, data):
+    group = player.group
+
+    arrived_ids_set = set(json_loads(group.arrived_ids))
+    arrived_ids_set.add(player.id_in_subsession)
+    group.arrived_ids = json_dumps(list(arrived_ids_set))
+
+    if not unarrived_players(group):
+        return {0: dict(finished=True)}
+
+
+class ScratchWaitPage(Page):
+    @staticmethod
+    def is_displayed(player: Player):
+        group = player.group
+        # first time
+        if not json_loads(group.wait_for_ids):
+            wait_for_ids = [p.id_in_subsession for p in group.get_players()]
+            group.wait_for_ids = json_dumps(wait_for_ids)
+        return unarrived_players(group)
+
+    @staticmethod
+    def live_method(player: Player, data):
+        if data.get('type') == 'wait_page':
+            return wait_page_live_method(player, data)
+
+    @staticmethod
+    def error_message(player: Player, values):
+        group = player.group
+        if unarrived_players(group):
+            return "Wait page not finished"
+
+
+
+# class SuperGameWaitPage(Page):
+    # after_all_players_arrive = get_role
+    # body_text = 'Waiting for other players to join the group'
+    # @staticmethod
+    # def is_displayed(player: Player):
+        # group = player.group
+        # first time
+        # if not json_loads(group.wait_for_ids):
+            # wait_for_ids = [p.id_in_subsession for p in group.get_players()]
+            # group.wait_for_ids = json_dumps(wait_for_ids)
+        # return unarrived_players(group)
+
+    # @staticmethod
+    # def live_method(player: Player, data):
+        # if data.get('type') == 'wait_page':
+            # return wait_page_live_method(player, data)
+
+    # @staticmethod
+    # def error_message(player: Player, values):
+        # group = player.group
+        # if unarrived_players(group):
+            # return "Wait page not finished"
+    
+    # @staticmethod
+    # def before_next_page(player: Player, timeout_happened):
+        # if player.id_in_subsession == 1 :
+            # group = player.group
+            # group = get_role(group)
+    
 class SuperGameWaitPage(WaitPage):
     after_all_players_arrive = get_role
     body_text = 'Waiting for other players to join the group'
 
-class NewSupergame(Page):
-    @staticmethod
-    def is_displayed(player: Player):
-        subsession = player.subsession
-        return subsession.period == 1
     
 class JoinClub(Page):
     form_model = 'player'
@@ -422,10 +522,39 @@ class JoinClub(Page):
     js_vars = js_vars
     vars_for_template = vars_for_template
 
-class ClubWaitPage(WaitPage):
-    after_all_players_arrive = check_club_formed
-    body_text = 'Waiting for other players to choose to join the club or not'
+class ClubWaitPage(Page):
+    @staticmethod
+    def is_displayed(player: Player):
+        group = player.group
+        # first time
+        if not json_loads(group.wait_for_ids):
+            wait_for_ids = [p.id_in_subsession for p in group.get_players()]
+            group.wait_for_ids = json_dumps(wait_for_ids)
+        return unarrived_players(group)
 
+    @staticmethod
+    def live_method(player: Player, data):
+        if data.get('type') == 'wait_page':
+            return wait_page_live_method(player, data)
+
+    @staticmethod
+    def error_message(player: Player, values):
+        group = player.group
+        if unarrived_players(group):
+            return "Wait page not finished"
+    
+    js_vars = js_vars
+    vars_for_template = vars_for_template
+
+    @staticmethod
+    def before_next_page(player: Player, timeout_happened):
+        if player.id_in_subsession ==1 :
+            group = player.group
+            group = check_club_formed(group)
+            group = player.group
+            group = ClearWaitPageHistory(group)
+            
+        
 
                    
 class Contribution(Page):
@@ -441,7 +570,14 @@ class Contribution(Page):
     def js_vars(player: Player):
         d = js_vars(player)
         others = player.get_others_in_group()
-        OtherJoin = [x.join_club for x in others]
+        OtherJoin= []
+        for x in others:
+            if x.local_community == player.local_community:
+                OtherJoin.append(x.join_club)
+        for x in others:
+            if x.local_community != player.local_community:
+                OtherJoin.append(x.join_club)    
+        
         return dict(d, 
                 MeJoin = player.join_club,
                 OtherJoin = OtherJoin,
@@ -449,11 +585,47 @@ class Contribution(Page):
                 
                 )
     vars_for_template = vars_for_template
+    @staticmethod
+    def error_message(player, values):
+        # print(values)
+        if player.join_club == 1  : 
+            if int(values['contribution_local']) + int(values['contribution_global']) > int(player.endowment)/10:
+                return 'Total allocation must be below your endowment.'
+        else :
+            if int(values['contribution_local']) > int(player.endowment)/10:
+                return 'Total allocation must be below your endowment.'
+class ResultsWaitPage(Page):
 
+    @staticmethod
+    def is_displayed(player: Player):
+        group = player.group
+        # first time
+        if not json_loads(group.wait_for_ids):
+            wait_for_ids = [p.id_in_subsession for p in group.get_players()]
+            group.wait_for_ids = json_dumps(wait_for_ids)
+        return unarrived_players(group)
+
+    @staticmethod
+    def live_method(player: Player, data):
+        if data.get('type') == 'wait_page':
+            return wait_page_live_method(player, data)
+
+    @staticmethod
+    def error_message(player: Player, values):
+        group = player.group
+        if unarrived_players(group):
+            return "Wait page not finished"
     
-class ResultsWaitPage(WaitPage):
-    after_all_players_arrive = set_payoffs
-    body_text = 'Waiting for other players to make their contributions'
+    js_vars = js_vars
+    vars_for_template = vars_for_template
+
+    @staticmethod
+    def before_next_page(player: Player, timeout_happened):
+        if player.id_in_subsession ==1 :
+            group = player.group
+            group = set_payoffs(group)
+
+
     
 class Results(Page):
     form_model = 'player'
@@ -464,20 +636,160 @@ class BlockEnd(Page):
     def is_displayed(player: Player):
         subsession = player.subsession
         return subsession.is_bk_last_period == 1
+    
+        # Note the only difference here is to return all rounds information !
+    def js_vars(player):
+        end_toshow = player.endowment/10
+        endowment_list_l = [end_toshow]
+        endowment_list_g = [end_toshow]
         
+        current_sp = player.subsession.sg -1 
+        LocalSize = int(player.session.config['localPG_size'])
+        GlobalSize = int(player.session.config['localPG_size'] * player.session.config['K'],)
+        
+        others = player.get_others_in_group()
+        for p in others:
+            end_toshow = p.endowment/10
+            if p.local_community == player.local_community:
+                endowment_list_l.append(end_toshow)
+                endowment_list_g.append(end_toshow)
+        for p in others:
+            end_toshow = p.endowment/10
+            if p.local_community != player.local_community:
+                endowment_list_g.append(end_toshow)
+                
+
+       # All history
+        joinedLastRound = player.in_round(player.round_number).join_club
+        ClubFormedLastRound = player.in_round(player.round_number).group.global_formed
+        all_previous = player.in_rounds(C.PLAYED_ROUND_STARTS[current_sp]+1, player.round_number-1)
+        contribution_l = [int(x.total_contribution_local/10) for x in all_previous ]
+        contribution_g = [int(x.group.total_contribution_global/10) for x in all_previous ]
+        contribution_l.reverse()
+        contribution_g.reverse()
+        
+        # Individual contribution is stored as proper points
+        my_cont_l = [int(x.contribution_local) for x in all_previous ]
+        my_cont_g = [ ]
+        for x in all_previous: 
+            if x.join_club == 1:
+                my_cont_g.append(int(x.contribution_global))
+            else :
+                my_cont_g.append(np.nan)
+        my_cont_l.reverse()
+        my_cont_g.reverse()
+        others_cont_l_lastOnly = [] 
+        others_cont_l = []
+        others_cont_g_lastOnly = []
+        others_cont_g = []
+        others_join_g = []
+        others_join_g_lastOnly = []
+        
+        others = player.get_others_in_group()
+        for p in others:
+            # First, loop over all others in the same local 
+            if p.local_community == player.local_community:
+                p_previous = p.in_rounds( C.PLAYED_ROUND_STARTS[current_sp]+1, player.round_number)
+                o_all_l = [int(x.contribution_local) for x in p_previous]
+                o_all_l.reverse()
+                others_cont_l.append(o_all_l)
+                others_cont_l_lastOnly.append(o_all_l[0])
+
+                o_all_g = []
+                for x in p_previous:
+                    if x.join_club==1 :
+                        o_all_g.append(int(x.contribution_global))
+                    else :
+                        o_all_g.append(np.nan)
+                        
+                o_join_g = [x.join_club for x in p_previous]
+                o_all_g.reverse()
+                o_join_g.reverse()
+                others_cont_g.append(o_all_g)
+                others_cont_g_lastOnly.append(o_all_g[0])
+                others_join_g.append(o_join_g)
+                others_join_g_lastOnly.append(o_join_g[0])
+            
+        for p in others:
+            # Second, loop over all others not in the same local 
+            if p.local_community != player.local_community:
+                p_previous = p.in_rounds( C.PLAYED_ROUND_STARTS[current_sp]+1, player.round_number)
+
+                o_all_g = []
+                for x in p_previous:
+                    if x.join_club==1 :
+                        o_all_g.append(int(x.contribution_global))
+                    else :
+                        o_all_g.append(np.nan)
+                        
+                o_join_g = [x.join_club for x in p_previous]
+                o_all_g.reverse()
+                o_join_g.reverse()
+                others_cont_g.append(o_all_g)
+                others_cont_g_lastOnly.append(o_all_g[0])
+                others_join_g.append(o_join_g)
+                others_join_g_lastOnly.append(o_join_g[0])
+                
+
+        all_list = range(LocalSize-1)
+        max_local = np.argwhere(others_cont_l_lastOnly == np.nanmax(others_cont_l_lastOnly)).flatten().tolist()
+        min_local = np.argwhere(others_cont_l_lastOnly == np.nanmin(others_cont_l_lastOnly)).flatten().tolist()
+        rest_local = [x for x in all_list if ( x not in max_local and x not in min_local) ]
+        
+        
+        all_list = range(GlobalSize-1)
+        max_global = np.argwhere(others_cont_g_lastOnly == np.nanmax(others_cont_g_lastOnly)).flatten().tolist()
+        min_global = np.argwhere(others_cont_g_lastOnly == np.nanmin(others_cont_g_lastOnly)).flatten().tolist()
+        rest_global = [x for x in all_list if ( x not in max_global and x not in min_global) ]
+            
+         # After contribution page: 
+        others = player.get_others_in_group()
+        OtherJoin = [x.join_club for x in others]     
+            
+            
+        return dict(matchNumber = player.subsession.sg,
+                    Round = player.subsession.period,
+            
+                    E_l = endowment_list_l,
+                    E_g = endowment_list_g,
+                    LocalSize = LocalSize,
+                    GlobalSize = GlobalSize,
+                    joinedLastRound = joinedLastRound, 
+                    C_t_l = contribution_l,
+                    C_t_g = contribution_g,
+                    my_cont_l = my_cont_l,
+                    my_cont_g = my_cont_g,
+                    others_cont_l = others_cont_l,
+                    others_cont_g = others_cont_g,
+                    others_join_g = others_join_g,
+                    max_local = max_local,
+                    min_local = min_local,
+                    rest_local = rest_local,
+                    max_global = max_global,
+                    min_global = min_global,
+                    rest_global = rest_global,
+                    ClubFormedLastRound = ClubFormedLastRound,
+                    MeJoin = player.join_club,
+                    OtherJoin = OtherJoin,
+                    Formed = player.group.global_formed,
+                    
+                    )
+      
     def vars_for_template(player: Player):
         continuation_chance = int(round(C.DELTA * 100))
         # TODO: pull out a history of dierolls in this block gettattr()?
         # write a founction get block die rolls
         # player.subsession.dieroll
         # previous_rounds_in_block=
+        d = vars_for_template(player) 
         sg = player.subsession.sg
         player_in_end_round=player.in_round(C.PAY_ROUNDS_ENDS[sg-1])
         end_period=player_in_end_round.subsession.period
 
-        return dict(continuation_chance=continuation_chance,
+        return dict(d,
+            continuation_chance=continuation_chance,
                     die_threshold_plus_one=continuation_chance + 1,
                     block_history=get_block_dierolls(player),
                     end_period=end_period
                     )
-page_sequence = [SuperGameWaitPage, NewSupergame, JoinClub, ClubWaitPage, Contribution, ResultsWaitPage, Results, BlockEnd  ]
+page_sequence = [ SuperGameWaitPage, JoinClub, ClubWaitPage, Contribution, ResultsWaitPage, BlockEnd  ]
