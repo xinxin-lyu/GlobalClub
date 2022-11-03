@@ -3,7 +3,11 @@ from os import environ
 SESSION_CONFIGS = [
     dict(
         name='my_public_goods',
-        app_sequence=['my_public_goods'],
+        app_sequence=[
+        # 'PGSO_01_Introduction',
+        # 'PGSO_02_SocialPreferenceElicitation',
+        # 'PGSO_03_Instructions',
+        'my_public_goods'],
         num_demo_participants=8,
         
         multiplier = 2.4,
@@ -13,7 +17,7 @@ SESSION_CONFIGS = [
         homo_endowment = 1,
         # m_l = 0.6,
         # m_g = 0.6,
-        
+        CutoffRoll=10,
         doc="""
             
             <br> <b>'localPG_size' </b> how many people in the local PG </br>

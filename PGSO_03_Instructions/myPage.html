@@ -1,0 +1,449 @@
+{% extends "global/Page.html" %}
+{% load staticfiles otree %}
+
+{% block app_styles %}
+
+<style type="text/css">
+
+:root {
+    --C-color: #f9ff87;
+    --D-color: #8ec9ff;
+    --cell-width: 50px;
+    --cell-height: 35px;
+    --line-height-small: 30px;
+    --line-height-regular: 45px;
+    --label-width: 150px;
+    --line1-top: 0px;
+    --line2-top: 35px;
+    --line3-top: 70px;
+    --line4-top: 120px;
+    --line5-top: 170px;
+    --line6-top: 205px;
+    --inner-container-height: 150px;
+}
+
+.row {
+    display: flex;
+}
+
+/* Create two equal columns that sits next to each other */
+.column {
+    flex: 50%;
+    padding: 20px 50px 0px 50px;
+}
+
+.payoffTablesColumn {
+    flex: 33%;
+    padding: 0px 0px 0px 0px;
+    text-align: center;
+}
+
+table {
+    table-layout: fixed;
+    width: 95%;
+    left: 2.5%;
+    line-height: 1.15;
+    vertical-align: middle;
+}
+
+th {
+    height: 50px;
+    vertical-align: middle;
+}
+
+
+tr{
+    border: none;
+    background-color: white;
+    vertical-align: middle;
+}
+
+
+.borderexample {
+    border-style: solid;
+    border-color: black;
+    padding: 2px;
+    font-weight: normal;
+    border-width: thin;
+}
+
+
+.otree-body {
+
+    font-family: Proxima Nova;
+    font-size: 18px;
+    position: absolute;
+    width: 1678px;
+    height: 1048px;
+    max-width: 1678px;
+    max-height: 1048px;
+    border: solid darkgreen;
+}
+
+.otree-title {
+    background: white;
+    font-family: Proxima Nova;
+    text-align: center;
+}
+
+.otree-title.page-header {
+    font-family: Proxima Nova;
+    text-align: center;
+    padding: 0px;
+}
+
+.card-body {
+    background: white;
+    font-family: Proxima Nova;
+    font-size: 18px;
+    padding-left: 10%;
+    padding-right: 10%;
+}
+
+.card.bg-light.instructions{
+    padding: 0;
+    border: none;
+}
+
+.outerbox
+{
+   width:100%; /* or whatever width you want. */
+   height: 130px;
+   max-width:100%; /* or whatever width you want. */
+   position: relative;
+   background: white;
+   {#top:100px;#}
+   {#left:0px;#}
+   overflow-x: hidden;
+   overflow-y: hidden;
+}
+
+
+.innerbox
+{
+   width:1150px; /* or whatever width you want. */
+   height: 90px;
+   max-width:1150px; /* or whatever width you want. */
+   position: absolute;
+   background: white;
+   top:0px;
+   left:150px;
+   overflow-x: hidden;
+   overflow-y: hidden;
+}
+
+.payoffbox
+{
+   width:350px; /* or whatever width you want. */
+   height: 200px;
+   max-width:350px; /* or whatever width you want. */
+   position: relative;
+   background: white;
+   top:0px;
+   left:50px;
+   overflow-x: hidden;
+   overflow-y: hidden;
+}
+
+.payoffDetail {
+    left:var(--label-width);
+    width:var(--cell-width);
+    height:var(--cell-width);
+    background: white;
+    border-style: solid;
+    border-width: thin;
+    position: absolute;
+
+    text-align: center;
+    line-height: var(--line-height-regular);
+    padding-bottom: 5px;
+}
+
+
+.randomNumLabel {
+    top:var(--line2-top);
+    left:0px;
+    width:var(--label-width);
+    height:var(--cell-height);
+    background: white;
+    border-style: none;
+    position: -webkit-sticky;
+    position: sticky;
+    opacity: .5;
+    {#top:10px;#}
+    {#left:10px;#}
+    text-align: center;
+    line-height: var(--line-height-small);
+    padding-bottom: 5px;
+    {#font-size: 35px;#}
+    z-index: 2;
+    font-size: 12px;
+}
+.randomNum {
+    left:30px;
+    top:var(--line2-top);
+    width:45px;
+    background: white;
+    border-style: none;
+    position: absolute;
+    opacity: .5;
+    {#top:10px;#}
+    {#left:10px;#}
+    text-align: center;
+    line-height: var(--line-height-small);
+    padding-bottom: 5px;
+    padding-left: 25px;
+    font-size: 12px;
+
+    opacity: 0;
+    animation: fadeIn5 .25s;
+    animation-delay: 0.1s;
+    animation-fill-mode: forwards;
+}
+
+.periodLabel {
+    top:var(--line1-top);
+    left:0px;
+    width:var(--label-width);
+    height:var(--cell-height);
+    background: white;
+    border-style: none;
+    position: -webkit-sticky;
+    position: sticky;
+    {#top:10px;#}
+    {#left:10px;#}
+    text-align: center;
+    line-height: var(--line-height-small);
+    padding-bottom: 5px;
+    {#font-size: 35px;#}
+    z-index: 2;
+}
+.period {
+    {#left:0px;#}
+    top:var(--line1-top);
+    width:var(--cell-width);
+    height:var(--cell-height);
+    background: white;
+    border-style: none;
+    position: absolute;
+    {#top:10px;#}
+    {#left:10px;#}
+    text-align: center;
+    line-height: var(--line-height-small);
+    padding-bottom: 5px;
+    {#font-size: 35px;#}
+
+    {#opacity: 0;#}
+    animation: fadeIn .25s;
+    animation-delay: .1s;
+    animation-fill-mode: forwards;
+
+	-webkit-animation-fill-mode: forwards;
+	-moz-animation-fill-mode: forwards;
+	-o-animation-fill-mode: forwards;
+	animation-fill-mode: forwards;
+
+}
+
+
+.myChoiceLabel {
+    top:var(--line3-top);
+    left:0px;
+    width:var(--label-width);
+    height:var(--cell-width);
+    background: white;
+    border-style: solid;
+    border-width: thin;
+    position: -webkit-sticky;
+    position: sticky;
+    {#top:10px;#}
+    {#left:10px;#}
+    text-align: center;
+    line-height: var(--line-height-regular);
+    padding-bottom: 5px;
+    {#font-size: 35px;#}
+    z-index: 2;
+}
+.myChoice {
+    left:0px;
+    top:var(--line3-top);
+    width:var(--cell-width);
+    height:var(--cell-width);
+    background: white;
+    border-style: solid;
+    border-width: thin;
+    position: absolute;
+    {#top:10px;#}
+    {#left:10px;#}
+    text-align: center;
+    line-height: var(--line-height-regular);
+    padding-bottom: 5px;
+    {#font-size: 35px;#}
+
+    opacity: 0;
+    animation: fadeIn .25s;
+    animation-delay: .15s;
+    animation-fill-mode: forwards;
+}
+
+
+
+.otherChoiceLabel {
+    top:var(--line4-top);
+    left:0px;
+    width:var(--label-width);
+    height:var(--cell-width);
+    background: white;
+    border-style: solid;
+    border-width: thin;
+    position: -webkit-sticky;
+    position: sticky;
+    {#top:10px;#}
+    {#left:10px;#}
+    text-align: center;
+    line-height: var(--line-height-regular);
+    padding-bottom: 5px;
+    {#font-size: 35px;#}
+    z-index: 2;
+}
+.otherChoice {
+    left:0px;
+    top:var(--line4-top);
+    width:var(--cell-width);
+    height:var(--cell-width);
+    background: white;
+    border-style: solid;
+    border-width: thin;
+    position: absolute;
+    {#top:10px;#}
+    {#left:10px;#}
+    text-align: center;
+    line-height: var(--line-height-regular);
+    padding-bottom: 5px;
+    {#font-size: 35px;#}
+
+    opacity: 0;
+    animation: fadeIn .25s;
+    animation-delay: .15s;
+    animation-fill-mode: forwards;
+}
+
+
+.myPayoffLabel {
+    top:var(--line5-top);
+    left:0px;
+    width:var(--label-width);
+    height:var(--cell-height);
+    background: white;
+    border-style: none;
+    position: -webkit-sticky;
+    position: sticky;
+    {#top:10px;#}
+    {#left:10px;#}
+    text-align: center;
+    line-height: var(--line-height-small);
+    padding-bottom: 5px;
+    {#font-size: 35px;#}
+    z-index: 2;
+}
+.myPayoff {
+    left:0px;
+    top:var(--line5-top);
+    width:var(--cell-width);
+    height:var(--cell-height);
+    background: white;
+    border-style: none;
+    position: absolute;
+    {#top:10px;#}
+    {#left:10px;#}
+    text-align: center;
+    line-height: var(--line-height-small);
+    padding-bottom: 5px;
+    {#font-size: 35px;#}
+
+    opacity: 0;
+    animation: fadeIn .25s;
+    animation-delay: .15s;
+    animation-fill-mode: forwards;
+}
+
+.otherPayoffLabel {
+    top:var(--line6-top);
+    left:0px;
+    width:var(--label-width);
+    height:var(--cell-height);
+    background: white;
+    border-style: none;
+    position: -webkit-sticky;
+    position: sticky;
+    {#top:10px;#}
+    {#left:10px;#}
+    text-align: center;
+    line-height: var(--line-height-small);
+    padding-bottom: 5px;
+    {#font-size: 35px;#}
+    z-index: 2;
+}
+.otherPayoff {
+    left:0px;
+    top:var(--line6-top);
+    width:var(--cell-width);
+    height:var(--cell-height);
+    background: white;
+    border-style: none;
+    position: absolute;
+    {#top:10px;#}
+    {#left:10px;#}
+    text-align: center;
+    line-height: var(--line-height-small);
+    padding-bottom: 5px;
+    {#font-size: 35px;#}
+
+    opacity: 0;
+    animation: fadeIn .25s;
+    animation-delay: .15s;
+    animation-fill-mode: forwards;
+    animation-timing-function: linear,ease;
+}
+
+.scrollLabel {
+    top:var(--line3-top);
+    left:0px;
+    width:var(--label-width);
+    height:20px;
+    background: white;
+    border-style: none;
+    position: -webkit-sticky;
+    position: sticky;
+    opacity: .5;
+    {#top:10px;#}
+    {#left:10px;#}
+    text-align: center;
+    line-height: var(--line-height-small);
+    {#font-size: 35px;#}
+    z-index: 2;
+    font-size: 12px;
+    vertical-align: middle;
+    display: none;
+}
+
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes fadeIn5 {
+    from { opacity: 0; }
+    to { opacity: .5; }
+}
+
+
+</style>
+
+{% endblock %}
+
+
+
+
+

@@ -166,7 +166,10 @@ class Group(BaseGroup):
     # json fields (for wait_page_from_scratch)
     wait_for_ids = models.LongStringField(initial='[]')
     arrived_ids = models.LongStringField(initial='[]')
-   
+    
+    did_aapa1 = models.BooleanField(initial=False)
+    did_aapa2 = models.BooleanField(initial=False)
+    
 def get_role(group: Group):
      players = group.get_players()
      homo_endowment = group.session.config['homo_endowment']
@@ -548,12 +551,12 @@ class ClubWaitPage(Page):
 
     @staticmethod
     def before_next_page(player: Player, timeout_happened):
-        if player.id_in_subsession ==1 :
-            group = player.group
-            group = check_club_formed(group)
-            group = player.group
-            group = ClearWaitPageHistory(group)
+        group = player.group
+        if not group.did_aapa1: 
             
+            check_club_formed(group)
+            ClearWaitPageHistory(group)
+            group.did_aapa1 = True
         
 
                    
@@ -621,10 +624,13 @@ class ResultsWaitPage(Page):
 
     @staticmethod
     def before_next_page(player: Player, timeout_happened):
-        if player.id_in_subsession ==1 :
-            group = player.group
-            group = set_payoffs(group)
-
+        group = player.group
+        if not group.did_aapa2: 
+            
+            set_payoffs(group)
+            ClearWaitPageHistory(group)
+            group.did_aapa2 = True
+        
 
     
 class Results(Page):
