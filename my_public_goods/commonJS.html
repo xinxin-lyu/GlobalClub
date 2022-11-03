@@ -160,7 +160,7 @@
 	
 	
 	function ShowPrevious(level, component) {
-	
+		document.getElementById("button_history").value += ",ShowPrevious" +"_"+level+"_"+component;
 		if (component == 'total' ) {
 			if (level== 'local') {
 				var column1 = "column1_l";
@@ -173,7 +173,7 @@
 				document.getElementById(button_ind_infor).style.visibility = "visible";
 				<!-- Show More History Information -->
 				document.getElementById("MoreLocal").style.visibility = "visible";
-				var groupName = "Group total was ";
+				var groupName = "Group Account total was ";
 			}
 			else if  (level== 'global') {
 				var column1 = "column1_g";
@@ -191,7 +191,7 @@
 				<!-- } -->
 				<!-- Show More History Information -->
 				document.getElementById("MoreGlobal").style.visibility = "visible";
-				var groupName = "Second group total was ";
+				var groupName = "Group Account #2 total was ";
 				<!-- Change colors according to the join status -->
 				<!-- if (js_vars.ClubFormedLastRound ) {  -->
 				
@@ -228,7 +228,7 @@
 		var tr = tbl.children[1];
 		var th = document.createElement('th');
 		if ( !isNaN(my_allocation))  {th.innerHTML = my_allocation;}
-			else {th.innerHTML = "Not join";}
+			else {th.innerHTML = "-";}
 		if ( !isNaN(my_allocation)) { th.style.backgroundColor=groupColor;}
 		tr.appendChild(th);
 		
@@ -266,7 +266,7 @@
 				var  th = document.createElement('th');
 				if ( !isNaN(indiv_cont[rows[i]][0])) {
 					th.innerHTML = indiv_cont[rows[i]][0];}
-				else {th.innerHTML = "Not join";}
+				else {th.innerHTML = "-";}
 				if (row_id > js_vars.LocalSize) {th.style.backgroundColor='lightgrey'; }
 				if ( !isNaN(indiv_cont[rows[i]][0])) { th.style.backgroundColor=groupColor;}
 				
@@ -281,7 +281,7 @@
 		} ;
 
 	function ShowAllHistory(level, includeCurrent=0) {
-		
+		document.getElementById("button_history").value += ",ShowAllHistory" +"_"+level;
 		if (level == 'local') {
 			var column1 = "column1_l";
 			var indiv_cont = js_vars.others_cont_l;
@@ -335,7 +335,7 @@
 				th.innerHTML = myall; 
 				th.style.backgroundColor = groupColor;}
 			else {
-				th.innerHTML =  "Not join";
+				th.innerHTML =  "-";
 				}
 			
 			tr.appendChild(th);
@@ -354,7 +354,7 @@
 					th.style.backgroundColor = groupColor;
 					}
 				else {
-					th.innerHTML =  "Not join";
+					th.innerHTML =  "-";
 					if ( r > js_vars.LocalSize ) {
 					th.style.backgroundColor = "lightgrey";
 					}
@@ -405,7 +405,7 @@
 	  span2 =  generateButton(level, "min", "Lowest");
 	  span3 = generateButton(level, "rest", "Rest");
 
-	  para.innerHTML = "You can see each member's allocation : ";
+	  para.innerHTML = "You can see other's allocations : ";
 
 	  var arr1 = [span1, span2, span3];
 

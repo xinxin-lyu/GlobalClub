@@ -26,25 +26,26 @@
 		
 		<br>
 		{{ if formed_g }}
-		The second group was formed. {{ if joined }} You joined the second group. {{ else }} You didn't join the second group. {{ endif }}
+		The Group Account #2 was formed. {{ if joined }} You had access to it. {{ else }} You didn't have access to it. {{ endif }}
 		{{ else }}
-		The second group was not formed.
+		The Group Account #2 was not formed.
 		{{ endif }}
-		<br> You can review the last round information: 
+		<br> In the last round: 
 		<span id="ShowLocalPrevious">
-		<button type="button"   class="button_infor_l  btn " onclick="ShowPrevious('local', 'total')" > Group </button> </span>
-		<span id="ShowGlobalPrevious" ><button type="button"   class="button_infor_g  btn" onclick="ShowPrevious('global', 'total')" > Second Group	 </button></span>
+		<button type="button"   class="button_infor_l  btn " onclick="ShowPrevious('local', 'total')" > Group Account</button> </span>
+		<span id="ShowGlobalPrevious" ><button type="button"   class="button_infor_g  btn" onclick="ShowPrevious('global', 'total')" > Group Account #2 </button></span>
 		{{ endif }}
 		
 		<br>
-		Please decide, for this round: do you want to pay {{ FC}} points and form a second group?
+		Please decide, for this round: do you want to pay {{ FC}} points and form Group Account #2?
 		<br>
 		<button  name="join_club" class="btn btn-primary" value=1> Yes </button>
 		<button  name="join_club"  class="btn btn-primary" value=0> No </button>
 		
 		<br> 
-		<!-- <input type="hidden" name="join_club" /> -->
+		<input type="hidden" id='button_history' name="button_j"  />
 		 {{ formfield_errors 'join_club' }}
+		 {{ formfield_errors 'button_j' }} 
 		<br> <br>
 		<!-- {% next_button %} -->
 		</center>

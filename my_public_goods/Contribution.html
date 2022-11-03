@@ -1,7 +1,7 @@
 {{ extends 'global/Page.html' }}
 {{ block title }}
 
-    Supergame {{ subsession.sg }}, Round {{ subsession.period }}
+    Match {{ subsession.sg }}, Round {{ subsession.period }}
 
 Contribute{{ endblock }}
 
@@ -16,10 +16,11 @@ Contribute{{ endblock }}
 	<br> 
 	
 			<center>
-	In this round, the second group account is 
+	In this round, Group Account #2 is 
 	{{ if player.group.global_formed }} 
 	formed. 
-	<br> You {{ if player.join_club }} paid {{ FC }} points and joined the second group. {{ else }} didn't join the second group. {{  endif }}
+	<br> You {{ if player.join_club }} paid {{ FC }} points and have access to Group Account #2. 
+	{{ else }} don't have access to Group Account #2. {{  endif }}
 	{{ else }} 
 	not formed. 
 	{{ endif }}
@@ -32,12 +33,17 @@ Contribute{{ endblock }}
 	<!-- {{ endif }} -->
 	
 	{{ if player.subsession.period != 1}} 
-	<br> You can review the last round information: 
-		<span id="ShowLocalPrevious"> <button type="button"   class="button_infor_l btn " onclick="ShowPrevious('local', 'total')" > Group </button> </span>
+	<br> In the last round: 
+		<span id="ShowLocalPrevious"> <button type="button"   class="button_infor_l btn " onclick="ShowPrevious('local', 'total')" > Group Account </button> </span>
 		{{ if player.group.global_formed }} 
-		<span id="ShowGlobalPrevious" ><button type="button"   class="button_infor_g btn " onclick="ShowPrevious('global', 'total')" > Second Group </button></span>
+		<span id="ShowGlobalPrevious" ><button type="button"   class="button_infor_g btn " onclick="ShowPrevious('global', 'total')" > Group Account #2 </button></span>
 		{{ endif }}
 	{{ endif }}
+	
+	<input type="hidden" id='button_history' name="button_c" />
+
+	
+	<br> Please decide how to allocate your points in this round: 
 
 <!-- {% formfields %} -->
  <!-- <div class="row" 	style="margin-right:400px;margin-left:400px; "> -->
@@ -48,7 +54,7 @@ Contribute{{ endblock }}
 	<!-- value=Number(js_vars.E_l[0]) -->
 	</th> </tr>
 {{ if player.join_club and player.group.global_formed }}
-<tr style="background-color:lightgreen;"> <th> Second Group Account: </th> 
+<tr style="background-color:lightgreen;"> <th> Group Account #2: </th> 
 <th> <input  id="contribution_global" name="contribution_global"   type="number"   min="0"  oninput="Allocation(this)"  /> </th></tr>
 <!-- value=null -->
 {{ endif }}

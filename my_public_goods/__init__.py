@@ -253,7 +253,13 @@ class Player(BasePlayer):
     # For the local PG
     total_contribution_local = models.CurrencyField(initial=0)
     individual_share_local = models.CurrencyField(initial=0)    
-
+    
+    # Button record
+    button_j = models.LongStringField(initial='[]',blank=True)
+    button_j_w = models.LongStringField(initial='[]',blank=True)
+    button_c = models.LongStringField(initial='[]',blank=True)
+    button_c_w = models.LongStringField(initial='[]',blank=True)
+    button_b = models.LongStringField(initial='[]',blank=True)
 # def my_method(player: Player):
     # group = player.group
     # group = group
@@ -520,12 +526,15 @@ class SuperGameWaitPage(WaitPage):
     
 class JoinClub(Page):
     form_model = 'player'
-    form_fields = ['join_club']
+    form_fields = ['join_club', 'button_j']
     
     js_vars = js_vars
     vars_for_template = vars_for_template
 
 class ClubWaitPage(Page):
+    form_model = 'player'
+    form_fields = ['button_j_w'] 
+    
     @staticmethod
     def is_displayed(player: Player):
         group = player.group
@@ -566,9 +575,9 @@ class Contribution(Page):
 
     def get_form_fields(player: Player):
         if player.join_club == 1  : 
-            return ['contribution_local', 'contribution_global']
+            return ['contribution_local', 'contribution_global', 'button_c']
         else:
-            return ['contribution_local']
+            return ['contribution_local', 'button_c']
     
     def js_vars(player: Player):
         d = js_vars(player)
@@ -597,8 +606,12 @@ class Contribution(Page):
         else :
             if int(values['contribution_local']) > int(player.endowment)/10:
                 return 'Total allocation must be below your endowment.'
+                
+                
 class ResultsWaitPage(Page):
-
+    form_model = 'player'
+    form_fields = ['button_c_w'] 
+    
     @staticmethod
     def is_displayed(player: Player):
         group = player.group
@@ -633,11 +646,10 @@ class ResultsWaitPage(Page):
         
 
     
-class Results(Page):
-    form_model = 'player'
-    
-
 class BlockEnd(Page):
+    form_model = 'player'
+    form_fields = ['button_b'] 
+
     @staticmethod
     def is_displayed(player: Player):
         subsession = player.subsession
