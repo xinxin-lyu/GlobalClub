@@ -1,5 +1,23 @@
 from os import environ
 
+ROOMS = [
+    {
+        'name': 'lab',
+        'display_name': 'VSEEL (KRAN 701)',
+        'participant_label_file': '_rooms/VSEEL701.txt',
+    },
+    {
+        'name': 'lab2',
+        'display_name': 'VSEEL (KRAN 701) S2',
+        'participant_label_file': '_rooms/VSEEL701.txt',
+    },
+        {
+        'name': 'lab3',
+        'display_name': 'VSEEL (KRAN 701) S3',
+        'participant_label_file': '_rooms/VSEEL701.txt',
+    },
+]
+
 SESSION_CONFIGS = [
 
     dict(
@@ -41,15 +59,14 @@ SESSION_CONFIGS = [
             <br> <b>'homo_endowment' </b> Whether the local community has homogenous endowments </br>
             """
     ),
+    
+
 
     dict(
-        name='my_public_goods',
+        name='my_public_goods_app1',
         app_sequence=[
-        # 'PGSO_01_Introduction',
-        'PGSO_02_SocialPreferenceElicitation',
-        # 'PGSO_03_Instructions',
-        # 'my_public_goods'
-        # 'PGSO_07_Quiz_Part3',
+            'PGSO_08_WithClubOppVariedCost_Part3',
+
         ],
         num_demo_participants=2,
         

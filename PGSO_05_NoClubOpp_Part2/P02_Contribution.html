@@ -12,7 +12,7 @@
 
  <div class="row" 	style=" margin-right:0px;margin-left:0px; ">
     <div class="col-6"  > 
-	{% include 'my_public_goods\commonHTML_LocalInfor.html' %}
+	{% include 'PGSO_05_NoClubOpp_Part2/commonHTML_LocalInfor.html' %}
 
 	<br> 
 	
@@ -63,7 +63,7 @@
 	
 	{{ if player.group.global_formed }} 
 	<div class="col-6" style="opacity: 70%;" id="ClubGoodColor" > 
-		{% include 'my_public_goods\commonHTML_GlobalInfor.html' %}
+		{% include 'PGSO_05_NoClubOpp_Part2/commonHTML_GlobalInfor.html' %}
 
 	</div>	
 	{{ endif }}
@@ -80,7 +80,7 @@
 
 {% block scripts %}
 
-    {% include 'my_public_goods\commonJS.html' %}
+    {% include 'PGSO_05_NoClubOpp_Part2/commonJS.html' %}
 	<script>
 	<!-- To calculate the endowment allocation  -->
 	document.getElementById('privateAcc').value = js_vars.E_l[0];
@@ -148,7 +148,7 @@
 
 {% block app_styles %}
 	
-    {% include 'my_public_goods\commonCSS.html' %}
+    {% include 'PGSO_05_NoClubOpp_Part2/commonCSS.html' %}
 	
 	
 	

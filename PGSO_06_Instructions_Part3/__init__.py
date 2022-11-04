@@ -45,12 +45,16 @@ class WaitForOthers(WaitPage):
 class P01_BeginPart3(Page):
     @staticmethod
     def vars_for_template(player: Player):
+        if 'endowment' in player.participant.vars.keys():
+            endow = player.participant.vars['endowment']
+        else : 
+            endow = -1
         return {
             'Matches': 1,
             'PointsPerDollar': int(1.0 / player.session.config['real_world_currency_per_point']),
             'ShowUpFee': int(player.session.config['participation_fee']),
             'CutoffRoll': int(player.session.config['CutoffRoll']),
-            'myEndow': player.participant.vars['endowment']
+            'myEndow': endow, 
 
         }
     @staticmethod
@@ -66,12 +70,16 @@ class P02_MatchWork(Page):
 
     @staticmethod
     def vars_for_template(player: Player):
+        if 'endowment' in player.participant.vars.keys():
+            endow = player.participant.vars['endowment']
+        else : 
+            endow = -1
         return {
             'Matches': 1,
             'PointsPerDollar': int(1.0 / player.session.config['real_world_currency_per_point']/10),
             'ShowUpFee': int(player.session.config['participation_fee']),
             'CutoffRoll': int(player.session.config['CutoffRoll']),
-            'myEndow': player.participant.vars['endowment']
+            'myEndow': endow,
         }
     @staticmethod
     def js_vars(player):

@@ -46,7 +46,7 @@ def group_size():
     return 
     
 class C(BaseConstants):
-    NAME_IN_URL = 'Pilot_11042022'
+    NAME_IN_URL = 'PGSO_08_WithClubOppVariedCost_Part3'
     PLAYERS_PER_GROUP =  None
     # MULTIPLIER = 2.4
     block_dierolls_template = 'block_random_termination/block_dierolls.html'
