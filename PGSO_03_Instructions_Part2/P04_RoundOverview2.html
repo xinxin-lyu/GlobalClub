@@ -1,0 +1,81 @@
+{% extends "otree/Page.html" %}
+{% load staticfiles otree %}
+
+{% block app_styles %}
+    {% include 'PGSO_03_Instructions_Part2/commonCSS.html' %}
+{% endblock %}
+
+{% block scripts %}
+    {% include 'PGSO_05_NoClubOpp_Part2/commonJS.html' %}
+	<script>
+	setTimeout(
+		function () {
+			alert("Please click 'Next' when you are done reading this page.");
+		},
+		120*1000 // 120 seconds
+	);
+	</script>
+
+{% endblock %}
+
+{% block title %}
+    Round Overview II 
+	<!-- (P03_RoundOverview) -->
+{% endblock %}
+
+{% block content %}
+
+    <br><br>
+
+    <div class="card-body" style="text-align: left; padding-left: 10%;padding-right: 10%;font-size: 18px;">
+	<div style="position:relative;left: 10%;width: 80%;background-color: #ffffff">
+	<u>Earnings  </u>
+		<p> Your earning in each round is: 
+			<center> <strong>
+			1 x Number of points in your Private Account
+			<br> +
+			<br> 0.6 x Number of points in <mark_groupAcc>Group Account</mark_groupAcc>
+			</strong> </center>
+		</p>
+		
+	<p> For example, 
+	{{ if HOMO }}
+	 if you keep 5 points in your private account and allocate 15 points to the group account, 
+		suppose the other three members allocated 30 points to the group account, 
+			your earning in this round will be 5 + 0.6*(15+30) = 5 + 0.6*45 = 32 points. 
+	{{ else  }}
+	suppose you have 10 points as endowment.
+		If you keep 5 points in your private account and allocate 5 points to the group account, 
+		suppose the other three members allocated 30 points to the group account, 
+		your earning in this round will be 5 + 0.6*(5+30) = 5 + 0.6*35 = 26 points.
+	{{ endif }}
+	</p> 	
+	
+	<p> At the end of each round, your earnings for the round will be recorded. 
+		Your payment for part 2 will be determined 
+		by the sum of the points that you earn in each round 
+		before the part ends with a conversion rate of: {{PointsPerDollar}} points = $1. 
+	</p>
+		
+
+	<u> Information </u>
+	
+	<p> You will be able to review your <mark_groupAcc> Group Account </mark_groupAcc>.total points 
+		and how many points each group member allocated to the <mark_groupAcc> Group Account </mark_groupAcc> in all previous rounds.</p>
+
+	<p> To achieve this, you need to click the button to review last round information first. </p> 
+	
+	<img style="max-width: 100%" class="center" src="{{ static 'Instruction/LastRoundInfor.png' }}"/>
+	
+	<p> You will see the group member table is updated with your previous round allocation and the group total account. 
+	You may click the relevant buttons to review each member’s allocation or the full history. </p>
+	<img style="max-width: 100%;" class="center" src="{{ static 'Instruction/MoreHistory.png' }}"/>
+
+        <p style="text-align: center"><br/><br/>
+            <button class="otree-btn-next btn btn-primary" id="NextButton" style="display:inline-block;">Next</button>
+        </p>
+
+    </div>
+	</div> 
+
+{% endblock %}

@@ -1,0 +1,50 @@
+{{ extends 'global/Page.html' }}
+
+{{ block title }}
+
+    Match {{ subsession.sg }} 
+	<br>
+	 {{ endblock }}
+
+{{ block content }}
+
+<!-- Information part: -->
+
+<div class="container">
+    <div class="card">
+        <div class="card-body">
+            <p>Waiting for others</p>
+            <div class="progress">
+                <div class="progress-bar progress-bar-striped progress-bar-animated" style="width: 100%"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{ endblock }}
+
+
+{% block scripts %}
+<script>
+    function liveRecv(data) {
+        console.log('data', data)
+        if (data.finished) {
+            document.getElementById("form").submit();
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", (event) => {
+        liveSend({'type': 'wait_page'});
+    });
+		
+
+</script>
+{{ endblock }}
+
+{% block app_styles %}
+	
+    {% include 'my_public_goods\commonCSS.html' %}
+	
+	
+	
+{% endblock %}

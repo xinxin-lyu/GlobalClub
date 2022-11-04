@@ -1,0 +1,446 @@
+{% load otree_tags %}
+
+<script>
+
+
+	
+
+
+    document.addEventListener('keydown', function (event) {
+        if ((event.code == 'KeyR' || event.code == 'KeyF' || event.code == 'KeyS') && (event.ctrlKey || event.metaKey)) {
+            event.preventDefault();
+        }
+        if ((event.code == 'F5')) {
+            event.preventDefault();
+        }
+        if ((event.code == 'Tab')) {
+            event.preventDefault();
+        }
+        if ((event.code == 'Enter')) {
+            event.preventDefault();
+        }
+        if ((event.code == 'NumpadEnter')) {
+            event.preventDefault();
+        }
+        <!-- if ((event.code == 'Space')) { -->
+            <!-- event.preventDefault(); -->
+        <!-- } -->
+        if ((event.code == 'ArrowLeft' || event.code == 'ArrowRight') && (event.code == 'AltLeft' || event.code == 'altRight' || event.altKey || event.metaKey)) {
+            event.preventDefault();
+        }
+    });
+
+<!-- This is used to re-order the tables in each page -->
+<!-- var x = js_vars.Table_Rearrange; -->
+
+<!-- This function is to define the whole table at the begining of each round -->
+    function ShowTable_Local(page=0) {
+	<!-- Use the period (round) number to decide  -->
+		<!-- If Round == 1:  only Show the current table  -->
+		var Card = document.getElementById("InformationTable_local");
+		var Card_div = document.createElement('div');
+		Card_div.className = "row";
+		Card_div.style = "align-content: center";
+		Card.appendChild(Card_div);	
+		
+		
+		var div_c1 =  document.createElement('div');
+		div_c1.className = "closeTable";
+		<!-- div_c1.style.width = "50px"; -->
+		div_c1.id = "column1_l";
+		ShowFirstColumn(div_c1,'local', page);
+		Card_div.appendChild(div_c1);
+
+		
+
+    };
+	
+	  function ShowTable_Global(page=0) {
+	<!-- Use the period (round) number to decide  -->
+		<!-- If Round == 1:  only Show the current table  -->
+		var Card = document.getElementById("InformationTable_global");
+		var Card_div = document.createElement('div');
+		Card_div.className = "row";
+		Card.appendChild(Card_div);	
+		
+		
+		var div_c1 =  document.createElement('div');
+		div_c1.className = "closeTable";
+		<!-- div_c1.style.width = "50px"; -->
+		div_c1.id = "column1_g";
+		ShowFirstColumn(div_c1,'global', page);
+		Card_div.appendChild(div_c1);
+
+		
+
+    };
+	
+
+
+
+
+	function ShowFirstColumn(element, level, page=0) {
+		var tbl = document.createElement('table');
+
+		tbl.className = "table";
+		var tr = document.createElement('tr');
+		tr.className = "HistoryRound_cell";
+		var th = document.createElement('th');
+		<!-- th.style = " width: 150px"; -->
+		th.innerHTML = "ID";
+		th.style = "background-color: white";
+		tr.appendChild(th);
+		var th = document.createElement('th');
+		if (page==0 ) {th.innerHTML = "Endowment";}
+		else if (page==1) {th.innerHTML = "Endowment To Allocate";
+		if (js_vars.Formed && js_vars.MeJoin) { 
+				document.getElementById("ClubGoodColor").style.opacity = "100%"; }}
+		th.style = "background-color: white";
+		tr.appendChild(th);
+		tbl.appendChild(tr);
+
+		if (level == 'local' ) {
+			var num = js_vars.LocalSize;
+			var e_list = js_vars.E_l; 
+			var groupColor = "lightblue";
+			} 
+		else if (level == 'global' ) {
+			var num = js_vars.GlobalSize;
+			var e_list = js_vars.E_g; 
+			var groupColor = "lightgreen";
+			}
+		for (var i = 1; i <= num; i++) {
+			var tr = document.createElement('tr');
+			tr.className = "HistoryRound_cell";		
+			var th = document.createElement('th');
+			var th2 = document.createElement('th');
+			if (i ==  1) {
+				th.innerHTML = "You"; 
+				tr.className += " Me";
+				th.style = "font-weight: bold;";
+				
+				th2.innerHTML =  e_list[i-1];
+				if (page==1 && js_vars.MeJoin && level=="global") {
+					th.innerHTML += " (Joined)" ; 
+					th.style.backgroundColor=groupColor;
+					th2.style.backgroundColor=groupColor;}
+				th2.style.fontWeight= "bold";
+				
+				}
+			else {
+			th.innerHTML = i ;
+			th2.innerHTML =  e_list[i-1];
+			if (i > js_vars.LocalSize ) {
+				th.style = "background-color: lightgrey";
+				th2.style = "background-color: lightgrey";
+			}	
+			if (page==1 && js_vars.OtherJoin[i-2] && level=="global") {
+				th.innerHTML += " (Joined)" ; 
+				th.style.backgroundColor=groupColor;
+				th2.style.backgroundColor=groupColor;
+				}
+			
+			}
+			tr.appendChild(th);
+			tr.appendChild(th2);
+			tbl.appendChild(tr);	
+			}
+		
+		<!-- Only add dice role after the block -->
+		<!-- var tr = document.createElement('tr'); -->
+		<!-- var th = document.createElement('th'); -->
+		<!-- th.className ="DiceLabel"; -->
+		<!-- th.innerHTML = "Dice Roll"; -->
+		<!-- tr.appendChild(th); -->
+		<!-- tbl.appendChild(tr); -->
+		
+		element.appendChild(tbl);
+	
+	};
+	
+	
+	function ShowPrevious(level, component) {
+		document.getElementById("button_history").value += ",ShowPrevious" +"_"+level+"_"+component;
+		if (component == 'total' ) {
+			if (level== 'local') {
+				var column1 = "column1_l";
+				var group_total = js_vars.C_t_l[0];
+				var my_allocation = js_vars.my_cont_l[0] ;
+				var button_id = "ShowLocalPrevious";
+				var groupColor = "lightblue";
+				var button_ind_infor = "individualLocal";
+				<!-- Show Additional Individual Information -->
+				document.getElementById(button_ind_infor).style.visibility = "visible";
+				<!-- Show More History Information -->
+				document.getElementById("MoreLocal").style.visibility = "visible";
+				var groupName = "Group Account total was ";
+			}
+			else if  (level== 'global') {
+				var column1 = "column1_g";
+				var group_total = js_vars.C_t_g[0];
+				var my_allocation = js_vars.my_cont_g[0] ;
+				var button_id = "ShowGlobalPrevious";
+				var groupColor = "lightgreen";
+				<!-- Show Additional Individual Information -->
+				<!-- if (js_vars.joinedLastRound && js_vars.ClubFormedLastRound ) { -->
+				document.getElementById("individualGlobal").style.visibility = "visible";
+				RandomButton('individualGlobal','global');
+				
+				if (js_vars.ClubFormedLastRound ) { 
+				document.getElementById("ClubGoodColor").style.opacity = "100%"; }
+				<!-- } -->
+				<!-- Show More History Information -->
+				document.getElementById("MoreGlobal").style.visibility = "visible";
+				var groupName = "Group Account #2 total was ";
+				<!-- Change colors according to the join status -->
+				<!-- if (js_vars.ClubFormedLastRound ) {  -->
+				
+					<!-- ChangeClubColor() -->
+				<!-- } -->
+				<!-- else {} -->
+			}
+			
+		
+		<!-- # Adding last row -->
+		var tbl = document.getElementById(column1).children[0];
+		<!-- var tbl = document.createElement('table'); -->
+		var tr = document.createElement('tr');
+		var th = document.createElement('th');
+		th.className = level+"_Group_Total";
+		th.innerHTML = "Total Account ";
+		th.style.backgroundColor=groupColor;
+		tr.appendChild(th);
+		var th = document.createElement('th');
+		th.style="visibility: hidden";
+		tr.appendChild(th);
+		var th = document.createElement('th');
+		th.innerHTML =  group_total; 
+		th.style.backgroundColor=groupColor;
+		tr.appendChild(th);
+		tbl.appendChild(tr);
+		
+		var tr = tbl.children[0];
+		var th = document.createElement('th');
+		th.innerHTML = "Previous Round Allocation";
+		th.style="background-color: white";
+		tr.appendChild(th);
+		
+		var tr = tbl.children[1];
+		var th = document.createElement('th');
+		if ( !isNaN(my_allocation))  {th.innerHTML = my_allocation;}
+			else {th.innerHTML = "-";}
+		if ( !isNaN(my_allocation)) { th.style.backgroundColor=groupColor;}
+		tr.appendChild(th);
+		
+		var replace = document.getElementById(button_id);
+		replace.innerHTML = groupName + group_total + " points"; 
+		replace.style.backgroundColor=groupColor;
+		
+		}
+		
+		else  {
+		
+		if (level == 'local') {
+			var column1 = "column1_l";
+			var rows = js_vars[component+'_'+level];
+			var indiv_cont = js_vars.others_cont_l;
+			var groupColor = "lightblue";
+			}
+		else if (level == 'global') {
+			var column1 = "column1_g";
+			var rows = js_vars[component+'_'+level];
+			var indiv_cont = js_vars.others_cont_g;
+			var groupColor = "lightgreen";
+			}
+		
+		var tbl = document.getElementById(column1).children[0];
+		<!-- # find the right row -->
+		for (var i in rows ) {
+			
+			var row_id = rows[i]+2;
+			<!-- console.log(row_id); -->
+			var tr = tbl.children[row_id]; 
+			<!-- console.log(tr); -->
+			
+			if (tr.childElementCount < 3 ) {
+				var  th = document.createElement('th');
+				if ( !isNaN(indiv_cont[rows[i]][0])) {
+					th.innerHTML = indiv_cont[rows[i]][0];}
+				else {th.innerHTML = "-";}
+				if (row_id > js_vars.LocalSize) {th.style.backgroundColor='lightgrey'; }
+				if ( !isNaN(indiv_cont[rows[i]][0])) { th.style.backgroundColor=groupColor;}
+				
+				tr.appendChild(th);
+			}
+			}
+		
+		}
+		
+		
+		
+		} ;
+
+	function ShowAllHistory(level, includeCurrent=0) {
+		document.getElementById("button_history").value += ",ShowAllHistory" +"_"+level;
+		if (level == 'local') {
+			var column1 = "column1_l";
+			var indiv_cont = js_vars.others_cont_l;
+			var group_total = js_vars.C_t_l;
+			var my_allocation = js_vars.my_cont_l ;			
+			var groupColor = "lightblue";
+			var size = js_vars.LocalSize;
+			}
+		else if (level == 'global') {
+			var column1 = "column1_g";
+			var indiv_cont = js_vars.others_cont_g;
+			var group_total = js_vars.C_t_g;
+			var my_allocation = js_vars.my_cont_g ;			
+			var groupColor = "lightgreen";
+			var size = js_vars.GlobalSize;
+			}	
+		if 	(includeCurrent==1) {
+			var columnNum = js_vars.Round+2; 
+			var beginPos= 0;
+		}
+		else {var columnNum = js_vars.Round+1; 
+			var beginPos= 1;}
+		
+		var element = document.getElementById(column1);
+		<!-- Change to allow scroll -->
+		element.className = "inner";
+		<!-- Append the table to show all results -->
+		var tbl = element.children[0];
+		
+		<!-- First Line is about round number  -->
+		var tr = tbl.children[0];
+		if 	(includeCurrent==1) { 
+			tr.children[2].innerHTML = "Current Round";
+		}
+		var pr_2 = js_vars.Round - 2 + includeCurrent ;
+		while (tr.childElementCount < columnNum) {
+			var  th = document.createElement('th');
+			th.innerHTML = "Round " + pr_2; 
+			th.style.backgroundColor = "white";
+			pr_2 --;
+			
+			tr.appendChild(th);
+			}
+		<!-- Second line is my own history -->
+		var tr = tbl.children[1];
+		var i = beginPos;
+		while (tr.childElementCount < columnNum && tr.childElementCount>2 ) {
+			var  th = document.createElement('th');
+			var myall = my_allocation[i] ;
+			if ( !isNaN(myall) ) {
+				th.innerHTML = myall; 
+				th.style.backgroundColor = groupColor;}
+			else {
+				th.innerHTML =  "-";
+				}
+			
+			tr.appendChild(th);
+			i ++ ;
+			}
+		<!-- Third line and so on is others' history -->
+		for (let r = 2; r <= size ; r++ ) {
+			
+			var tr = tbl.children[r];
+			var i = beginPos;
+			while (tr.childElementCount < columnNum && tr.childElementCount>2 ) {
+				var  th = document.createElement('th');
+				var otherall = indiv_cont[r-2][i] ;
+				if ( !isNaN(otherall) ) {
+					th.innerHTML = otherall; 
+					th.style.backgroundColor = groupColor;
+					}
+				else {
+					th.innerHTML =  "-";
+					if ( r > js_vars.LocalSize ) {
+					th.style.backgroundColor = "lightgrey";
+					}
+					}
+			
+			tr.appendChild(th);
+			i ++ ;
+			}
+			}
+			
+		<!-- Last line is total account history	 -->
+		var tr = tbl.children[size+1];
+		var i = beginPos;
+		while (tr.childElementCount < columnNum && tr.childElementCount>2 ) {
+			var  th = document.createElement('th');
+			var total_n = group_total[i] ;
+			if ( !isNaN(total_n) ) {
+				th.innerHTML = total_n; }
+			else {
+				th.innerHTML =  "Not formed";
+				}
+			th.style.backgroundColor = groupColor;
+			tr.appendChild(th);
+			i ++ ;
+			}	
+	
+	};
+		
+		<!-- To place the buttons with random positions -->
+	/* Randomize array in-place using Durstenfeld shuffle algorithm */
+	function shuffleArray(array) {
+		for (var i = array.length - 1; i > 0; i--) {
+			var j = Math.floor(Math.random() * (i + 1));
+			var temp = array[i];
+			array[i] = array[j];
+			array[j] = temp;
+		}
+	};
+	
+	
+	function RandomButton(pName,level) {
+
+	  var para = document.getElementById(pName);
+	  
+	  var span1, span2, span3;
+
+	  span1 =  generateButton(level, "max", "Highest");
+	  span2 =  generateButton(level, "min", "Lowest");
+	  span3 = generateButton(level, "rest", "Rest");
+
+	  para.innerHTML = "You can see other's allocations : ";
+
+	  var arr1 = [span1, span2, span3];
+
+	  shuffleArray(arr1);
+
+	  for (var i in arr1) {
+		para.appendChild(arr1[i]);
+
+	  }
+
+	};
+
+
+	// feature is "max", "local" or "rest"
+	// buttonText is "Highest", "Lowest" or "Rest"
+	function generateButton(feature1,feature2, buttonText) {
+	  var span = document.createElement("span");
+	  var btn = document.createElement("button");
+	  
+	  span.id = feature1 + feature2;
+	  span.appendChild(btn);
+	  
+	  var ShowPreviousModified = ShowPrevious.bind(this, feature1, feature2);
+	  <!-- console.log(ShowPreviousModified); -->
+
+	  btn.type = "button";
+	  if (feature1=="local") {
+	  btn.className = 'button_infor_l '; }
+	  else {btn.className = 'button_infor_g '; }
+	  btn.className += 'btn ';
+	  btn.style = 'width: 100px';
+	  btn.innerHTML = buttonText;
+	  btn.onclick = ShowPreviousModified;
+	  return span;
+	};
+
+
+</script>

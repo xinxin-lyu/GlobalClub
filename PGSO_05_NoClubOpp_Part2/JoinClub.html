@@ -1,0 +1,99 @@
+{{ extends 'global/Page.html' }}
+{{ block title }}
+
+    Match {{ subsession.sg }}, Round {{ subsession.period }}
+	<br>
+	Form Group Account #2? {{ endblock }}
+
+{{ block content }}
+
+<!-- Information part: -->
+
+ <div class="row" 	style=" margin-right:0px;margin-left:0px; ">
+    <div class="col-6"  > 
+	{% include 'my_public_goods\commonHTML_LocalInfor.html' %}
+	
+	<br> 
+		<center>
+		
+		{{ if player.subsession.period == 1}} 
+		This is the beginning of a new match. 
+		{{ else }}
+		
+		Last round, you earned {{ earning }} points. 
+		
+		
+		
+		<br>
+		{{ if formed_g }}
+		The Group Account #2 was formed. {{ if joined }} You had access to it. {{ else }} You didn't have access to it. {{ endif }}
+		{{ else }}
+		The Group Account #2 was not formed.
+		{{ endif }}
+		<br> In the last round: 
+		<span id="ShowLocalPrevious">
+		<button type="button"   class="button_infor_l  btn " onclick="ShowPrevious('local', 'total')" > Group Account</button> </span>
+		<span id="ShowGlobalPrevious" ><button type="button"   class="button_infor_g  btn" onclick="ShowPrevious('global', 'total')" > Group Account #2 </button></span>
+		{{ endif }}
+		
+		<br>
+		Please decide, for this round: do you want to pay {{ FC}} points and form Group Account #2?
+		<br>
+		<button  name="join_club" class="btn btn-primary" value=1> Yes </button>
+		<button  name="join_club"  class="btn btn-primary" value=0> No </button>
+		
+		<br> 
+		<input type="hidden" id='button_history' name="button_j"  />
+		 {{ formfield_errors 'join_club' }}
+		 {{ formfield_errors 'button_j' }} 
+		<br> <br>
+		<!-- {% next_button %} -->
+		</center>
+		
+	</div>
+	
+	<div class="col-6" style="opacity: 70%;" id="ClubGoodColor" > 
+		{% include 'my_public_goods\commonHTML_GlobalInfor.html' %}
+
+	</div>	
+</div>
+
+ <div class="row" 	style="margin-right:0px;margin-left:0px; ">
+ 
+		
+		
+		<!-- </div> -->
+	</div>
+	
+	
+
+{{ endblock }}
+
+
+{% block scripts %}
+
+    {% include 'my_public_goods\commonJS.html' %}
+	<script>
+
+
+	
+	
+	RandomButton('individualLocal','local');
+	
+
+	ShowTable_Local();
+	ShowTable_Global();
+	
+
+	</script>
+{{ endblock }}
+
+
+{% block app_styles %}
+	
+    {% include 'my_public_goods\commonCSS.html' %}
+	
+	
+	
+{% endblock %}
+

@@ -1,14 +1,57 @@
 from os import environ
 
 SESSION_CONFIGS = [
+
+    dict(
+        name='Pilot_11042022',
+        app_sequence=[
+        'PGSO_01_Introduction',
+        'PGSO_02_SocialPreferenceElicitation',
+        'PGSO_03_Instructions_Part2',
+        'PGSO_04_Quiz_Part2',
+        'PGSO_05_NoClubOpp_Part2',
+        'PGSO_06_Instructions_Part3',
+        'PGSO_07_Quiz_Part3',
+        'PGSO_08_WithClubOppVariedCost_Part3',
+        'PGSO_09_PayoffScreen',
+        'PGSO_10_Demographics',
+        'PGSO_11_FeedbackQuestions',
+        'PGSO_12_Feedback',
+        
+        
+        ],
+        num_demo_participants=16,
+        
+        multiplier = 2.4,
+        localPG_size = 4,
+        K = 2 ,
+        FC = 20,  #note: all earnings stored as integer, endowment=200 pnts for homo
+        homo_endowment = 0,
+        # m_l = 0.6,
+        # m_g = 0.6,
+        CutoffRoll=10,
+        doc="""
+            
+            <br> <b>'localPG_size' </b> how many people in the local PG </br>
+            <br> <b>'K' </b> how many communities connect to form the club good </br>
+            <br> <b>'FC' </b> fixed cost to join the club good; 20 vs 100 </br>
+            <br> <b>'multiplier' </b> total multiplier = localPG_size * m_l = m_g (for now)  </br>
+            <br> <b>'m_l' </b> MPCR for local PG </br>
+            <br> <b>'m_g' </b> MPCR for global Club </br>
+            <br> <b>'homo_endowment' </b> Whether the local community has homogenous endowments </br>
+            """
+    ),
+
     dict(
         name='my_public_goods',
         app_sequence=[
         # 'PGSO_01_Introduction',
-        # 'PGSO_02_SocialPreferenceElicitation',
+        'PGSO_02_SocialPreferenceElicitation',
         # 'PGSO_03_Instructions',
-        'my_public_goods'],
-        num_demo_participants=8,
+        # 'my_public_goods'
+        # 'PGSO_07_Quiz_Part3',
+        ],
+        num_demo_participants=2,
         
         multiplier = 2.4,
         localPG_size = 4,
@@ -42,7 +85,7 @@ SESSION_CONFIGS = [
 # e.g. self.session.config['participation_fee']
 
 SESSION_CONFIG_DEFAULTS = dict(
-    real_world_currency_per_point=1.00, participation_fee=0.00, doc=""
+    real_world_currency_per_point=0.000595, participation_fee=0.00, doc=""
 )
 
 PARTICIPANT_FIELDS = []

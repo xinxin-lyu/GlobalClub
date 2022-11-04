@@ -1,0 +1,83 @@
+import numpy as np
+from otree.api import *
+
+
+author = 'Yaroslav Rosokha'
+doc = """
+Post-experimental Questionnaire.
+"""
+
+
+class Constants(BaseConstants):
+    name_in_url = 'PGSO_11_FeedbackQuestions'
+    players_per_group = None
+    num_rounds = 1
+
+
+class Group(BaseGroup):
+    pass
+
+
+class Subsession(BaseSubsession):
+    pass
+
+
+class Player(BasePlayer):
+    # Questionnaire
+    understandingSelect = models.StringField(
+        choices=['Clear', 'Somewhat Clear', 'Somewhat Confusing', 'Confusing'],
+        verbose_name='Clarity of Instructions:',
+        blank=True,
+        widget=widgets.RadioSelectHorizontal,
+    )
+    explainedText = models.LongStringField(
+        verbose_name='What could have been explained better?',
+        blank=True,
+    )
+    strategy1Text = models.LongStringField(
+        verbose_name='What was your strategy in part 2? How did you make contributions to your group account? (Please be specific)',
+        blank=True,
+    )
+    strategy2Text = models.LongStringField(
+        verbose_name='What was your strategy in part 3? How did you decide to pay the fee and contribute to group accounts? (Please be specific)',
+        blank=True,
+    )
+    strategy3Text = models.LongStringField(
+        verbose_name='Did you contribute to your Group Account differently when there is an opportunity to access to Group Account #2 ? If so, in what way? (Please be specific)',
+        blank=True,
+    )
+    strategy4Text = models.LongStringField(
+        verbose_name='Was your strategy different when the fee is high versus low If so, in what way? (Please be specific)',
+       
+        blank=True,
+    )
+    strategy5Text = models.LongStringField(
+        verbose_name= 'Did your decision in a round depend on what happened in the previous rounds? If so, in what way? (Please be specific)',
+        blank=True,
+    )
+
+
+# FUNCTIONS
+# PAGES
+class Questionnaire(Page):
+    form_model = 'player'
+    form_fields = [
+        'understandingSelect',
+        'explainedText',
+        'strategy1Text',
+        'strategy2Text',
+        'strategy3Text',
+        'strategy4Text',
+        'strategy5Text',
+    ]
+
+    @staticmethod
+    def is_displayed(player: Player):
+        return player.round_number == Constants.num_rounds
+    @staticmethod
+    def vars_for_template(player: Player):
+        x = player.participant.vars['pay_matters'] * player.session.config['real_world_currency_per_point']
+        return {'earningsTotal': int(x)}
+
+
+page_sequence = [Questionnaire]

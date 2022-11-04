@@ -1,0 +1,57 @@
+{% extends "otree/Page.html" %}
+{% load staticfiles otree %}
+
+{% block app_styles %}
+    {% include 'PGSO_05_NoClubOpp_Part2/commonCSS.html' %}
+{% endblock %}
+
+{% block scripts %}
+    {% include 'PGSO_05_NoClubOpp_Part2/commonJS.html' %}
+
+{% endblock %}
+
+
+
+
+{% block title %}
+    Quiz
+{% endblock %}
+
+{% block content %}
+
+    <div class="card-body" style="text-align: left">
+			<div style="position:relative;left: 10%;width: 80%;background-color: #ffffff">
+
+	<!-- <p><strong style="color: blue">Question 9:</strong> -->
+	<p><strong style="color: blue">Question 2:</strong>
+
+		(True or False)
+		If you have experienced 15 rounds, the chance that this part will end in this round is 10%.		
+        <p style="text-align: center">
+                <button class="otree-btn-next btn btn-primary" id="startMatchButton" type="button"
+            onclick="correctAnswer('This is correct.')">
+				True </button>
+            <button class="otree-btn-next btn btn-primary" id="startMatchButton" type="button" 
+			onclick="incorrectAnswer('This is incorrect. Please raise your hand if you have questions.')">
+				False </button>
+                       
+            </p>
+
+        <p style="text-align: center; color: red;" id="quizMessage">  	</p>
+		<div style="background-color: lightgrey; position:relative; left: 20%; width: 60%;"> <em>
+			<center> Recap</center>
+			 <ul>
+                
+			<li>  At the end of each round the computer will roll a ten-sided fair dice.  </li> 
+			<li> If the computer rolls a number less than 10, then this part continues for at least one more round.  </li>
+			<li> If the computer rolls a 10, then this part ends after the current round.  </li>
+  			</ul>
+			
+		</div>
+    </div>	
+	 </div>
+	<center>
+<button class="otree-btn-next btn btn-primary" id="NextButton" style="display:none;">Next</button>
+    <input type="hidden" name="quizHistory2" value="," id="id_testingHistory"/>
+	</center> 
+{% endblock %}

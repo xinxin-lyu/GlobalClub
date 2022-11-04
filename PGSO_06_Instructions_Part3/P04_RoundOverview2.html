@@ -1,0 +1,79 @@
+{% extends "otree/Page.html" %}
+{% load staticfiles otree %}
+
+{% block app_styles %}
+    {% include 'PGSO_03_Instructions_Part2/commonCSS.html' %}
+{% endblock %}
+
+{% block scripts %}
+    {% include 'PGSO_05_NoClubOpp_Part2/commonJS.html' %}
+	<script>
+	setTimeout(
+		function () {
+			alert("Please click 'Next' when you are done reading this page.");
+		},
+		120*1000 // 120 seconds
+	);
+	</script>
+
+{% endblock %}
+
+{% block title %}
+    Round Overview II 
+	<!-- (P03_RoundOverview) -->
+{% endblock %}
+
+{% block content %}
+
+    <br><br>
+
+    <div class="card-body" style="text-align: left; padding-left: 10%;padding-right: 10%;font-size: 18px;">
+	<div style="position:relative;left: 10%;width: 80%;background-color: #ffffff">
+	<u>Earnings  </u>
+		<p> Your earning in each round is: 
+			<center> <strong>
+			1 x Number of points in your Private Account
+			<br> +
+			<br> 0.6 x Number of points in <mark_groupAcc>Group Account</mark_groupAcc>
+			<br> + 
+			<br> - Fee   + 0.6 x Number of points in <mark_groupAcc2>Group Account #2</mark_groupAcc2>, if paid the fee;
+			</strong> </center>
+		</p>
+		
+	<p> For example, 
+	{{ if HOMO }}
+	if the fee is 1 point, you decide to pay the fee. 
+	You will have 19 (20-1) points to allocate among the three accounts. 
+	Suppose you keep 9 points in your private account and allocate 5 points each to the two group accounts.
+	Suppose others allocate 20 points to the group account and 20 points in the second group account, 
+	your earning in this round will be 9 + 0.6*(5+20) + 0.6*(5+20) = 9 + 0.6*25 + 0.6*25 = 39 points.
+	{{ else  }}
+	if the fee is 1 point, you decide to pay the fee. 
+	Suppose you have 10 points as endowment, you will have 9 (10-1) points to allocate among the three accounts. 
+	Suppose you keep 5 points in your private account and allocate 2 points each to the two group accounts. 
+	Suppose others allocate 20 points to the group account and 20 points in the second group account, 
+	your earning in this round will be 5 + 0.6*(2+20) + 0.6*(2+20) = 9 + 0.6*25 + 0.6*25 = 31.4 points.
+	{{ endif }}
+	</p> 	
+	
+	<p> At the end of each round, your earnings for the round will be recorded. 
+		Your payment for part 3 will be determined by the sum of the points 
+		that you earn in all three matches with a conversion rate of: {{PointsPerDollar}} points = $1. 
+	</p>
+		
+
+	<u> Information </u>
+	
+	<p> You will be able to review both <mark_groupAcc> Group Account </mark_groupAcc> and <mark_groupAcc2>Group Account #2</mark_groupAcc2> 
+	information for all previous rounds within a match.</p>
+
+
+
+        <p style="text-align: center"><br/><br/>
+            <button class="otree-btn-next btn btn-primary" id="NextButton" style="display:inline-block;">Next</button>
+        </p>
+
+    </div>
+	</div> 
+
+{% endblock %}

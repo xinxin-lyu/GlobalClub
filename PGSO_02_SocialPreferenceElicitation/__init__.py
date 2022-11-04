@@ -84,8 +84,6 @@ def set_receivedMoney(group):
                
         
 # PAGES
-class P00_BeginPart1(Page):
-    pass
 
 
 class p01_introduction(Page):
@@ -161,4 +159,4 @@ class WaitForOthers(WaitPage):
         return {'title_text': title_text, "body_text": body_text}
 
 
-page_sequence = [P00_BeginPart1, p01_introduction, p03_task, p04_task, WaitForOthers]
+page_sequence = [p01_introduction, p03_task, p04_task, WaitForOthers]
