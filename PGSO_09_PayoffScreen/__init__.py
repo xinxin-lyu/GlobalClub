@@ -46,6 +46,7 @@ class Subsession(BaseSubsession):
 class Player(BasePlayer):
     Chosen_Task =  models.IntegerField()
     MatchesPayoff = models.CurrencyField(initial = 0)
+    TotalPayoff =  models.CurrencyField(initial = 0)
     ReceivMoneyDummy = models.IntegerField(initial = 0)
     ReceivedMoney = models.CurrencyField(initial = 0)
 
@@ -99,6 +100,8 @@ class FinalPaymentWaitPage(WaitPage):
                 
             if player.participant.vars['pay_matters']  < 0:
                 player.participant.vars['pay_matters']   = 0
+            
+            player.TotalPayoff = player.participant.vars['pay_matters']
     
 ### Change EarnBelief5 to EarnBelief25 below ###
 class PaymentInfo(Page):
@@ -123,7 +126,7 @@ class PaymentInfo(Page):
             others =  Constants.other1
             me = Constants.safeOption[player.participant.vars['SocialPreferenceQuestion']-10]
         
-        x = player.participant.vars['pay_matters'] * player.session.config['real_world_currency_per_point']
+        x = float(player.participant.vars['pay_matters'] * player.session.config['real_world_currency_per_point'])
         # print(x)
         return {
             'MatchesPayoff': int(player.MatchesPayoff/10) ,
@@ -147,7 +150,7 @@ class PaymentInfo(Page):
             'SocialPreferenceEarn_other' : player.participant.vars['SocialPreferenceEarn_other'],
             'SocialPreferenceQuestion_optionA' : me, 
             'SocialPreferenceQuestion_optionAothers' : others ,
-            'MoneyReceived' : int(player.ReceivedMoney),
+            'MoneyReceived' : round(float(player.ReceivedMoney), 2),
             
             'PointsPerDollar': int(1.0 / player.session.config['real_world_currency_per_point']/10),
 

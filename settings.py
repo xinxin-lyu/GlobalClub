@@ -70,7 +70,7 @@ SESSION_CONFIGS = [
             # 'PGSO_06_Instructions_Part3',
             # 'PGSO_08_WithClubOppVariedCost_Part3',
             'PGSO_09_PayoffScreen',
-        'PGSO_10_Demographics',
+        # 'PGSO_10_Demographics',
         'PGSO_11_FeedbackQuestions',
         'PGSO_12_Feedback',
 

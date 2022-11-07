@@ -16,7 +16,8 @@ Allocation{{ endblock }}
 	<br> 
 	
 			<center>
-	In this round, Group Account #2 was 
+	In this round,
+	Group Account #2 was 
 	{{ if player.group.global_formed }} 
 	formed. 
 	<br> You {{ if player.join_club }} paid {{ FC }} points and have access to Group Account #2. 
@@ -56,6 +57,8 @@ Allocation{{ endblock }}
 {{ if player.join_club and player.group.global_formed }}
 <tr style="background-color:lightgreen;"> <th> Group Account #2: </th> 
 <th> <input  id="contribution_global" name="contribution_global"   type="number"   min="0"  oninput="Allocation(this)"  /> </th></tr>
+{{ formfield_errors 'contribution_global' }} 
+
 <!-- value=null -->
 {{ endif }}
 </table>
@@ -63,7 +66,6 @@ Allocation{{ endblock }}
 <p id="contribution_global_e" style="color:red"> 
 <p id = "next_btn" style="visibility:hidden" >  {% next_button %} </p>
 {{ formfield_errors 'contribution_local' }} 
-{{ formfield_errors 'contribution_global' }} 
 
 </center>
 

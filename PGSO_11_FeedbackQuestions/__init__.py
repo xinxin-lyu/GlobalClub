@@ -76,7 +76,7 @@ class Questionnaire(Page):
         return player.round_number == Constants.num_rounds
     @staticmethod
     def vars_for_template(player: Player):
-        x = player.participant.vars['pay_matters'] * player.session.config['real_world_currency_per_point']
+        x = float(player.participant.vars['pay_matters'] * player.session.config['real_world_currency_per_point'])
         return {'earningsTotal': round(x, 2)}
 
 

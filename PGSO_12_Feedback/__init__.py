@@ -31,7 +31,7 @@ class Player(BasePlayer):
 class ThankYou(Page):
     @staticmethod
     def vars_for_template(player: Player):
-        x = player.participant.vars['pay_matters'] * player.session.config['real_world_currency_per_point']
+        x = float(player.participant.vars['pay_matters'] * player.session.config['real_world_currency_per_point'])
         return {'earningsTotal': round(x, 2)}
 
 
