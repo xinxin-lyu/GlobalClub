@@ -3,7 +3,7 @@
 
     Match {{ subsession.sg }}, Round {{ subsession.period }}
 	<br>
-	Form Group Account #2? {{ endblock }}
+	Access to Group Account #2? {{ endblock }}
 
 {{ block content }}
 
@@ -32,7 +32,7 @@
 		<br>
 		{{ if formed_g }}
 		<!-- The Group Account #2 was formed.  -->
-		{{ if joined }} You had access to it. {{ else }} You didn't have access to it. {{ endif }}
+		{{ if joined }} You had access to  Group Account #2. {{ else }} You didn't have access to  Group Account #2. {{ endif }}
 		{{ else }}
 		The Group Account #2 was not formed.
 		{{ endif }}

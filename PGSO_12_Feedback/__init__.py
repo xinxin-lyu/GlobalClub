@@ -32,7 +32,7 @@ class ThankYou(Page):
     @staticmethod
     def vars_for_template(player: Player):
         x = player.participant.vars['pay_matters'] * player.session.config['real_world_currency_per_point']
-        return {'earningsTotal': int(x)}
+        return {'earningsTotal': round(x, 2)}
 
 
 page_sequence = [

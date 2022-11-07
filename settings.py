@@ -65,8 +65,9 @@ SESSION_CONFIGS = [
     dict(
         name='my_public_goods_app1',
         app_sequence=[
-            'PGSO_05_NoClubOpp_Part2',
-
+            # 'PGSO_03_Instructions_Part2',
+            # 'PGSO_05_NoClubOpp_Part2',
+            'PGSO_06_Instructions_Part3',
             'PGSO_08_WithClubOppVariedCost_Part3',
 
         ],
@@ -104,7 +105,7 @@ SESSION_CONFIGS = [
 # e.g. self.session.config['participation_fee']
 
 SESSION_CONFIG_DEFAULTS = dict(
-    real_world_currency_per_point=0.000595, participation_fee=0.00, doc=""
+    real_world_currency_per_point=0.0001116, participation_fee=0.00, doc=""
 )
 
 PARTICIPANT_FIELDS = []

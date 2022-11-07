@@ -66,7 +66,7 @@ class P02_MatchWork(Page):
     def vars_for_template(player: Player):
         return {
             'Matches': 1,
-            'PointsPerDollar': int(1.0 / player.session.config['real_world_currency_per_point']),
+            'PointsPerDollar': int(1.0 / player.session.config['real_world_currency_per_point']/10),
             'ShowUpFee': int(player.session.config['participation_fee']),
             'CutoffRoll': int(player.session.config['CutoffRoll']),
         }
@@ -84,7 +84,7 @@ class P03_RoundOverview(Page):
     def vars_for_template(player: Player):
         return {
             'HOMO': player.session.config['homo_endowment'],
-            'PointsPerDollar': int(1.0 / player.session.config['real_world_currency_per_point']),
+            'PointsPerDollar': int(1.0 / player.session.config['real_world_currency_per_point']/10),
             'ShowUpFee': int(player.session.config['participation_fee']),
             'CutoffRoll': int(player.session.config['CutoffRoll']),
         }
@@ -95,7 +95,6 @@ class P04_RoundOverview2(Page):
     def vars_for_template(player: Player):
         return {
             'HOMO': player.session.config['homo_endowment'],
-            'PointsPerDollar': int(1.0 / player.session.config['real_world_currency_per_point']),
             'ShowUpFee': int(player.session.config['participation_fee']),
             'CutoffRoll': int(player.session.config['CutoffRoll']),
             'PointsPerDollar': int(1.0 / player.session.config['real_world_currency_per_point']/10),

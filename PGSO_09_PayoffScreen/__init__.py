@@ -120,7 +120,7 @@ class PaymentInfo(Page):
         # print(x)
         return {
             'MatchesPayoff': int(player.MatchesPayoff/10) ,
-            'TotalPayoff': int(x),
+            'TotalPayoff': round(x, 2),
             'Matches': 4,
             
             'Chosen_Task' : player.Chosen_Task, 

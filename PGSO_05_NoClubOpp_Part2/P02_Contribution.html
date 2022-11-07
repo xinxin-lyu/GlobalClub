@@ -17,6 +17,12 @@
 	<br> 
 	
 			<center>
+			
+		{{ if player.subsession.period != 1}} 
+		
+		Last round, you earned {{ earning }} points. 
+		{{ endif }}
+
 	
 	<br> You have <strong> {{ endow }} </strong>  points.
 	<!-- {{ if player.join_club }} -->
