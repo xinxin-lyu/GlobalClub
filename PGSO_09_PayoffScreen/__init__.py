@@ -53,7 +53,6 @@ class Player(BasePlayer):
 def creating_session(subsession):
     import random
     for player in subsession.get_players():
-        
         # player.Chosen_Task =  int(np.random.choice(np.arange(6)) + 1)
         player.Chosen_Task =  int(np.random.choice(np.arange(2)) + 1)
         # if player.Chosen_Task  == 3 or player.Chosen_Task  == 4 :
@@ -74,6 +73,14 @@ class FinalPaymentWaitPage(WaitPage):
     @staticmethod
     def after_all_players_arrive(group: Group):
         for player in group.get_players():
+            # This part needs to be deleted**** (For testing purpose)
+            # player.participant.vars['pay_matters'] = 2000
+            # player.participant.vars['MoneyReceived'] = 1
+            # player.participant.vars['SocialPreferenceEarn_me'] = 3
+            # player.participant.vars['SocialPreferenceEarn_other'] = 1
+            # player.participant.vars['SocialPreferenceQuestion'] = 1
+            # player.participant.vars['SocialPreferenceChoices'] = ['A', 'B', 'A']
+            # This part needs to be deleted  
             player.MatchesPayoff = player.participant.vars['pay_matters'] 
             if player.ReceivMoneyDummy == 1 :
                 player.ReceivedMoney = player.participant.vars['MoneyReceived']
@@ -95,11 +102,11 @@ class FinalPaymentWaitPage(WaitPage):
     
 ### Change EarnBelief5 to EarnBelief25 below ###
 class PaymentInfo(Page):
-    @staticmethod
-    def before_next_page(player: Player, timeout_happened):
-        player.participant.vars['totalPayoffs'] = player.participant.vars['pay_matters'].to_real_world_currency(
-            player.session
-        )
+    # @staticmethod
+    # def before_next_page(player: Player, timeout_happened):
+        # player.participant.vars['totalPayoffs'] = player.participant.vars['pay_matters'].to_real_world_currency(
+            # player.session
+        # )
 
     @staticmethod
     def is_displayed(player):

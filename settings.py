@@ -67,8 +67,12 @@ SESSION_CONFIGS = [
         app_sequence=[
             # 'PGSO_03_Instructions_Part2',
             # 'PGSO_05_NoClubOpp_Part2',
-            'PGSO_06_Instructions_Part3',
-            'PGSO_08_WithClubOppVariedCost_Part3',
+            # 'PGSO_06_Instructions_Part3',
+            # 'PGSO_08_WithClubOppVariedCost_Part3',
+            'PGSO_09_PayoffScreen',
+        'PGSO_10_Demographics',
+        'PGSO_11_FeedbackQuestions',
+        'PGSO_12_Feedback',
 
         ],
         num_demo_participants=2,
@@ -105,7 +109,7 @@ SESSION_CONFIGS = [
 # e.g. self.session.config['participation_fee']
 
 SESSION_CONFIG_DEFAULTS = dict(
-    real_world_currency_per_point=0.0001116, participation_fee=0.00, doc=""
+    real_world_currency_per_point=0.000446, participation_fee=0.00, doc=""
 )
 
 PARTICIPANT_FIELDS = []
