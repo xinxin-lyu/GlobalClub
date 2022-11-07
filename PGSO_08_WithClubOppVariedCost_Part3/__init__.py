@@ -301,7 +301,7 @@ def get_block_dierolls(player: Player):
     
     # block_first_round = player.round_number - C.BLOCK_SIZE + 1
     block_first_round = C.PLAYED_ROUND_STARTS[current_sp] +1    # I want the full history
-    print(block_first_round)
+    # print(block_first_round)
     block = player.in_rounds(block_first_round, player.round_number)
     block_history = []
     for b in block:
@@ -824,7 +824,7 @@ class BlockEnd(Page):
                     )
       
     def vars_for_template(player: Player):
-        continuation_chance = int(round(C.DELTA * 100))
+        continuation_chance = int(round(C.DELTA * 10))
         # TODO: pull out a history of dierolls in this block gettattr()?
         # write a founction get block die rolls
         # player.subsession.dieroll

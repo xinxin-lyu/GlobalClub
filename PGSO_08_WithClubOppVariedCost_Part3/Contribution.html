@@ -89,6 +89,14 @@ Contribute{{ endblock }}
 
     {% include 'PGSO_08_WithClubOppVariedCost_Part3/commonJS.html' %}
 	<script>
+	
+	setTimeout(
+		function () {
+			alert("Please make your decision when you are ready.");
+		},
+		60*1000 // 60 seconds
+	);
+
 	<!-- To calculate the endowment allocation  -->
 	document.getElementById('privateAcc').value = js_vars.E_l[0];
 	

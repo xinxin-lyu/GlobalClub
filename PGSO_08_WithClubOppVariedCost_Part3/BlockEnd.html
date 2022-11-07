@@ -75,7 +75,8 @@
 		<span id="ShowLocalPrevious">
 		<button type="button"   class="button_infor_l  btn " onclick="ShowPrevious('local', 'total')" > Show </button> </span>
 		<span id="ShowGlobalPrevious" ><button type="button"   class="button_infor_g  btn" onclick="ShowPrevious('global', 'total')" > Show </button></span>
-		
+		<input type="hidden" id='button_history' name="button_b" />
+
 		<br>
 		{{ next_button }}
 		</center>
@@ -102,7 +103,7 @@
 		 <p id="individualGlobal" style="visibility:hidden" >		</p>
 		<p id="MoreGlobal" style="visibility:hidden" >  You can see the full history in this match by clicking  
 		<button type="button" id="More_g"  class="button_infor_g  btn" onclick="ShowAllHistory('global',1)" > More </button>  </p>
-	
+		
 		 </center>
 		</div>
 

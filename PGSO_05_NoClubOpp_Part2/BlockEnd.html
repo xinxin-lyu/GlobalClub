@@ -74,8 +74,8 @@
 		<br> You can review the history information: 
 		<span id="ShowLocalPrevious">
 		<button type="button"   class="button_infor_l  btn " onclick="ShowPrevious('local', 'total')" > Show </button> </span>
-		<span id="ShowGlobalPrevious" ><button type="button"   class="button_infor_g  btn" onclick="ShowPrevious('global', 'total')" > Show </button></span>
-		
+		<input type="hidden" id='button_history' name="button_b" />
+
 		<br>
 		{{ next_button }}
 		</center>
@@ -103,12 +103,6 @@
 	
 
 	ShowTable_Local();
-	ShowTable_Global();
-	
-	<!-- var ShowAllHistoryModified = ShowAllHistory.bind(this, 'local', 1); -->
-	<!-- document.getElementById("More_l").onclick = ShowAllHistoryModified; -->
-	<!-- var ShowAllHistoryModified = ShowAllHistory.bind(this, 'global', 1); -->
-	<!-- document.getElementById("More_g").onclick = ShowAllHistoryModified; -->
 	</script>
 {{ endblock }}
 

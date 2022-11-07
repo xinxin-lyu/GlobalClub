@@ -21,12 +21,12 @@ ROOMS = [
 SESSION_CONFIGS = [
 
     dict(
-        name='Pilot_11042022',
+        name='Pilot_11072022',
         app_sequence=[
-        # 'PGSO_01_Introduction',
-        # 'PGSO_02_SocialPreferenceElicitation',
-        # 'PGSO_03_Instructions_Part2',
-        # 'PGSO_04_Quiz_Part2',
+        'PGSO_01_Introduction',
+        'PGSO_02_SocialPreferenceElicitation',
+        'PGSO_03_Instructions_Part2',
+        'PGSO_04_Quiz_Part2',
         'PGSO_05_NoClubOpp_Part2',
         'PGSO_06_Instructions_Part3',
         'PGSO_07_Quiz_Part3',
