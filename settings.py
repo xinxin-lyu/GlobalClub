@@ -23,10 +23,10 @@ SESSION_CONFIGS = [
     dict(
         name='Pilot_11042022',
         app_sequence=[
-        'PGSO_01_Introduction',
-        'PGSO_02_SocialPreferenceElicitation',
-        'PGSO_03_Instructions_Part2',
-        'PGSO_04_Quiz_Part2',
+        # 'PGSO_01_Introduction',
+        # 'PGSO_02_SocialPreferenceElicitation',
+        # 'PGSO_03_Instructions_Part2',
+        # 'PGSO_04_Quiz_Part2',
         'PGSO_05_NoClubOpp_Part2',
         'PGSO_06_Instructions_Part3',
         'PGSO_07_Quiz_Part3',
@@ -65,6 +65,8 @@ SESSION_CONFIGS = [
     dict(
         name='my_public_goods_app1',
         app_sequence=[
+            'PGSO_05_NoClubOpp_Part2',
+
             'PGSO_08_WithClubOppVariedCost_Part3',
 
         ],

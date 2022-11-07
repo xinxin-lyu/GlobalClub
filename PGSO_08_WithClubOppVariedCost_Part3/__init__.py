@@ -92,7 +92,7 @@ class Subsession(BaseSubsession):
     # whether a round is the last period of a block
     is_bk_last_period = models.BooleanField()
     is_pay_relevant = models.BooleanField()
-    dieroll = models.IntegerField(min=1, max=100)
+    dieroll = models.IntegerField(min=1, max=10)
     
 def creating_session(subsession: Subsession):
     local_size = subsession.session.config['localPG_size']
@@ -157,7 +157,7 @@ def creating_session(subsession: Subsession):
             is_pay_relevant = ss_round in C.PAY_ROUNDS
             ss.is_pay_relevant = is_pay_relevant
 
-            continuation_chance = int(round(C.DELTA * 100))
+            continuation_chance = int(round(C.DELTA * 10))
             # dieroll_continue = random.randint(1, continuation_chance)
             # dieroll_end = random.randint(continuation_chance + 1, 100)
             is_pay_round_end = ss_round in C.PAY_ROUNDS_ENDS
@@ -165,7 +165,7 @@ def creating_session(subsession: Subsession):
                 ss.dieroll = random.randint(1, continuation_chance)
             else:
 
-                ss.dieroll = random.randint(continuation_chance + 1, 100)
+                ss.dieroll = random.randint(continuation_chance + 1, 10)
     
     
 class Group(BaseGroup):
@@ -176,8 +176,10 @@ class Group(BaseGroup):
     total_contribution_global = models.CurrencyField(initial=0)
     individual_share_global = models.CurrencyField(initial=0) 
     # json fields (for wait_page_from_scratch)
-    wait_for_ids = models.LongStringField(initial='[]')
-    arrived_ids = models.LongStringField(initial='[]')
+    wait_for_ids1 = models.LongStringField(initial='[]')
+    arrived_ids1 = models.LongStringField(initial='[]')
+    wait_for_ids2 = models.LongStringField(initial='[]')
+    arrived_ids2 = models.LongStringField(initial='[]')
     
     did_aapa1 = models.BooleanField(initial=False)
     did_aapa2 = models.BooleanField(initial=False)
@@ -478,17 +480,32 @@ def vars_for_template(player: Player):
                join_club = player.join_club==1
                 )
 
+def unarrived_players1(group: Group):
+    return set(json_loads(group.wait_for_ids1)) - set(json_loads(group.arrived_ids1))
+    
+def unarrived_players2(group: Group):
+    return set(json_loads(group.wait_for_ids2)) - set(json_loads(group.arrived_ids2))
+    
 
-def wait_page_live_method(player: Player, data):
+def wait_page_live_method1(player: Player, data):
     group = player.group
 
-    arrived_ids_set = set(json_loads(group.arrived_ids))
+    arrived_ids_set = set(json_loads(group.arrived_ids1))
     arrived_ids_set.add(player.id_in_subsession)
-    group.arrived_ids = json_dumps(list(arrived_ids_set))
+    group.arrived_ids1 = json_dumps(list(arrived_ids_set))
 
-    if not unarrived_players(group):
+    if not unarrived_players1(group):
         return {0: dict(finished=True)}
+        
+def wait_page_live_method2(player: Player, data):
+    group = player.group
 
+    arrived_ids_set = set(json_loads(group.arrived_ids2))
+    arrived_ids_set.add(player.id_in_subsession)
+    group.arrived_ids2 = json_dumps(list(arrived_ids_set))
+
+    if not unarrived_players2(group):
+        return {0: dict(finished=True)}
 
 class ScratchWaitPage(Page):
     @staticmethod
@@ -512,35 +529,6 @@ class ScratchWaitPage(Page):
             return "Wait page not finished"
 
 
-
-# class SuperGameWaitPage(Page):
-    # after_all_players_arrive = get_role
-    # body_text = 'Waiting for other players to join the group'
-    # @staticmethod
-    # def is_displayed(player: Player):
-        # group = player.group
-        # first time
-        # if not json_loads(group.wait_for_ids):
-            # wait_for_ids = [p.id_in_subsession for p in group.get_players()]
-            # group.wait_for_ids = json_dumps(wait_for_ids)
-        # return unarrived_players(group)
-
-    # @staticmethod
-    # def live_method(player: Player, data):
-        # if data.get('type') == 'wait_page':
-            # return wait_page_live_method(player, data)
-
-    # @staticmethod
-    # def error_message(player: Player, values):
-        # group = player.group
-        # if unarrived_players(group):
-            # return "Wait page not finished"
-    
-    # @staticmethod
-    # def before_next_page(player: Player, timeout_happened):
-        # if player.id_in_subsession == 1 :
-            # group = player.group
-            # group = get_role(group)
 class P01_beginExperiment(Page):
 
     @staticmethod
@@ -579,20 +567,20 @@ class ClubWaitPage(Page):
     def is_displayed(player: Player):
         group = player.group
         # first time
-        if not json_loads(group.wait_for_ids):
-            wait_for_ids = [p.id_in_subsession for p in group.get_players()]
-            group.wait_for_ids = json_dumps(wait_for_ids)
-        return unarrived_players(group)
+        if not json_loads(group.wait_for_ids1):
+            wait_for_ids1 = [p.id_in_subsession for p in group.get_players()]
+            group.wait_for_ids1 = json_dumps(wait_for_ids1)
+        return unarrived_players1(group)
 
     @staticmethod
     def live_method(player: Player, data):
         if data.get('type') == 'wait_page':
-            return wait_page_live_method(player, data)
+            return wait_page_live_method1(player, data)
 
     @staticmethod
     def error_message(player: Player, values):
         group = player.group
-        if unarrived_players(group):
+        if unarrived_players1(group):
             return "Wait page not finished"
     
     js_vars = js_vars
@@ -604,9 +592,9 @@ class ClubWaitPage(Page):
         if not group.did_aapa1: 
             
             check_club_formed(group)
-            ClearWaitPageHistory(group)
+                                       
             group.did_aapa1 = True
-        
+
 
                    
 class Contribution(Page):
@@ -656,20 +644,21 @@ class ResultsWaitPage(Page):
     def is_displayed(player: Player):
         group = player.group
         # first time
-        if not json_loads(group.wait_for_ids):
-            wait_for_ids = [p.id_in_subsession for p in group.get_players()]
-            group.wait_for_ids = json_dumps(wait_for_ids)
-        return unarrived_players(group)
+        if not json_loads(group.wait_for_ids2):
+            wait_for_ids2 = [p.id_in_subsession for p in group.get_players()]
+            group.wait_for_ids2 = json_dumps(wait_for_ids2)
+        return unarrived_players2(group)
+
 
     @staticmethod
     def live_method(player: Player, data):
         if data.get('type') == 'wait_page':
-            return wait_page_live_method(player, data)
+            return wait_page_live_method2(player, data)
 
     @staticmethod
     def error_message(player: Player, values):
         group = player.group
-        if unarrived_players(group):
+        if unarrived_players2(group):
             return "Wait page not finished"
     
     js_vars = js_vars
@@ -681,9 +670,10 @@ class ResultsWaitPage(Page):
         if not group.did_aapa2: 
             
             set_payoffs(group)
-            ClearWaitPageHistory(group)
+                                       
             group.did_aapa2 = True
-        
+
+
 
     
 class BlockEnd(Page):
