@@ -1,4 +1,4 @@
-
+{{ extends 'global/Page.html' }}
 
 {{ block title }}
 
@@ -6,16 +6,17 @@
 	<br>
 	 {{ endblock }}
 
+
+
 {{ block content }}
 
  <div class="row" 	style=" margin-right:0px;margin-left:0px; ">
     <div class="col-6"  > 
-	{% include 'PGSO_08_WithClubOppVariedCost_Part3/commonHTML_LocalInfor.html' %}
-  
+	{% include 'PGSO_08ABA_ClubOpp_Par3BBB/commonHTML_LocalInfor.html' %}
 		</div>
 	
 	<div class="col-6" style="opacity: 70%;" id="ClubGoodColor" > 
-		{% include 'PGSO_08_WithClubOppVariedCost_Part3/commonHTML_GlobalInfor.html' %}
+		{% include 'PGSO_08ABA_ClubOpp_Par3BBB/commonHTML_GlobalInfor.html' %}
 
 	</div>	
 </div>
@@ -24,15 +25,17 @@
     <div class="card">
 
         <div class="card-body">
-            <p>Waiting for others to make the allocations. </p>
+            <p>Waiting for others to choose to pay the fee or not.</p>
+			
 		{{ if player.subsession.period != 1}} 
-		<br> You can review the last round information: 
+		<p> You can review the last round information: 
 			<span id="ShowLocalPrevious"> <button type="button"   class="button_infor_l btn " onclick="ShowPrevious('local', 'total')" > Group </button> </span>
 			<span id="ShowGlobalPrevious" ><button type="button"   class="button_infor_g btn " onclick="ShowPrevious('global', 'total')" > Second Group </button></span>
 		{{ endif }}
+		</p> 
 		
-			<input type="hidden" id='button_history' name="button_c_w" />
-
+				<br> 
+		<input type="hidden" id='button_history' name="button_j_w" />
 
             <div class="progress">
                 <div class="progress-bar progress-bar-striped progress-bar-animated" style="width: 100%"></div>
@@ -42,7 +45,7 @@
 </div>
 {{ endblock }}
 {% block scripts %}
- {% include 'PGSO_08_WithClubOppVariedCost_Part3/commonJS.html' %}
+ {% include 'PGSO_08ABA_ClubOpp_Par3BBB/commonJS.html' %}
 <script>
     function liveRecv(data) {
         console.log('data', data)
@@ -62,7 +65,10 @@
 
 </script>
 {{ endblock }}
-
 {% block app_styles %}
-    {% include 'PGSO_08_WithClubOppVariedCost_Part3/commonCSS.html' %}
+	
+    {% include 'PGSO_08ABA_ClubOpp_Par3BBB/commonCSS.html' %}
+	
+	
+	
 {% endblock %}

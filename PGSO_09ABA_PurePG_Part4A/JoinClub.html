@@ -3,7 +3,7 @@
 
     Match {{ subsession.sg }}, Round {{ subsession.period }}
 	<br>
-	Access to Group Account #2? {{ endblock }}
+	Form Group Account #2? {{ endblock }}
 
 {{ block content }}
 
@@ -11,18 +11,13 @@
 
  <div class="row" 	style=" margin-right:0px;margin-left:0px; ">
     <div class="col-6"  > 
-	{% include 'PGSO_08_WithClubOppVariedCost_Part3/commonHTML_LocalInfor.html' %}
+	{% include 'my_public_goods\commonHTML_LocalInfor.html' %}
 	
 	<br> 
 		<center>
 		
 		{{ if player.subsession.period == 1}} 
 		This is the beginning of a new match. 
-		<br> In each match, you are randomly matched with a different group.
-		
-		<br> Your group member stays the same.
-		
-		<br> The fee you pay to access to Group Account #2 may vary across matches. 
 		{{ else }}
 		
 		Last round, you earned {{ earning }} points. 
@@ -31,8 +26,7 @@
 		
 		<br>
 		{{ if formed_g }}
-		<!-- The Group Account #2 was formed.  -->
-		{{ if joined }} You had access to  Group Account #2. {{ else }} You didn't have access to  Group Account #2. {{ endif }}
+		The Group Account #2 was formed. {{ if joined }} You had access to it. {{ else }} You didn't have access to it. {{ endif }}
 		{{ else }}
 		The Group Account #2 was not formed.
 		{{ endif }}
@@ -43,8 +37,7 @@
 		{{ endif }}
 		
 		<br>
-		Please decide, for this round: do you want to pay 
-		<strong style="color:red"> {{ FC}} points </strong> and access to Group Account #2?
+		Please decide, for this round: do you want to pay {{ FC}} points and form Group Account #2?
 		<br>
 		<button  name="join_club" class="btn btn-primary" value=1> Yes </button>
 		<button  name="join_club"  class="btn btn-primary" value=0> No </button>
@@ -60,7 +53,7 @@
 	</div>
 	
 	<div class="col-6" style="opacity: 70%;" id="ClubGoodColor" > 
-		{% include 'PGSO_08_WithClubOppVariedCost_Part3/commonHTML_GlobalInfor.html' %}
+		{% include 'my_public_goods\commonHTML_GlobalInfor.html' %}
 
 	</div>	
 </div>
@@ -79,14 +72,8 @@
 
 {% block scripts %}
 
-    {% include 'PGSO_08_WithClubOppVariedCost_Part3/commonJS.html' %}
+    {% include 'my_public_goods\commonJS.html' %}
 	<script>
-	setTimeout(
-    function () {
-        alert("Please make your decision when you are ready.");
-    },
-    60*1000 // 60 seconds
-);
 
 
 	
@@ -104,7 +91,7 @@
 
 {% block app_styles %}
 	
-    {% include 'PGSO_08_WithClubOppVariedCost_Part3/commonCSS.html' %}
+    {% include 'my_public_goods\commonCSS.html' %}
 	
 	
 	

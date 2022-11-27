@@ -1,4 +1,4 @@
-{{ extends 'global/Page.html' }}
+
 
 {{ block title }}
 
@@ -6,37 +6,30 @@
 	<br>
 	 {{ endblock }}
 
-
-
 {{ block content }}
 
  <div class="row" 	style=" margin-right:0px;margin-left:0px; ">
-    <div class="col-6"  > 
-	{% include 'my_public_goods\commonHTML_LocalInfor.html' %}
-		</div>
-	
-	<div class="col-6" style="opacity: 70%;" id="ClubGoodColor" > 
-		{% include 'my_public_goods\commonHTML_GlobalInfor.html' %}
+     <div class="col-6"  > 
 
-	</div>	
+	{% include 'PGSO_05_NoClubOpp_Part2/commonHTML_LocalInfor.html' %}
+  	</div>
+
+	
+	
 </div>
 
 <div class="container">
     <div class="card">
 
         <div class="card-body">
-            <p>Waiting for others to choose to form the second group or not.</p>
-			
+            <p>Waiting for others to make the allocations. </p>
 		{{ if player.subsession.period != 1}} 
-		<p> You can review the last round information: 
+		<br> You can review the last round information: 
 			<span id="ShowLocalPrevious"> <button type="button"   class="button_infor_l btn " onclick="ShowPrevious('local', 'total')" > Group </button> </span>
-			<span id="ShowGlobalPrevious" ><button type="button"   class="button_infor_g btn " onclick="ShowPrevious('global', 'total')" > Second Group </button></span>
+			<!-- <span id="ShowGlobalPrevious" ><button type="button"   class="button_infor_g btn " onclick="ShowPrevious('global', 'total')" > Second Group </button></span> -->
 		{{ endif }}
-		</p> 
 		
-				<br> 
-		<input type="hidden" id='button_history' name="button_j_w" />
-
+			<input type="hidden" id='button_history' name="button_c_w" />
             <div class="progress">
                 <div class="progress-bar progress-bar-striped progress-bar-animated" style="width: 100%"></div>
             </div>
@@ -45,7 +38,8 @@
 </div>
 {{ endblock }}
 {% block scripts %}
- {% include 'my_public_goods\commonJS.html' %}
+ {% include 'PGSO_05_NoClubOpp_Part2/commonJS.html' %}
+ 
 <script>
     function liveRecv(data) {
         console.log('data', data)
@@ -60,15 +54,12 @@
 	
 	RandomButton('individualLocal','local');
 	ShowTable_Local();
-	ShowTable_Global();
+	<!-- ShowTable_Global(); -->
 	
 
 </script>
 {{ endblock }}
+
 {% block app_styles %}
-	
-    {% include 'my_public_goods\commonCSS.html' %}
-	
-	
-	
+    {% include 'PGSO_05_NoClubOpp_Part2/commonCSS.html' %}
 {% endblock %}

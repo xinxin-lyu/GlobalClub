@@ -74,39 +74,15 @@
 		<br> You can review the history information: 
 		<span id="ShowLocalPrevious">
 		<button type="button"   class="button_infor_l  btn " onclick="ShowPrevious('local', 'total')" > Show </button> </span>
-		<span id="ShowGlobalPrevious" ><button type="button"   class="button_infor_g  btn" onclick="ShowPrevious('global', 'total')" > Show </button></span>
-		
+		<input type="hidden" id='button_history' name="button_b" />
+
 		<br>
 		{{ next_button }}
 		</center>
 		
 	</div>
 	
-	<div class="col-6" style="opacity: 70%;" id="ClubGoodColor" > 
-		<div class="card-body" >
-		<div style="background-color: lightgreen; ">
-		<center> Potential members in the second group 
-		<br> Members in your and another group can form a second group account.
-		<br>  If formed, every token invested in this group account will give <span style="color:red; font-weight: bold;"> {{ local_multiplier }} </span> to every member who joins this group.
-		</div>
-		
-		<div  id = "InformationTable_global" style="max-width: 800px"> </div>
-		
-		
-		 <!-- Note: for future design, if only club members can see detailed contribution; if formed_g and joined  -->
-		 <!-- Since you joined the club in last round:  -->
-		 <!-- {{ if formed_g }} -->
-		 
-		 <!-- {{ endif }} -->
-		 
-		 <p id="individualGlobal" style="visibility:hidden" >		</p>
-		<p id="MoreGlobal" style="visibility:hidden" >  You can see the full history in this match by clicking  
-		<button type="button" id="More_g"  class="button_infor_g  btn" onclick="ShowAllHistory('global',1)" > More </button>  </p>
-	
-		 </center>
-		</div>
 
-	</div>	
 </div>
 
 
@@ -117,7 +93,7 @@
 
 {% block scripts %}
 
-    {% include 'my_public_goods\commonJS.html' %}
+    {% include 'PGSO_05_NoClubOpp_Part2/commonJS.html' %}
 	<script>
 
 
@@ -127,12 +103,6 @@
 	
 
 	ShowTable_Local();
-	ShowTable_Global();
-	
-	<!-- var ShowAllHistoryModified = ShowAllHistory.bind(this, 'local', 1); -->
-	<!-- document.getElementById("More_l").onclick = ShowAllHistoryModified; -->
-	<!-- var ShowAllHistoryModified = ShowAllHistory.bind(this, 'global', 1); -->
-	<!-- document.getElementById("More_g").onclick = ShowAllHistoryModified; -->
 	</script>
 {{ endblock }}
 
@@ -140,7 +110,7 @@
 {% block app_styles %}
 	
 
-    {% include 'my_public_goods\commonCSS.html' %}
+    {% include 'PGSO_05_NoClubOpp_Part2/commonCSS.html' %}
 	
 	
 	

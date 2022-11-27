@@ -43,11 +43,11 @@ class Player(BasePlayer):
         blank=True,
     )
     strategy3Text = models.LongStringField(
-        verbose_name='Did you contribute to your Group Account differently when there is an opportunity to access to Group Account #2 ? If so, in what way? (Please be specific)',
+        verbose_name='Did you contribute to your Group Account differently when there is an opportunity to access to Group Account #2? If so, in what way? (Please be specific)',
         blank=True,
     )
     strategy4Text = models.LongStringField(
-        verbose_name='Was your strategy different when the fee is high versus low If so, in what way? (Please be specific)',
+        verbose_name='Will your strategy be different if the fee is higher or lower? If so, in what way? (Please be specific)',
        
         blank=True,
     )

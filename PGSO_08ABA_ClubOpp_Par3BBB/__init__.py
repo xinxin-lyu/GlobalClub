@@ -4,16 +4,17 @@ import random
 import numpy as np
 from json import dumps as json_dumps, loads as json_loads
 
-doc = '''This is for pilot, with club opporutnity
+doc = '''This is for the real experiment, with club opporutnity
     Block random termination still;
-    3 matches H/L/M or L/H/M;
+    3 matches same cost;
     Use a group variable to store the fixed cost for each sp;
     Group rematching is: 
-    S1: G1 + G2 (H) ; G3 + G4 (L) 
-    S2: G1+G3 (L) ; G2+G4 (H)
-    S3: G1 + G2 (L); G3 + G4(H); 
-    
+    S1: G1 + G2  ; G3 + G4  
+    S2: G1 + G3  ; G2 + G4 
+    S3: G1 + G4  ; G2 + G3 ; 
+    The first part of 3 matches has length: [6,18,17]
     '''
+
         
 def cumsum(lst):
     total = 0
@@ -46,21 +47,17 @@ def group_size():
     return 
     
 class C(BaseConstants):
-    NAME_IN_URL = 'PGSO_08_WithClubOppVariedCost_Part3'
+    NAME_IN_URL = 'PGSO_08ABA_ClubOpp_Par3BBB'
     PLAYERS_PER_GROUP =  None
     # MULTIPLIER = 2.4
-    block_dierolls_template = 'block_random_termination/block_dierolls.html'
-    DELTA = 0.9  # discount factor equals to 0.75
+    DELTA = 0.9  # discount factor equals to 0.9
     BLOCK_SIZE = int(1 / (1 - DELTA))
     # print(BLOCK_SIZE)
     # first supergame lasts 2 rounds, second supergame lasts 3 rounds, etc...
     # These are the payoff relevants rounds; 
-    # Note: for my current experiment design, there are only 3 repeated games/matches (ABA or BAA)
-    # Note: for pilot, only 3 matches, but with different fixed cost
-    COUNT_ROUNDS_PER_SG = [8, 12, 7]
-    JOIN_CLUB_SG = [1] # super games where a global club is offered; not in use for now
-    GroupMatch = [[[1,2],[3,4]], [[1,3],[2,4]], [[1,2],[3,4]]]
-    FixedCost = [ [80,20], [20,80],  [20,80]]
+    # Note: for my current experiment design, there are 3 repeated games/matches 
+    COUNT_ROUNDS_PER_SG = [6,18,17]
+    GroupMatch = [[[1,2],[3,4]], [[1,3],[2,4]], [[1,4],[2,3]]]
     # number of supergames to be played
     NUM_SG = len(COUNT_ROUNDS_PER_SG)
     # Get what the round each supergame ends
@@ -187,8 +184,7 @@ class Group(BaseGroup):
     FC = models.IntegerField(initial=0)
     
 def get_role(group: Group):
-    # Pilot only: Changing fixed cost
-     group.FC = C.FixedCost[group.subsession.sg-1][group.id_in_subsession-1]
+     group.FC = group.session.config['FC']
      players = group.get_players()
      homo_endowment = group.session.config['homo_endowment']
      local_size = group.session.config['localPG_size']
@@ -547,19 +543,19 @@ class P01_beginExperiment(Page):
 
         }
 
-class SuperGameWaitPage(WaitPage):
+class P02_SuperGameWaitPage(WaitPage):
     after_all_players_arrive = get_role
-    body_text = 'Waiting for other players to join the group'
+    body_text = 'Waiting for other players to make their decisions'
 
     
-class JoinClub(Page):
+class P03_JoinClub(Page):
     form_model = 'player'
     form_fields = ['join_club', 'button_j']
     
     js_vars = js_vars
     vars_for_template = vars_for_template
 
-class ClubWaitPage(Page):
+class P04_ClubWaitPage(Page):
     form_model = 'player'
     form_fields = ['button_j_w'] 
     
@@ -597,7 +593,7 @@ class ClubWaitPage(Page):
 
 
                    
-class Contribution(Page):
+class P05_Contribution(Page):
     form_model = 'player'
     form_fields = []
 
@@ -636,7 +632,7 @@ class Contribution(Page):
                 return 'Total allocation must be below your endowment.'
                 
                 
-class ResultsWaitPage(Page):
+class P06_ResultsWaitPage(Page):
     form_model = 'player'
     form_fields = ['button_c_w'] 
     
@@ -676,7 +672,7 @@ class ResultsWaitPage(Page):
 
 
     
-class BlockEnd(Page):
+class P07_BlockEnd(Page):
     form_model = 'player'
     form_fields = ['button_b'] 
 
@@ -840,4 +836,4 @@ class BlockEnd(Page):
                     block_history=get_block_dierolls(player),
                     end_period=end_period
                     )
-page_sequence = [ P01_beginExperiment, SuperGameWaitPage, JoinClub, ClubWaitPage, Contribution, ResultsWaitPage, BlockEnd  ]
+page_sequence = [ P01_beginExperiment, P02_SuperGameWaitPage, P03_JoinClub, P04_ClubWaitPage, P05_Contribution, P06_ResultsWaitPage, P07_BlockEnd  ]

@@ -4,9 +4,16 @@ import random
 import numpy as np
 from json import dumps as json_dumps, loads as json_loads
 
-doc = '''Based on Otree Studio public good. 
-        This program is designed to implement a local public good vs a global club good
-        Blcok random termination attributes to Jieqiong Jin, procedure follows Frechette&Yuksel(2017)'''
+doc = '''This is for pilot, with club opporutnity
+    Block random termination still;
+    3 matches H/L/M or L/H/M;
+    Use a group variable to store the fixed cost for each sp;
+    Group rematching is: 
+    S1: G1 + G2 (H) ; G3 + G4 (L) 
+    S2: G1+G3 (L) ; G2+G4 (H)
+    S3: G1 + G2 (L); G3 + G4(H); 
+    
+    '''
         
 def cumsum(lst):
     total = 0
@@ -39,18 +46,21 @@ def group_size():
     return 
     
 class C(BaseConstants):
-    NAME_IN_URL = 'my_public_goods'
+    NAME_IN_URL = 'PGSO_05_NoClubOpp_Part2'
     PLAYERS_PER_GROUP =  None
     # MULTIPLIER = 2.4
     block_dierolls_template = 'block_random_termination/block_dierolls.html'
-    DELTA = 0.75  # discount factor equals to 0.75
+    DELTA = 0.9  # discount factor equals to 0.75
     BLOCK_SIZE = int(1 / (1 - DELTA))
     # print(BLOCK_SIZE)
     # first supergame lasts 2 rounds, second supergame lasts 3 rounds, etc...
     # These are the payoff relevants rounds; 
     # Note: for my current experiment design, there are only 3 repeated games/matches (ABA or BAA)
-    COUNT_ROUNDS_PER_SG = [5, 7, 6]
-    JOIN_CLUB_SG = [1] # super games where a global club is offered 
+    # Note: for pilot, only 3 matches, but with different fixed cost
+    COUNT_ROUNDS_PER_SG = [13]
+    JOIN_CLUB_SG = [1] # super games where a global club is offered; not in use for now
+    GroupMatch = [[[1,2],[3,4]], [[1,3],[2,4]], [[1,2],[3,4]]]
+    FixedCost = [ [80,20], [20,80],  [20,80]]
     # number of supergames to be played
     NUM_SG = len(COUNT_ROUNDS_PER_SG)
     # Get what the round each supergame ends
@@ -82,7 +92,7 @@ class Subsession(BaseSubsession):
     # whether a round is the last period of a block
     is_bk_last_period = models.BooleanField()
     is_pay_relevant = models.BooleanField()
-    dieroll = models.IntegerField(min=1, max=100)
+    dieroll = models.IntegerField(min=1, max=10)
     
 def creating_session(subsession: Subsession):
     local_size = subsession.session.config['localPG_size']
@@ -101,12 +111,14 @@ def creating_session(subsession: Subsession):
             ss.sg = sg
             ss.period = period
             ss.bk = period
-            # if (ss_round==1) or (ss_round-1 in C.SG_ENDS):
-            if ss_round==1 :
-                shuffle_list = np.arange(1,int(shuffle_group)+1) # This is when the endowment is assigned randomly 
-                #When a round is the first round or right after a supergame's end, reshuffle
-                np.random.shuffle(shuffle_list)
-                shuffle_list = shuffle_list.reshape(group_n, community_num).tolist()
+            if (ss_round==1) or (ss_round-1 in C.SG_ENDS):
+            # if ss_round==1 :
+                # shuffle_list = np.arange(1,int(shuffle_group)+1) # This is when the endowment is assigned randomly 
+                # # When a round is the first round or right after a supergame's end, reshuffle
+                # np.random.shuffle(shuffle_list)
+                # shuffle_list = shuffle_list.reshape(group_n, community_num).tolist()
+                print('super game is'+str(sg))
+                shuffle_list = C.GroupMatch[sg-1]
                 print(shuffle_list)
                 matrix = []
                 for row in shuffle_list:
@@ -145,7 +157,7 @@ def creating_session(subsession: Subsession):
             is_pay_relevant = ss_round in C.PAY_ROUNDS
             ss.is_pay_relevant = is_pay_relevant
 
-            continuation_chance = int(round(C.DELTA * 100))
+            continuation_chance = int(round(C.DELTA * 10))
             # dieroll_continue = random.randint(1, continuation_chance)
             # dieroll_end = random.randint(continuation_chance + 1, 100)
             is_pay_round_end = ss_round in C.PAY_ROUNDS_ENDS
@@ -153,7 +165,7 @@ def creating_session(subsession: Subsession):
                 ss.dieroll = random.randint(1, continuation_chance)
             else:
 
-                ss.dieroll = random.randint(continuation_chance + 1, 100)
+                ss.dieroll = random.randint(continuation_chance + 1, 10)
     
     
 class Group(BaseGroup):
@@ -164,13 +176,20 @@ class Group(BaseGroup):
     total_contribution_global = models.CurrencyField(initial=0)
     individual_share_global = models.CurrencyField(initial=0) 
     # json fields (for wait_page_from_scratch)
-    wait_for_ids = models.LongStringField(initial='[]')
-    arrived_ids = models.LongStringField(initial='[]')
+    wait_for_ids1 = models.LongStringField(initial='[]')
+    arrived_ids1 = models.LongStringField(initial='[]')
+    wait_for_ids2 = models.LongStringField(initial='[]')
+    arrived_ids2 = models.LongStringField(initial='[]')
+
     
     did_aapa1 = models.BooleanField(initial=False)
     did_aapa2 = models.BooleanField(initial=False)
     
+    FC = models.IntegerField(initial=0)
+    
 def get_role(group: Group):
+    # Pilot only: Changing fixed cost
+     group.FC = C.FixedCost[group.subsession.sg-1][group.id_in_subsession-1]
      players = group.get_players()
      homo_endowment = group.session.config['homo_endowment']
      local_size = group.session.config['localPG_size']
@@ -190,10 +209,13 @@ def get_role(group: Group):
         for p in players:
             p.local_community = p.id_in_subsession % shuffle_group # again, only true for the random grouping
             p.id_in_local =  (p.id_in_subsession-1)// shuffle_group 
-            if p.id_in_group <= int(local_size/2):
+            if p.id_in_local < int(local_size/2):
                 p.endowment=300
+                
             else :
                 p.endowment=100
+            p.participant.vars['endowment'] = p.endowment
+
                 
 def check_club_formed(group: Group):
     players = group.get_players()
@@ -206,42 +228,41 @@ def check_club_formed(group: Group):
         group.global_formed = 1
         for p in players:
             if p.join_club:
-                p.endowment -= p.session.config['FC']
+                p.endowment -= p.group.FC
             
 def set_payoffs(group: Group):
     players = group.get_players()
     multiplier = group.session.config['multiplier']
     local_size = group.session.config['localPG_size']
     community_num = group.session.config['K']
-    contribution_local = np.zeros(community_num)
+    contribution_local = {}
     contribution_global = 0
     for p in players:
         # local needs to be specified because it's supposed to be half of the group size  
         # individual contribution is recorded on the 0-20 base
+        if p.local_community not in contribution_local.keys() :
+            contribution_local[p.local_community] = 0
+            
         contribution_local[p.local_community] += p.contribution_local * 10
         contribution_global += p.contribution_global * 10
-    individual_share_local = contribution_local *  multiplier/ local_size
     group.total_contribution_global = contribution_global
     group.individual_share_global = group.total_contribution_global * multiplier / local_size
     # note: for mg=ml, just use the players per local PG group
     # for the congestion case, can use the number of players in each club 
-    fixed_cost = group.session.config['FC']
+    fixed_cost = group.FC
     payRelevant = group.subsession.is_pay_relevant
     for p in players:
         p.total_contribution_local = contribution_local[p.local_community]
-        p.individual_share_local = individual_share_local[p.local_community]
+        p.individual_share_local = p.total_contribution_local *  multiplier/ local_size
         # p.payoff = p.endowment - p.contribution_local + p.individual_share_local +  p.join_club* (- p.contribution_global - fixed_cost + group.individual_share_global)
         p.payoff = p.endowment - p.contribution_local*10 + p.individual_share_local +  p.join_club* (- p.contribution_global*10 + group.individual_share_global)
-        # if payRelevant :
-            # p.participant.payoffs = p.payoff
+        if 'pay_matters' not in p.participant.vars.keys() :
+            p.participant.vars['pay_matters'] =0
+        
+        if payRelevant :
+            p.participant.vars['pay_matters'] += p.payoff
 Group.set_payoffs = set_payoffs
 
-def unarrived_players(group: Group):
-    return set(json_loads(group.wait_for_ids)) - set(json_loads(group.arrived_ids))
-    
-def ClearWaitPageHistory(group: Group):
-    group.wait_for_ids = '[]'
-    group.arrived_ids = '[]'
     
 class Player(BasePlayer):
     endowment = models.CurrencyField(initial=0)  
@@ -445,7 +466,7 @@ def vars_for_template(player: Player):
     return dict(local_size = player.session.config['localPG_size'],
                 local_multiplier = player.session.config['multiplier'] / player.session.config['localPG_size'],
                 global_multiplier =player.session.config['multiplier'] / player.session.config['localPG_size'],
-                FC = int(player.session.config['FC'] / 10),
+                FC = int(player.group.FC / 10),
                 endow = int(player.endowment/10),
                 
                 earning = earning, 
@@ -456,14 +477,31 @@ def vars_for_template(player: Player):
                 )
 
 
-def wait_page_live_method(player: Player, data):
+def unarrived_players1(group: Group):
+    return set(json_loads(group.wait_for_ids1)) - set(json_loads(group.arrived_ids1))
+    
+def unarrived_players2(group: Group):
+    return set(json_loads(group.wait_for_ids2)) - set(json_loads(group.arrived_ids2))
+    
+
+def wait_page_live_method1(player: Player, data):
     group = player.group
 
-    arrived_ids_set = set(json_loads(group.arrived_ids))
+    arrived_ids_set = set(json_loads(group.arrived_ids1))
     arrived_ids_set.add(player.id_in_subsession)
-    group.arrived_ids = json_dumps(list(arrived_ids_set))
+    group.arrived_ids1 = json_dumps(list(arrived_ids_set))
 
-    if not unarrived_players(group):
+    if not unarrived_players1(group):
+        return {0: dict(finished=True)}
+        
+def wait_page_live_method2(player: Player, data):
+    group = player.group
+
+    arrived_ids_set = set(json_loads(group.arrived_ids2))
+    arrived_ids_set.add(player.id_in_subsession)
+    group.arrived_ids2 = json_dumps(list(arrived_ids_set))
+
+    if not unarrived_players2(group):
         return {0: dict(finished=True)}
 
 
@@ -490,39 +528,28 @@ class ScratchWaitPage(Page):
 
 
 
-# class SuperGameWaitPage(Page):
-    # after_all_players_arrive = get_role
-    # body_text = 'Waiting for other players to join the group'
-    # @staticmethod
-    # def is_displayed(player: Player):
-        # group = player.group
-        # first time
-        # if not json_loads(group.wait_for_ids):
-            # wait_for_ids = [p.id_in_subsession for p in group.get_players()]
-            # group.wait_for_ids = json_dumps(wait_for_ids)
-        # return unarrived_players(group)
+class P01_beginExperiment(Page):
 
-    # @staticmethod
-    # def live_method(player: Player, data):
-        # if data.get('type') == 'wait_page':
-            # return wait_page_live_method(player, data)
+    @staticmethod
+    def is_displayed(player: Player):
+        subsession = player.subsession
+        return subsession.round_number == 1
+        
+    @staticmethod
+    def vars_for_template(player: Player):
+        return {
+            'HOMO': player.session.config['homo_endowment'],
+            'PointsPerDollar': int(1.0 / player.session.config['real_world_currency_per_point']),
+            'ShowUpFee': int(player.session.config['participation_fee']),
+            'CutoffRoll': int(player.session.config['CutoffRoll']),
+            'PointsPerDollar': int(1.0 / player.session.config['real_world_currency_per_point']/10),
 
-    # @staticmethod
-    # def error_message(player: Player, values):
-        # group = player.group
-        # if unarrived_players(group):
-            # return "Wait page not finished"
-    
-    # @staticmethod
-    # def before_next_page(player: Player, timeout_happened):
-        # if player.id_in_subsession == 1 :
-            # group = player.group
-            # group = get_role(group)
-    
+        }
+
+
 class SuperGameWaitPage(WaitPage):
     after_all_players_arrive = get_role
     body_text = 'Waiting for other players to join the group'
-
     
 class JoinClub(Page):
     form_model = 'player'
@@ -539,20 +566,20 @@ class ClubWaitPage(Page):
     def is_displayed(player: Player):
         group = player.group
         # first time
-        if not json_loads(group.wait_for_ids):
-            wait_for_ids = [p.id_in_subsession for p in group.get_players()]
-            group.wait_for_ids = json_dumps(wait_for_ids)
-        return unarrived_players(group)
+        if not json_loads(group.wait_for_ids1):
+            wait_for_ids1 = [p.id_in_subsession for p in group.get_players()]
+            group.wait_for_ids1 = json_dumps(wait_for_ids1)
+        return unarrived_players1(group)
 
     @staticmethod
     def live_method(player: Player, data):
         if data.get('type') == 'wait_page':
-            return wait_page_live_method(player, data)
+            return wait_page_live_method1(player, data)
 
     @staticmethod
     def error_message(player: Player, values):
         group = player.group
-        if unarrived_players(group):
+        if unarrived_players1(group):
             return "Wait page not finished"
     
     js_vars = js_vars
@@ -562,14 +589,12 @@ class ClubWaitPage(Page):
     def before_next_page(player: Player, timeout_happened):
         group = player.group
         if not group.did_aapa1: 
-            
             check_club_formed(group)
-            ClearWaitPageHistory(group)
             group.did_aapa1 = True
-        
+
 
                    
-class Contribution(Page):
+class P02_Contribution(Page):
     form_model = 'player'
     form_fields = []
 
@@ -616,20 +641,20 @@ class ResultsWaitPage(Page):
     def is_displayed(player: Player):
         group = player.group
         # first time
-        if not json_loads(group.wait_for_ids):
-            wait_for_ids = [p.id_in_subsession for p in group.get_players()]
-            group.wait_for_ids = json_dumps(wait_for_ids)
-        return unarrived_players(group)
+        if not json_loads(group.wait_for_ids2):
+            wait_for_ids2 = [p.id_in_subsession for p in group.get_players()]
+            group.wait_for_ids2 = json_dumps(wait_for_ids2)
+        return unarrived_players2(group)
 
     @staticmethod
     def live_method(player: Player, data):
         if data.get('type') == 'wait_page':
-            return wait_page_live_method(player, data)
+            return wait_page_live_method2(player, data)
 
     @staticmethod
     def error_message(player: Player, values):
         group = player.group
-        if unarrived_players(group):
+        if unarrived_players2(group):
             return "Wait page not finished"
     
     js_vars = js_vars
@@ -638,12 +663,11 @@ class ResultsWaitPage(Page):
     @staticmethod
     def before_next_page(player: Player, timeout_happened):
         group = player.group
-        if not group.did_aapa2: 
-            
+        if not group.did_aapa2:            
             set_payoffs(group)
-            ClearWaitPageHistory(group)
             group.did_aapa2 = True
-        
+
+
 
     
 class BlockEnd(Page):
@@ -794,7 +818,7 @@ class BlockEnd(Page):
                     )
       
     def vars_for_template(player: Player):
-        continuation_chance = int(round(C.DELTA * 100))
+        continuation_chance = int(round(C.DELTA * 10))
         # TODO: pull out a history of dierolls in this block gettattr()?
         # write a founction get block die rolls
         # player.subsession.dieroll
@@ -810,4 +834,6 @@ class BlockEnd(Page):
                     block_history=get_block_dierolls(player),
                     end_period=end_period
                     )
-page_sequence = [ SuperGameWaitPage, JoinClub, ClubWaitPage, Contribution, ResultsWaitPage, BlockEnd  ]
+page_sequence = [ P01_beginExperiment, SuperGameWaitPage, 
+                    # JoinClub, ClubWaitPage,
+                    P02_Contribution, ResultsWaitPage, BlockEnd  ]

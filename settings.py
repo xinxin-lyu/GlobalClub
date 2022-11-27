@@ -21,20 +21,21 @@ ROOMS = [
 SESSION_CONFIGS = [
 
     dict(
-        name='Pilot_11072022',
+        name='Real_Experiment',
         app_sequence=[
-        'PGSO_01_Introduction',
-        'PGSO_02_SocialPreferenceElicitation',
-        'PGSO_03_Instructions_Part2',
-        'PGSO_04_Quiz_Part2',
-        'PGSO_05_NoClubOpp_Part2',
-        'PGSO_06_Instructions_Part3',
-        'PGSO_07_Quiz_Part3',
-        'PGSO_08_WithClubOppVariedCost_Part3',
-        'PGSO_09_PayoffScreen',
-        'PGSO_10_Demographics',
-        'PGSO_11_FeedbackQuestions',
-        'PGSO_12_Feedback',
+        # 'PGSO_01_Introduction',
+        # 'PGSO_02_SocialPreferenceElicitation',
+        # 'PGSO_03ABA_Instructions_Part2A',
+        # 'PGSO_04ABA_Quiz_Part2A',
+        # 'PGSO_05ABA_PurePG_Part2A',
+        # 'PGSO_06ABA_Instructions_Part3BBB',
+        # 'PGSO_07ABA_Quiz_Part3BBB',
+        'PGSO_08ABA_ClubOpp_Par3BBB',
+        # 'PGSO_09ABA_PurePG_Part4A',
+        # 'PGSO_10_PayoffScreen',
+        # 'PGSO_11_Demographics',
+        # 'PGSO_12_FeedbackQuestions',
+        # 'PGSO_13_Feedback',
         
         
         ],
@@ -48,6 +49,8 @@ SESSION_CONFIGS = [
         # m_l = 0.6,
         # m_g = 0.6,
         CutoffRoll=10,
+        use_browser_bots=False,
+
         doc="""
             
             <br> <b>'localPG_size' </b> how many people in the local PG </br>
@@ -65,14 +68,11 @@ SESSION_CONFIGS = [
     dict(
         name='my_public_goods_app1',
         app_sequence=[
-            # 'PGSO_03_Instructions_Part2',
-            # 'PGSO_05_NoClubOpp_Part2',
-            # 'PGSO_06_Instructions_Part3',
-            # 'PGSO_08_WithClubOppVariedCost_Part3',
-            'PGSO_09_PayoffScreen',
-        # 'PGSO_10_Demographics',
-        'PGSO_11_FeedbackQuestions',
-        'PGSO_12_Feedback',
+       'PGSO_10_PayoffScreen',
+        'PGSO_11_Demographics',
+        'PGSO_12_FeedbackQuestions',
+        'PGSO_13_Feedback',
+        
 
         ],
         num_demo_participants=2,

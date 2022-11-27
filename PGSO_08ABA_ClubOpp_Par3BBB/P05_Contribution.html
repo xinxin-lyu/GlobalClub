@@ -1,9 +1,9 @@
 {{ extends 'global/Page.html' }}
 {{ block title }}
 
-    Match {{ subsession.sg }}, Round {{ subsession.period }}
+    Match {{ subsession.sg }}, Round {{ subsession.period }},
 
-Contribute{{ endblock }}
+Allocation{{ endblock }}
 
 {{ block content }}
 
@@ -11,26 +11,17 @@ Contribute{{ endblock }}
 
  <div class="row" 	style=" margin-right:0px;margin-left:0px; ">
     <div class="col-6"  > 
-	{% include 'my_public_goods\commonHTML_LocalInfor.html' %}
+	{% include 'PGSO_08ABA_ClubOpp_Par3BBB/commonHTML_LocalInfor.html' %}
 
 	<br> 
 	
 			<center>
-	In this round, Group Account #2 is 
-	{{ if player.group.global_formed }} 
-	formed. 
+	In this round,
 	<br> You {{ if player.join_club }} paid {{ FC }} points and have access to Group Account #2. 
 	{{ else }} don't have access to Group Account #2. {{  endif }}
-	{{ else }} 
-	not formed. 
-	{{ endif }}
+	
 	
 	<br> You have <strong> {{ endow }} </strong>  points.
-	<!-- {{ if player.join_club }} -->
-	<!-- <br> You have {{ endow }} points to allocate among your private and the two group accounts.   -->
-	<!-- {{ else }}  -->
-	<!-- <br> You have {{ endow }} points to allocate  between your private and the group account.   -->
-	<!-- {{ endif }} -->
 	
 	{{ if player.subsession.period != 1}} 
 	<br> In the last round: 
@@ -56,6 +47,8 @@ Contribute{{ endblock }}
 {{ if player.join_club and player.group.global_formed }}
 <tr style="background-color:lightgreen;"> <th> Group Account #2: </th> 
 <th> <input  id="contribution_global" name="contribution_global"   type="number"   min="0"  oninput="Allocation(this)"  /> </th></tr>
+{{ formfield_errors 'contribution_global' }} 
+
 <!-- value=null -->
 {{ endif }}
 </table>
@@ -70,7 +63,7 @@ Contribute{{ endblock }}
 	
 	{{ if player.group.global_formed }} 
 	<div class="col-6" style="opacity: 70%;" id="ClubGoodColor" > 
-		{% include 'my_public_goods\commonHTML_GlobalInfor.html' %}
+		{% include 'PGSO_08ABA_ClubOpp_Par3BBB/commonHTML_GlobalInfor.html' %}
 
 	</div>	
 	{{ endif }}
@@ -87,8 +80,16 @@ Contribute{{ endblock }}
 
 {% block scripts %}
 
-    {% include 'my_public_goods\commonJS.html' %}
+    {% include 'PGSO_08ABA_ClubOpp_Par3BBB/commonJS.html' %}
 	<script>
+	
+	setTimeout(
+		function () {
+			alert("Please make your decision when you are ready.");
+		},
+		60*1000 // 60 seconds
+	);
+
 	<!-- To calculate the endowment allocation  -->
 	document.getElementById('privateAcc').value = js_vars.E_l[0];
 	
@@ -155,7 +156,7 @@ Contribute{{ endblock }}
 
 {% block app_styles %}
 	
-    {% include 'my_public_goods\commonCSS.html' %}
+    {% include 'PGSO_08ABA_ClubOpp_Par3BBB/commonCSS.html' %}
 	
 	
 	
