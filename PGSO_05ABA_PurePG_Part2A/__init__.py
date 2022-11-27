@@ -7,8 +7,8 @@ from json import dumps as json_dumps, loads as json_loads
 doc = '''This is for the real experiment, PG only
     Block random termination still;
     Only 1 match;
-    
-    
+    A1 = 7
+    [7, 6, 18, 17, 13, 8, 12, 7]
     '''
         
 def cumsum(lst):
@@ -42,10 +42,9 @@ def group_size():
     return 
     
 class C(BaseConstants):
-    NAME_IN_URL = 'PGSO_05_NoClubOpp_Part2'
+    NAME_IN_URL = 'PGSO_05ABA_PurePG_Part2A'
     PLAYERS_PER_GROUP =  None
     # MULTIPLIER = 2.4
-    block_dierolls_template = 'block_random_termination/block_dierolls.html'
     DELTA = 0.9  # discount factor equals to 0.75
     BLOCK_SIZE = int(1 / (1 - DELTA))
     # print(BLOCK_SIZE)
@@ -53,10 +52,9 @@ class C(BaseConstants):
     # These are the payoff relevants rounds; 
     # Note: for my current experiment design, there are only 3 repeated games/matches (ABA or BAA)
     # Note: for pilot, only 3 matches, but with different fixed cost
-    COUNT_ROUNDS_PER_SG = [13]
-    JOIN_CLUB_SG = [1] # super games where a global club is offered; not in use for now
+    COUNT_ROUNDS_PER_SG = [7]
+    # The below line should not matter for this app, but is needed to make the program work
     GroupMatch = [[[1,2],[3,4]], [[1,3],[2,4]], [[1,2],[3,4]]]
-    FixedCost = [ [80,20], [20,80],  [20,80]]
     # number of supergames to be played
     NUM_SG = len(COUNT_ROUNDS_PER_SG)
     # Get what the round each supergame ends
@@ -184,8 +182,7 @@ class Group(BaseGroup):
     FC = models.IntegerField(initial=0)
     
 def get_role(group: Group):
-    # Pilot only: Changing fixed cost
-     group.FC = C.FixedCost[group.subsession.sg-1][group.id_in_subsession-1]
+     group.FC = group.session.config['FC']
      players = group.get_players()
      homo_endowment = group.session.config['homo_endowment']
      local_size = group.session.config['localPG_size']
@@ -277,16 +274,7 @@ class Player(BasePlayer):
     button_c = models.LongStringField(initial='[]',blank=True)
     button_c_w = models.LongStringField(initial='[]',blank=True)
     button_b = models.LongStringField(initial='[]',blank=True)
-# def my_method(player: Player):
-    # group = player.group
-    # group = group
-    # players = group.get_players()
-    # contributions = [ p.contribution for p in players]
-    # group.total_contribution = sum(contributions)
-    # group.individual_share = group.total_contribution * C.MULTIPLIER / C.PLAYERS_PER_GROUP
-    # for p in players:
-        # p.payoff = p.endowment - p.contribution + group.individual_share
-# Player.my_method = my_method
+
     
 def get_block_dierolls(player: Player):
     current_sp = player.subsession.sg -1 
@@ -501,27 +489,6 @@ def wait_page_live_method2(player: Player, data):
         return {0: dict(finished=True)}
 
 
-class ScratchWaitPage(Page):
-    @staticmethod
-    def is_displayed(player: Player):
-        group = player.group
-        # first time
-        if not json_loads(group.wait_for_ids):
-            wait_for_ids = [p.id_in_subsession for p in group.get_players()]
-            group.wait_for_ids = json_dumps(wait_for_ids)
-        return unarrived_players(group)
-
-    @staticmethod
-    def live_method(player: Player, data):
-        if data.get('type') == 'wait_page':
-            return wait_page_live_method(player, data)
-
-    @staticmethod
-    def error_message(player: Player, values):
-        group = player.group
-        if unarrived_players(group):
-            return "Wait page not finished"
-
 
 
 class P01_beginExperiment(Page):
@@ -545,51 +512,10 @@ class P01_beginExperiment(Page):
 
 class SuperGameWaitPage(WaitPage):
     after_all_players_arrive = get_role
-    body_text = 'Waiting for other players to join the group'
+    body_text = 'Waiting for other participants.'
     
-class JoinClub(Page):
-    form_model = 'player'
-    form_fields = ['join_club', 'button_j']
-    
-    js_vars = js_vars
-    vars_for_template = vars_for_template
 
-class ClubWaitPage(Page):
-    form_model = 'player'
-    form_fields = ['button_j_w'] 
-    
-    @staticmethod
-    def is_displayed(player: Player):
-        group = player.group
-        # first time
-        if not json_loads(group.wait_for_ids1):
-            wait_for_ids1 = [p.id_in_subsession for p in group.get_players()]
-            group.wait_for_ids1 = json_dumps(wait_for_ids1)
-        return unarrived_players1(group)
-
-    @staticmethod
-    def live_method(player: Player, data):
-        if data.get('type') == 'wait_page':
-            return wait_page_live_method1(player, data)
-
-    @staticmethod
-    def error_message(player: Player, values):
-        group = player.group
-        if unarrived_players1(group):
-            return "Wait page not finished"
-    
-    js_vars = js_vars
-    vars_for_template = vars_for_template
-
-    @staticmethod
-    def before_next_page(player: Player, timeout_happened):
-        group = player.group
-        if not group.did_aapa1: 
-            check_club_formed(group)
-            group.did_aapa1 = True
-
-
-                   
+                  
 class P02_Contribution(Page):
     form_model = 'player'
     form_fields = []
@@ -629,7 +555,7 @@ class P02_Contribution(Page):
                 return 'Total allocation must be below your endowment.'
                 
                 
-class ResultsWaitPage(Page):
+class P03_ResultsWaitPage(Page):
     form_model = 'player'
     form_fields = ['button_c_w'] 
     
@@ -666,7 +592,7 @@ class ResultsWaitPage(Page):
 
 
     
-class BlockEnd(Page):
+class P04_BlockEnd(Page):
     form_model = 'player'
     form_fields = ['button_b'] 
 
@@ -831,5 +757,4 @@ class BlockEnd(Page):
                     end_period=end_period
                     )
 page_sequence = [ P01_beginExperiment, SuperGameWaitPage, 
-                    # JoinClub, ClubWaitPage,
-                    P02_Contribution, ResultsWaitPage, BlockEnd  ]
+                    P02_Contribution, P03_ResultsWaitPage, P04_BlockEnd  ]

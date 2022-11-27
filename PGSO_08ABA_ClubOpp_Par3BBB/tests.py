@@ -3,6 +3,8 @@ from . import *
 from otree.api import Bot
 import random
 
+# def call_live_method(method, **kwargs):
+    # method(0, {'type': 'wait_page'})
 
 
 class PlayerBot(Bot):
@@ -16,7 +18,7 @@ class PlayerBot(Bot):
         joinClub = random.choice([0,1])
         yield P03_JoinClub, dict(join_club = joinClub)
         
-        # yield P04_ClubWaitPage
+        yield  Submission(P04_ClubWaitPage,check_html=False) 
         
         cont_l = random.choice([0,self.player.endowment])
         cont_g = 0
