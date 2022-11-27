@@ -2,11 +2,11 @@
 {% load staticfiles otree %}
 
 {% block app_styles %}
-    {% include 'PGSO_03_Instructions_Part2/commonCSS.html' %}
+    {% include 'PGSO_08ABA_ClubOpp_Par3BBB/commonCSS.html' %}
 {% endblock %}
 
 {% block scripts %}
-    {% include 'PGSO_05_NoClubOpp_Part2/commonJS.html' %}
+    {% include 'PGSO_08ABA_ClubOpp_Par3BBB/commonJS.html' %}
 	<script>
 	setTimeout(
 		function () {
@@ -20,7 +20,7 @@
 
 {% block title %}
     Round Overview 
-	<!-- (P03_RoundOverview) -->
+
 {% endblock %}
 
 {% block content %}
@@ -32,7 +32,7 @@
 	<u>Endowment </u>
 
 	<p> At the beginning of each round, 
-		all participants receive the same endowment as in part 2.  </p>
+		all participants receive the same endowment as in part 2. You remain in the same group as in part 2.  </p>
 
 	<p> You will see the endowments of the other group members you are paired with.  </p>
 
@@ -40,7 +40,7 @@
 	
 	<p> Each round has two decision stages. </p>
 	
-	<p> In stage 1, you need to decide whether to pay a fee and gain access to <mark_groupAcc2> Group Account #2</mark_groupAcc2>. </p>
+	<p> In stage 1, you need to decide whether to pay a fee of {{FC}} points and gain access to <mark_groupAcc2> Group Account #2</mark_groupAcc2>. </p>
 	
 	<p> In stage 2, you will know who else paid the fee and gained the access to <mark_groupAcc2> Group Account #2</mark_groupAcc2>.
 	
@@ -58,10 +58,10 @@
 	
 	<p> Each point in the Private Account yields a return of <strong style="color: red"> 1 point </strong> to YOU in that round. 
 
-	<p> Each point in the Group Account yields a return of <strong style="color: red"> 0.6 point </strong> to EVERYONE in the group. 
+	<p> Each point in the Group Account yields a return of <strong style="color: red"> 0.6 point </strong> to EVERYONE <strong>in the group</strong>. 
 		(Note: everyone in your group can allocate points to the <mark_groupAcc>Group Account</mark_groupAcc>.) </p>
 		
-	<p> Each point in the <mark_groupAcc2>Group Account #2</mark_groupAcc2> yields a return of 0.6 point to EVERYONE who paid the fee. 
+	<p> Each point in the <mark_groupAcc2>Group Account #2</mark_groupAcc2> yields a return of <strong style="color: red"> 0.6 point </strong> to EVERYONE <strong>who paid the fee</strong>. 
 		(Note: everyone who paid the fee can allocate points to the <mark_groupAcc2>Group Account #2</mark_groupAcc2>.) </p>
 
 

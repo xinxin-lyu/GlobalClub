@@ -4,14 +4,10 @@ import random
 import numpy as np
 from json import dumps as json_dumps, loads as json_loads
 
-doc = '''This is for pilot, with club opporutnity
+doc = '''This is for the real experiment, PG only
     Block random termination still;
-    3 matches H/L/M or L/H/M;
-    Use a group variable to store the fixed cost for each sp;
-    Group rematching is: 
-    S1: G1 + G2 (H) ; G3 + G4 (L) 
-    S2: G1+G3 (L) ; G2+G4 (H)
-    S3: G1 + G2 (L); G3 + G4(H); 
+    Only 1 match;
+    
     
     '''
         

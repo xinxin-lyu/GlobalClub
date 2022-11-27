@@ -7,7 +7,7 @@ doc = """
 
 
 class Constants(BaseConstants):
-    name_in_url = 'PGSO_06_Instructions_Part3'
+    name_in_url = 'PGSO_06ABA_Instructions_Part3BBB'
     players_per_group = None
     num_rounds = 1
 
@@ -31,6 +31,25 @@ class Player(BasePlayer):
 
 
 # FUNCTIONS
+def vars_for_template(player: Player):
+    if 'endowment' in player.participant.vars.keys():
+        endow = player.participant.vars['endowment']
+    else : 
+        endow = -1
+    return {
+        'Matches': 1,
+        'PointsPerDollar': int(1.0 / player.session.config['real_world_currency_per_point']/10),
+        'ShowUpFee': int(player.session.config['participation_fee']),
+        'CutoffRoll': int(player.session.config['CutoffRoll']),
+        'myEndow': endow, 
+        'FC': int(player.session.config['FC']/10),
+        'HOMO': player.session.config['homo_endowment']
+
+
+    }
+
+
+
 # PAGES
 
 class WaitForOthers(WaitPage):
@@ -43,20 +62,8 @@ class WaitForOthers(WaitPage):
 
         
 class P01_BeginPart3(Page):
-    @staticmethod
-    def vars_for_template(player: Player):
-        if 'endowment' in player.participant.vars.keys():
-            endow = player.participant.vars['endowment']
-        else : 
-            endow = -1
-        return {
-            'Matches': 1,
-            'PointsPerDollar': int(1.0 / player.session.config['real_world_currency_per_point']/10),
-            'ShowUpFee': int(player.session.config['participation_fee']),
-            'CutoffRoll': int(player.session.config['CutoffRoll']),
-            'myEndow': endow, 
+    vars_for_template = vars_for_template
 
-        }
     @staticmethod
     def js_vars(player):
         return dict( 
@@ -68,19 +75,8 @@ class P02_MatchWork(Page):
     form_model = 'player'
     form_fields = ['testingHistory']
 
-    @staticmethod
-    def vars_for_template(player: Player):
-        if 'endowment' in player.participant.vars.keys():
-            endow = player.participant.vars['endowment']
-        else : 
-            endow = -1
-        return {
-            'Matches': 1,
-            'PointsPerDollar': int(1.0 / player.session.config['real_world_currency_per_point']/10),
-            'ShowUpFee': int(player.session.config['participation_fee']),
-            'CutoffRoll': int(player.session.config['CutoffRoll']),
-            'myEndow': endow,
-        }
+    vars_for_template = vars_for_template
+
     @staticmethod
     def js_vars(player):
         return dict( 
@@ -91,26 +87,13 @@ class P02_MatchWork(Page):
         
 class P03_RoundOverview(Page):
 
-    @staticmethod
-    def vars_for_template(player: Player):
-        return {
-            'HOMO': player.session.config['homo_endowment'],
-            'PointsPerDollar': int(1.0 / player.session.config['real_world_currency_per_point']/10),
-            'ShowUpFee': int(player.session.config['participation_fee']),
-            'CutoffRoll': int(player.session.config['CutoffRoll']),
-        }
+    vars_for_template = vars_for_template
+
    
 class P04_RoundOverview2(Page):
 
-    @staticmethod
-    def vars_for_template(player: Player):
-        return {
-            'HOMO': player.session.config['homo_endowment'],
-            'ShowUpFee': int(player.session.config['participation_fee']),
-            'CutoffRoll': int(player.session.config['CutoffRoll']),
-            'PointsPerDollar': int(1.0 / player.session.config['real_world_currency_per_point']/10),
+    vars_for_template = vars_for_template
 
-        }
    
 
 

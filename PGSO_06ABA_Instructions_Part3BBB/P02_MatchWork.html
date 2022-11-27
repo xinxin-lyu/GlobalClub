@@ -1,4 +1,4 @@
-{% extends "PGSO_06_Instructions_Part3/myPage.html" %}
+{% extends "PGSO_06ABA_Instructions_Part3BBB/myPage.html" %}
 {% load staticfiles otree %}
 
 {% block title %}
@@ -36,17 +36,16 @@
 
                 <div class="innerbox" id="id_innerbox">
                 </div>
-
+				<br> 
                 <p style="font-size: 16px;color: gray;z-index: 6; position: absolute; bottom: 0px; left: 300px;">
-				Remember that at the end of each round the computer rolls a ten-sided fair dice. The match ends when the
-        computer rolls a {{ CutoffRoll }}. You will get the feedback at round 10,20,etc.</p>
+				Remember that at the end of each round the computer rolls a ten-sided fair dice. The match ends when the computer rolls a {{ CutoffRoll }}. You will get the feedback at round 10,20,etc.</p>
             <button class="otree-btn-next btn btn-primary" id="diceRollButton" type="button"
                         style="left:5px; bottom:2px; height: 21px; width: 140px; line-height: 15px; padding: 3px; background-color: #1e8f27; border-color: #1e8f27;position: absolute; display: none;z-index: 5"
                         onclick="rollDice()">Roll Dice</button>
             </div>
 
             <p style="text-align: left;display: none" id="matchSummary">
-            Part 2 duration: <strong id="summaryRounds">X</strong> rounds<br/>
+            Match duration: <strong id="summaryRounds">X</strong> rounds<br/>
             </p>
             <br/>
 

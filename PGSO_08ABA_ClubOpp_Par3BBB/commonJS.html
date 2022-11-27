@@ -441,6 +441,46 @@
 	  btn.onclick = ShowPreviousModified;
 	  return span;
 	};
+	
+<!-- For Quiz -->
+
+function correctAnswer(text) {
+	updateText('quizMessage',text);
+	show('NextButton');
+	var tempElem = document.getElementById('id_testingHistory');
+	tempElem.value = tempElem.value + "T,";
+
+};
+
+function incorrectAnswer(text) {
+	updateText('quizMessage',text);
+	hide('NextButton');
+	var tempElem = document.getElementById('id_testingHistory');
+	tempElem.value = tempElem.value + "F,";
+};
+    function updateText(target, someText) {
+        var x = document.getElementById(target);
+        x.innerHTML = someText;
+    };
+
+
+    function hide(target) {
+        var x = document.getElementById(target);
+        x.style.display = "none";
+    };
+
+    function show(target) {
+        var x = document.getElementById(target);
+		var temp = document.getElementById('id_testingHistory');
+        if (x.style.display == "none") {
+			x.style.display = "block";
+			temp += "C,";
+		}
+		else {
+			x.style.display = "none";
+			temp += "H,";
+		}
+    };
 
 
 </script>

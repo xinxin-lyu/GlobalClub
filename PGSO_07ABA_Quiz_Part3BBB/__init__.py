@@ -11,7 +11,7 @@ A quiz app for public good with a second option experiment.
 
 
 class Constants(BaseConstants):
-    name_in_url = 'PGSO_07_Quiz_Part3'
+    name_in_url = 'PGSO_07ABA_Quiz_Part3BBB'
     players_per_group = None
     num_rounds = 1
 
