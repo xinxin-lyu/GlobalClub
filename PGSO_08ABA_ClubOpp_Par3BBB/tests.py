@@ -15,15 +15,12 @@ class PlayerBot(Bot):
         if self.round_number ==1: 
             yield P01_beginExperiment
         
-        joinClub = random.choice([0,1])
-        yield P03_JoinClub, dict(join_club = joinClub)
+        yield P03_JoinClub, dict(join_club = random.choice([0,1]))
         
-        yield  Submission(P04_ClubWaitPage,check_html=False) 
+        # yield  Submission(P04_ClubWaitPage,check_html=False) 
         
-        cont_l = random.choice([0,self.player.endowment])
-        cont_g = 0
-        # yield P05_Contribution, dict(contribution_local = ), 
-                                          # contribution_global = random.choice([0,self.player.endowment-contribution_local])   )
+        cont_l = random.choice(range(0,int(int(self.player.endowment)/10)+1))
+        cont_g = random.choice(range(0,int(int(self.player.endowment)/10)-cont_l+1))
         if self.player.join_club == 1  : 
             yield P05_Contribution, dict(contribution_local = cont_l,  contribution_global = cont_g  )
         else : 

@@ -281,16 +281,6 @@ class Player(BasePlayer):
     button_c = models.LongStringField(initial='[]',blank=True)
     button_c_w = models.LongStringField(initial='[]',blank=True)
     button_b = models.LongStringField(initial='[]',blank=True)
-# def my_method(player: Player):
-    # group = player.group
-    # group = group
-    # players = group.get_players()
-    # contributions = [ p.contribution for p in players]
-    # group.total_contribution = sum(contributions)
-    # group.individual_share = group.total_contribution * C.MULTIPLIER / C.PLAYERS_PER_GROUP
-    # for p in players:
-        # p.payoff = p.endowment - p.contribution + group.individual_share
-# Player.my_method = my_method
     
 def get_block_dierolls(player: Player):
     current_sp = player.subsession.sg -1 
@@ -503,27 +493,6 @@ def wait_page_live_method2(player: Player, data):
     if not unarrived_players2(group):
         return {0: dict(finished=True)}
 
-class ScratchWaitPage(Page):
-    @staticmethod
-    def is_displayed(player: Player):
-        group = player.group
-        # first time
-        if not json_loads(group.wait_for_ids):
-            wait_for_ids = [p.id_in_subsession for p in group.get_players()]
-            group.wait_for_ids = json_dumps(wait_for_ids)
-        return unarrived_players(group)
-
-    @staticmethod
-    def live_method(player: Player, data):
-        if data.get('type') == 'wait_page':
-            return wait_page_live_method(player, data)
-
-    @staticmethod
-    def error_message(player: Player, values):
-        group = player.group
-        if unarrived_players(group):
-            return "Wait page not finished"
-
 
 class P01_beginExperiment(Page):
 
@@ -555,41 +524,41 @@ class P03_JoinClub(Page):
     js_vars = js_vars
     vars_for_template = vars_for_template
 
-class P04_ClubWaitPage(Page):
+class P04_ClubWaitPage(WaitPage):
     form_model = 'player'
     form_fields = ['button_j_w'] 
     
-    @staticmethod
-    def is_displayed(player: Player):
-        group = player.group
-        # first time
-        if not json_loads(group.wait_for_ids1):
-            wait_for_ids1 = [p.id_in_subsession for p in group.get_players()]
-            group.wait_for_ids1 = json_dumps(wait_for_ids1)
-        return unarrived_players1(group)
-
-    @staticmethod
-    def live_method(player: Player, data):
-        if data.get('type') == 'wait_page':
-            return wait_page_live_method1(player, data)
-
-    @staticmethod
-    def error_message(player: Player, values):
-        group = player.group
-        if unarrived_players1(group):
-            return "Wait page not finished"
-    
     js_vars = js_vars
     vars_for_template = vars_for_template
+    after_all_players_arrive = check_club_formed
 
-    @staticmethod
-    def before_next_page(player: Player, timeout_happened):
-        group = player.group
-        if not group.did_aapa1: 
+    # @staticmethod
+    # def is_displayed(player: Player):
+        # group = player.group
+        # if not json_loads(group.wait_for_ids1):
+            # wait_for_ids1 = [p.id_in_subsession for p in group.get_players()]
+            # group.wait_for_ids1 = json_dumps(wait_for_ids1)
+        # return unarrived_players1(group)
+
+    # @staticmethod
+    # def live_method(player: Player, data):
+        # if data.get('type') == 'wait_page':
+            # return wait_page_live_method1(player, data)
+
+    # @staticmethod
+    # def error_message(player: Player, values):
+        # group = player.group
+        # if unarrived_players1(group):
+            # return "Wait page not finished"
+
+    # @staticmethod
+    # def before_next_page(player: Player, timeout_happened):
+        # group = player.group
+        # if not group.did_aapa1: 
             
-            check_club_formed(group)
+            # check_club_formed(group)
                                        
-            group.did_aapa1 = True
+            # group.did_aapa1 = True
 
 
                    
@@ -632,42 +601,43 @@ class P05_Contribution(Page):
                 return 'Total allocation must be below your endowment.'
                 
                 
-class P06_ResultsWaitPage(Page):
+class P06_ResultsWaitPage(WaitPage):
     form_model = 'player'
     form_fields = ['button_c_w'] 
     
-    @staticmethod
-    def is_displayed(player: Player):
-        group = player.group
-        # first time
-        if not json_loads(group.wait_for_ids2):
-            wait_for_ids2 = [p.id_in_subsession for p in group.get_players()]
-            group.wait_for_ids2 = json_dumps(wait_for_ids2)
-        return unarrived_players2(group)
-
-
-    @staticmethod
-    def live_method(player: Player, data):
-        if data.get('type') == 'wait_page':
-            return wait_page_live_method2(player, data)
-
-    @staticmethod
-    def error_message(player: Player, values):
-        group = player.group
-        if unarrived_players2(group):
-            return "Wait page not finished"
     
     js_vars = js_vars
     vars_for_template = vars_for_template
+    after_all_players_arrive = set_payoffs
 
-    @staticmethod
-    def before_next_page(player: Player, timeout_happened):
-        group = player.group
-        if not group.did_aapa2: 
+    # @staticmethod
+    # def is_displayed(player: Player):
+        # group = player.group
+        # if not json_loads(group.wait_for_ids2):
+            # wait_for_ids2 = [p.id_in_subsession for p in group.get_players()]
+            # group.wait_for_ids2 = json_dumps(wait_for_ids2)
+        # return unarrived_players2(group)
+
+
+    # @staticmethod
+    # def live_method(player: Player, data):
+        # if data.get('type') == 'wait_page':
+            # return wait_page_live_method2(player, data)
+
+    # @staticmethod
+    # def error_message(player: Player, values):
+        # group = player.group
+        # if unarrived_players2(group):
+            # return "Wait page not finished"
+    
+    # @staticmethod
+    # def before_next_page(player: Player, timeout_happened):
+        # group = player.group
+        # if not group.did_aapa2: 
             
-            set_payoffs(group)
+            # set_payoffs(group)
                                        
-            group.did_aapa2 = True
+            # group.did_aapa2 = True
 
 
 

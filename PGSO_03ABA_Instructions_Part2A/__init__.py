@@ -106,7 +106,8 @@ class P04_RoundOverview2(Page):
 
 page_sequence = [
     WaitForOthers,
-    P01_MatchWork,
+    # P01_BeginPart2,
+    P02_MatchWork,
     P03_RoundOverview,
     P04_RoundOverview2
 
