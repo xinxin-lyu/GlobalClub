@@ -25,7 +25,7 @@ SESSION_CONFIGS = [
         app_sequence=[
         # 'PGSO_01_Introduction',
         # 'PGSO_02_SocialPreferenceElicitation',
-        # 'PGSO_03ABA_Instructions_Part2A',
+        'PGSO_03ABA_Instructions_Part2A',
         # 'PGSO_04ABA_Quiz_Part2A',
         # 'PGSO_05ABA_PurePG_Part2A',
         'PGSO_06ABA_Instructions_Part3BBB',

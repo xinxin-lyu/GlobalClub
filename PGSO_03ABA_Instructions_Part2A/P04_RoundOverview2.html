@@ -2,20 +2,7 @@
 {% load staticfiles otree %}
 
 {% block app_styles %}
-    {% include 'PGSO_05ABA_PurePG_Part2A/commonCSS.html' %}
-{% endblock %}
-
-{% block scripts %}
-    {% include 'PGSO_05ABA_PurePG_Part2A/commonJS.html' %}
-	<script>
-	setTimeout(
-		function () {
-			alert("Please click 'Next' when you are done reading this page.");
-		},
-		120*1000 // 120 seconds
-	);
-	</script>
-
+    {% include 'PGSO_08ABA_ClubOpp_Par3BBB/commonCSS.html' %}
 {% endblock %}
 
 {% block title %}
@@ -37,44 +24,119 @@
 			</strong> </center>
 		</p>
 		
-	<p> For example, 
-	{{ if HOMO }}
-	 if you keep 5 points in your private account and allocate 15 points to the group account, 
-		suppose the other three members allocated 30 points to the group account, 
-			your earning in this round will be 5 + 0.6*(15+30) = 5 + 0.6*45 = 32 points. 
-	{{ else  }}
-	suppose you have 10 points as endowment.
-		If you keep 5 points in your private account and allocate 5 points to the group account, 
-		suppose the other three members allocated 30 points to the group account, 
-		your earning in this round will be 5 + 0.6*(5+30) = 5 + 0.6*35 = 26 points.
-	{{ endif }}
-	</p> 	
+	<p>To see an example, click the 'Example' button below. You will need to see 5 examples.  </p>
+
+		<p style="text-align: center"> 
+		<button type="button" id="ShowExample" class="otree-btn-next btn btn-primary" 
+		style="left:5px; bottom:2px; height: 21px; width: 300px; line-height: 15px; padding: 3px; background-color: #1e8f27; border-color: #1e8f27;"
+		onclick="showExampleLandG(this)" > Example  </button>
+		</p>
+	<div id="example" style="display:none; text-align: center">
+	<p > For example, 
+	<!-- Hard coding here, may need to change in the future -->
+	{{ if HOMO }} your endowment in each round is 20 points, 
+	{{ else  }} {{ if myEndow == -1 }} suppose your endowment in each round is <span id='rndm_endow'> </span> points.
+				{{ else }} your endowment in each round is {{myEndow}} points. {{ endif }}
+	{{ endif }} </p>
+	
+	<p> You have <span id='how_much_to_allocate'> </span>  </p>
+	<p> Suppose you allocate  <span id='allocation_decision'> </span>  </p>
+	<p> Further suppose other participants allocate <span id='allocation_decision_o'> </span> to the group account. </p>
+	<p> Your earnings = <span id='earnings'> </span> </p>
+	</div>
+
 	
 	<p> At the end of each round, your earnings for the round will be recorded. 
-		Your payment for part 2 will be determined 
-		by the sum of the points that you earn in each round 
-		before the part ends with a conversion rate of: {{PointsPerDollar}} points = $1. 
+		Your payment for part 3 will be determined by the sum of the points 
+		that you earn in all three matches with a conversion rate of: {{PointsPerDollar}} points = $1. 
 	</p>
 		
 
 	<u> Information </u>
 	
-	<p> You will be able to review your <mark_groupAcc> Group Account </mark_groupAcc> total points 
-		and how many points each group member allocated to the <mark_groupAcc> Group Account </mark_groupAcc> in all previous rounds.</p>
+	<p> You will be able to review your <mark_groupAcc> Group Account </mark_groupAcc> 
+	information for all previous rounds within a match.</p>
 
-	<p> To achieve this, you need to click the button to review last round information first. </p> 
-	
-	<img style="max-width: 100%" class="center" src="{{ static 'Instruction/LastRoundInfor.png' }}"/>
+	<p> To achieve this, you need to click the button to review last round information first: 
+	<button type="button" class="button_infor_l  btn " readonly> Group Account</button> 
 	
 	<p> You will see the group member table is updated with your previous round allocation and the group total account. 
 	You may click the relevant buttons to review each member’s allocation or the full history. </p>
-	<img style="max-width: 100%;" class="center" src="{{ static 'Instruction/MoreHistory.png' }}"/>
-
+	
         <p style="text-align: center"><br/><br/>
-            <button class="otree-btn-next btn btn-primary" id="NextButton" style="display:inline-block;">Next</button>
+            <button class="otree-btn-next btn btn-primary" id="NextButton" style="display:none;">Next</button>
         </p>
 
     </div>
 	</div> 
 
+{% endblock %}
+
+
+{% block scripts %}
+    {% include 'PGSO_08ABA_ClubOpp_Par3BBB/commonJS.html' %}
+	<script type="text/javascript" async="" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML">
+	function randomChoice(arr) {
+    return arr[Math.floor(arr.length * Math.random())];
+	}	
+	
+	var FC = js_vars.fc; 
+	
+	var newEndow = 0 ;
+	var MyVariables = {period:0,match:0};
+
+	function showExampleLandG(ele) {
+
+	document.getElementById('example').style.display = "block";
+	if (js_vars.endow != -1) {
+		var myEndow = js_vars.endow;
+		}
+	else {
+		var myEndow = randomChoice([10,30]);
+		}
+	document.getElementById('rndm_endow').innerHTML = myEndow;
+	var local_pnts_o = Math.floor((80-myEndow) * Math.random());
+	var restt_o = 160 - 8*FC - local_pnts_o - myEndow;
+	var global_pnts_o = Math.floor( restt_o* Math.random());
+	
+	document.getElementById('how_much_to_allocate').innerHTML = myEndow +" points to allocate between two accounts.";
+	var local_pnts = Math.floor(myEndow * Math.random());
+	var prvt_pnts = myEndow - local_pnts;
+	document.getElementById('allocation_decision').innerHTML = "<mark_groupAcc>"+local_pnts + "</mark_groupAcc> points the group account, leaving " +prvt_pnts + " in the private account.";
+	var earnings = Math.round((prvt_pnts + 0.6*(local_pnts+local_pnts_o) )*10)/10;
+	document.getElementById('earnings').innerHTML = "1 * "+prvt_pnts+" + 0.6 * ("+local_pnts+" + "+local_pnts_o+" )="+earnings;
+
+
+	document.getElementById('allocation_decision_o').innerHTML =  "<mark_groupAcc>"+local_pnts_o+"</mark_groupAcc> points"
+
+	updateText('ShowExample','Example #'+(MyVariables.match+1).toFixed(0));
+	MyVariables.match++;
+	console.log(MyVariables)
+
+	if (MyVariables.match==5  ) {
+				ele.disabled = true;
+				document.getElementById('NextButton').style.display="inline-block";
+				
+		}
+	
+	}
+	
+	setTimeout(
+		function () {
+			alert("Please click 'Next' when you are done reading this page.");
+		},
+		120*1000 // 120 seconds
+	);
+
+		MathJax.Hub.Config({
+        extensions: ["tex2jax.js"],
+        jax: ["input/TeX", "output/HTML-CSS"],
+        tex2jax: {
+            inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+            displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+        },
+        "HTML-CSS": { availableFonts: ["TeX"] }
+    });
+
+	</script>
 {% endblock %}
