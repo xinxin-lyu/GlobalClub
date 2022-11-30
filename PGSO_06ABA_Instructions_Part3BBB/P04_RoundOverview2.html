@@ -5,22 +5,8 @@
     {% include 'PGSO_08ABA_ClubOpp_Par3BBB/commonCSS.html' %}
 {% endblock %}
 
-{% block scripts %}
-    {% include 'PGSO_08ABA_ClubOpp_Par3BBB/commonJS.html' %}
-	<script>
-	setTimeout(
-		function () {
-			alert("Please click 'Next' when you are done reading this page.");
-		},
-		120*1000 // 120 seconds
-	);
-	</script>
-
-{% endblock %}
-
 {% block title %}
     Round Overview II 
-	<!-- (P03_RoundOverview) -->
 {% endblock %}
 
 {% block content %}
@@ -36,25 +22,46 @@
 			<br> +
 			<br> 0.6 * Number of points in <mark_groupAcc>Group Account</mark_groupAcc>
 			<br> + 
-			<br> if you paid the fee: - {{FC}}   + 0.6 * Number of points in <mark_groupAcc2>Group Account #2</mark_groupAcc2>, 
+			<br> if you paid the fee:  0.6 * Number of points in <mark_groupAcc2>Group Account #2</mark_groupAcc2>, 
 			</strong> </center>
 		</p>
 		
 	<p> For example, 
-	{{ if HOMO }}
-	if the fee is 1 point, you decide to pay the fee. 
-	You will have 19 (20-1) points to allocate among the three accounts. 
-	Suppose you keep 9 points in your private account and allocate 5 points each to the two group accounts.
-	Suppose others allocate 20 points to the group account and 20 points in the second group account, 
-	your earning in this round will be 9 + 0.6*(5+20) + 0.6*(5+20) = 9 + 0.6*25 + 0.6*25 = 39 points.
-	{{ else  }}
-	if the fee is 1 point, you decide to pay the fee. 
-	Suppose you have 10 points as endowment, you will have 9 (10-1) points to allocate among the three accounts. 
-	Suppose you keep 5 points in your private account and allocate 2 points each to the two group accounts. 
-	Suppose others allocate 20 points to the group account and 20 points in the second group account, 
-	your earning in this round will be 5 + 0.6*(2+20) + 0.6*(2+20) = 9 + 0.6*25 + 0.6*25 = 31.4 points.
-	{{ endif }}
-	</p> 	
+	<!-- Hard coding here, may need to change in the future -->
+	{{ if HOMO }} your endowment in each round is 20 points, 
+	{{ else  }} {{ if myEndow == -1 }} suppose your endowment in each round is <span id='rndm_endow'> </span> points.
+				{{ else }} your endowment in each round is {{myEndow}} points. {{ endif }}
+	{{ endif }} </p>
+			
+	 <p> First, you need to decide whether to pay {{FC}} points and gain access to   <mark_groupAcc2>Group Account #2</mark_groupAcc2> :
+	<button  name="join_club" type="button" class="btn btn-primary" value=1 onclick="ExpandTable(this)"> Yes </button>
+		<button  name="join_club" type="button"  class="btn btn-primary" value=0 onclick="ExpandTable(this)"> No </button>
+		</p>
+	<p id='allocation'> 
+	
+	
+	 
+	<p id="contribution_local_e" style="color:red"> 
+	<p id="contribution_global_e" style="color:red"> 
+	</p>
+	
+	<p> Further suppose other participants allocate <span id='rndContribution'>
+	<button type="button"  
+	style="left:5px; bottom:2px; height: 21px; width: 150px; line-height: 15px; padding: 3px; background-color: lightblue; border-color: #1e8f27;"  
+	onclick='fillContr(l)'> Group Account </button> 
+	</span> 
+	<button type="button"  
+	style="left:5px; bottom:2px; height: 21px; width: 150px; line-height: 15px; padding: 3px; background-color: lightgreen; border-color: #1e8f27;"  
+	onclick='fillContr(g)'> Group Account #2 </button> 
+	</span> points to the two group accounts. </p>
+
+	
+	</p>
+	<mark_groupAcc>pnts_group</mark_groupAcc> and <mark_groupAcc2>pnts_group2</mark_groupAcc2> 
+	
+	<p> YOur earnings = 1 * prvt_acc + 0.6 * (your_acc + pnts_group ) + 0.6 * (your_acc2 + pnts_group2)</p>
+
+
 	
 	<p> At the end of each round, your earnings for the round will be recorded. 
 		Your payment for part 3 will be determined by the sum of the points 
@@ -82,4 +89,172 @@
     </div>
 	</div> 
 
+{% endblock %}
+
+
+{% block scripts %}
+    {% include 'PGSO_08ABA_ClubOpp_Par3BBB/commonJS.html' %}
+	<script type="text/javascript" async="" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML">
+	function randomChoice(arr) {
+    return arr[Math.floor(arr.length * Math.random())];
+	}	
+	
+	var FC = js_vars.fc; 
+	
+
+	
+	if (js_vars.endow != -1) {
+		var myEndow = js_vars.endow;
+		}
+	else {
+		var myEndow = randomChoice([10,30]);
+		}
+
+	
+	document.getElementById('rndm_endow').innerHTML = myEndow;
+	
+	var newEndow = 0 ;
+	function ExpandTable(ele) {
+	if (ele.value == 1) {
+	newEndow = myEndow - FC;
+	var num = "among three";
+	}
+	else {
+	newEndow = myEndow;
+	var num = "between two";
+	}
+	
+	var allocation = document.getElementById('allocation');
+	allocation.innerHTML = "Next, since you paid the fee, you have "+ newEndow + " points to allocate "+num+" accounts:";
+	table_t = document.createElement('table');
+	table_t.className = "table table_belief";
+	table_t.style = "width:500px;";
+	
+	var tr = document.createElement('tr');
+	var th = document.createElement('th');
+	th.innerHTML = "Private Account:";
+	tr.appendChild(th);
+	var th = document.createElement('th');
+	th.innerHTML = "<input type='number'  id='privateAcc' readonly >";
+	tr.appendChild(th);
+	table_t.appendChild(tr);
+	
+	var tr = document.createElement('tr');
+	tr.style="background-color:lightblue;";
+	var th = document.createElement('th');
+	th.innerHTML = "Group Account:";
+	tr.appendChild(th);
+	var th = document.createElement('th');
+	var input = document.createElement("input");
+	input.setAttribute("id", "contribution_local");
+	input.setAttribute("name", "contribution_local");
+	input.setAttribute("type", "number");
+	input.setAttribute("min", "0");
+	input.setAttribute("oninput", "Allocation(this)");
+	th.appendChild(input);
+	tr.appendChild(th);
+	table_t.appendChild(tr);
+	
+	if (ele.value == 1) {
+	var tr = document.createElement('tr');
+	tr.style="background-color:lightgreen";
+	var th = document.createElement('th');
+	th.innerHTML = "Group Account #2:";
+	tr.appendChild(th);
+	var th = document.createElement('th');
+	var input = document.createElement("input");
+	input.setAttribute("id", "contribution_global");
+	input.setAttribute("name", "contribution_global");
+	input.setAttribute("type", "number");
+	input.setAttribute("min", "0");
+	input.setAttribute("oninput", "Allocation(this)");
+	th.appendChild(input);
+	tr.appendChild(th);
+	table_t.appendChild(tr);
+	}
+	
+	allocation.appendChild(table_t); 
+	document.getElementById('privateAcc').value = newEndow;
+	join_club = ele.value;
+
+	randomContr
+	}
+	
+
+	function Allocation(ele) {
+		
+	var prvtAcc = document.getElementById("privateAcc");
+	if (ele.id.includes("local") ) {
+	var grpAcc =  document.getElementById("contribution_global");}
+	else if (ele.id.includes("global") ) {
+	var grpAcc =  document.getElementById("contribution_local");}
+	
+	<!-- If I joined the club, I need to allocate three accounts -->
+	<!-- 1) whether the ele.value is within range;  -->
+	var myEndow = newEndow;
+	if ( ele.value >= 0 && ele.value <= myEndow ) {
+		if ( join_club ) {
+			<!-- 2) the other account has a specified value -->
+			if (grpAcc.value != null) {
+				var tot = Number(grpAcc.value) + Number(ele.value);
+				if ( tot > myEndow  ) {
+				var error = document.getElementById(ele.id+"_e");
+					error.innerHTML = "Your total allocation must be less than " + myEndow +"."
+					ele.focus()
+					return false
+				}
+				prvtAcc.value = myEndow - ele.value - grpAcc.value ; 
+			}
+		}
+		else {
+		prvtAcc.value = myEndow - ele.value;
+		}
+		var error = document.getElementById(ele.id+"_e");
+
+		error.innerHTML = "";
+	}
+	else {
+		var error = document.getElementById(ele.id+"_e");
+		error.innerHTML = "Your allocation must be an integer between 0 and " + myEndow +".";
+		ele.focus();
+		return false
+	}
+	}
+	
+	var local_pnts = 0;
+	var global_pnts = 0;
+	
+	function fillContr(ele) {
+	if (ele == 'l') {
+		if global_pnts
+		local_pnts = Math.floor(80 * Math.random());
+	var rest = 160 - 2*FC - local;
+	var global = Math.floor( rest* Math.random());
+	return [local, global];
+	
+	}	
+	}
+	else if (ele == 'g' {
+	
+	}
+	}
+	
+	setTimeout(
+		function () {
+			alert("Please click 'Next' when you are done reading this page.");
+		},
+		120*1000 // 120 seconds
+	);
+
+		MathJax.Hub.Config({
+        extensions: ["tex2jax.js"],
+        jax: ["input/TeX", "output/HTML-CSS"],
+        tex2jax: {
+            inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+            displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+        },
+        "HTML-CSS": { availableFonts: ["TeX"] }
+    });
+
+	</script>
 {% endblock %}

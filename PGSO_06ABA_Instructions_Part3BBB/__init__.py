@@ -48,7 +48,15 @@ def vars_for_template(player: Player):
 
     }
 
-
+def js_vars(player):
+    if 'endowment' in player.participant.vars.keys():
+        endow = player.participant.vars['endowment']
+    else : 
+        endow = -1
+    return dict(endow = endow, 
+            homo = player.session.config['homo_endowment'],
+            fc = int(player.session.config['FC']/10),
+            )
 
 # PAGES
 
@@ -93,6 +101,8 @@ class P03_RoundOverview(Page):
 class P04_RoundOverview2(Page):
 
     vars_for_template = vars_for_template
+    js_vars = js_vars
+
 
    
 

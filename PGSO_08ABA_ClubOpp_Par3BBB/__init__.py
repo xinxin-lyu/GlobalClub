@@ -208,7 +208,7 @@ def get_role(group: Group):
                 p.endowment=300
             else :
                 p.endowment=100
-    
+            p.participant.vars['endowment'] = int(p.endowment)/10
 
                 
 def check_club_formed(group: Group):
@@ -255,6 +255,7 @@ def set_payoffs(group: Group):
         
         if payRelevant :
             p.participant.vars['pay_matters'] += p.payoff
+            
 Group.set_payoffs = set_payoffs
 
 def unarrived_players(group: Group):

@@ -207,7 +207,7 @@ def get_role(group: Group):
                 
             else :
                 p.endowment=100
-            p.participant.vars['endowment'] = p.endowment
+            p.participant.vars['endowment'] = int(p.endowment)/10
 
                 
 def check_club_formed(group: Group):
