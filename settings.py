@@ -21,23 +21,21 @@ ROOMS = [
 SESSION_CONFIGS = [
 
     dict(
-        name='Real_Experiment',
+        name='Thurseday_1201_12_130_PM_FC20_homo_0',
         app_sequence=[
-        # 'PGSO_01_Introduction',
+        'PGSO_01_Introduction',
         'PGSO_02_SocialPreferenceElicitation',
-        # 'PGSO_03ABA_Instructions_Part2A',
-        # 'PGSO_04ABA_Quiz_Part2A',
-        # 'PGSO_05ABA_PurePG_Part2A',
-        # 'PGSO_06ABA_Instructions_Part3BBB',
-        # 'PGSO_07ABA_Quiz_Part3BBB',
-        # 'PGSO_08ABA_ClubOpp_Par3BBB',
+        'PGSO_03ABA_Instructions_Part2A',
+        'PGSO_04ABA_Quiz_Part2A',
+        'PGSO_05ABA_PurePG_Part2A',
+        'PGSO_06ABA_Instructions_Part3BBB',
+        'PGSO_07ABA_Quiz_Part3BBB',
+        'PGSO_08ABA_ClubOpp_Par3BBB',
         'PGSO_09ABA_PurePG_Part4A',
         'PGSO_10_PayoffScreen',
         'PGSO_11_Demographics',
         'PGSO_12_FeedbackQuestions',
         'PGSO_13_Feedback',
-        
-        
         ],
         num_demo_participants=16,
         
@@ -64,29 +62,35 @@ SESSION_CONFIGS = [
     ),
     
 
-
     dict(
-        name='my_public_goods_app1',
+        name='Thurseday_1201_2_330_PM_FC80_homo_0',
         app_sequence=[
-       # 'PGSO_08ABA_ClubOpp_Par3BBB',
-       'PGSO_10_PayoffScreen',
-
-        # 'PGSO_11_Demographics',
-        # 'PGSO_12_FeedbackQuestions',
-        # 'PGSO_13_Feedback',
-        
-
+        'PGSO_01_Introduction',
+        'PGSO_02_SocialPreferenceElicitation',
+        'PGSO_03ABA_Instructions_Part2A',
+        'PGSO_04ABA_Quiz_Part2A',
+        'PGSO_05ABA_PurePG_Part2A',
+        'PGSO_06ABA_Instructions_Part3BBB',
+        'PGSO_07ABA_Quiz_Part3BBB',
+        'PGSO_08ABA_ClubOpp_Par3BBB',
+        'PGSO_09ABA_PurePG_Part4A',
+        'PGSO_10_PayoffScreen',
+        'PGSO_11_Demographics',
+        'PGSO_12_FeedbackQuestions',
+        'PGSO_13_Feedback',
         ],
-        num_demo_participants=2,
+        num_demo_participants=16,
         
         multiplier = 2.4,
         localPG_size = 4,
         K = 2 ,
-        FC = 20,  #note: all earnings stored as integer, endowment=200 pnts for homo
-        homo_endowment = 1,
+        FC = 80,  #note: all earnings stored as integer, endowment=200 pnts for homo
+        homo_endowment = 0,
         # m_l = 0.6,
         # m_g = 0.6,
         CutoffRoll=10,
+        use_browser_bots=False,
+
         doc="""
             
             <br> <b>'localPG_size' </b> how many people in the local PG </br>
@@ -99,10 +103,144 @@ SESSION_CONFIGS = [
             """
     ),
     
-    # dict(
-        # name='block_random_termination',
-        # app_sequence=['block_random_termination'],
-        # num_demo_participants=2,),
+    
+    
+    
+        dict(
+        name='Thurseday_1201_530_7PM_FC20_homo_1',
+        app_sequence=[
+        'PGSO_01_Introduction',
+        'PGSO_02_SocialPreferenceElicitation',
+        'PGSO_03ABA_Instructions_Part2A',
+        'PGSO_04ABA_Quiz_Part2A',
+        'PGSO_05ABA_PurePG_Part2A',
+        'PGSO_06ABA_Instructions_Part3BBB',
+        'PGSO_07ABA_Quiz_Part3BBB',
+        'PGSO_08ABA_ClubOpp_Par3BBB',
+        'PGSO_09ABA_PurePG_Part4A',
+        'PGSO_10_PayoffScreen',
+        'PGSO_11_Demographics',
+        'PGSO_12_FeedbackQuestions',
+        'PGSO_13_Feedback',
+        ],
+        num_demo_participants=16,
+        
+        multiplier = 2.4,
+        localPG_size = 4,
+        K = 2 ,
+        FC = 20,  #note: all earnings stored as integer, endowment=200 pnts for homo
+        homo_endowment = 1,
+        # m_l = 0.6,
+        # m_g = 0.6,
+        CutoffRoll=10,
+        use_browser_bots=False,
+
+        doc="""
+            
+            <br> <b>'localPG_size' </b> how many people in the local PG </br>
+            <br> <b>'K' </b> how many communities connect to form the club good </br>
+            <br> <b>'FC' </b> fixed cost to join the club good; 20 vs 100 </br>
+            <br> <b>'multiplier' </b> total multiplier = localPG_size * m_l = m_g (for now)  </br>
+            <br> <b>'m_l' </b> MPCR for local PG </br>
+            <br> <b>'m_g' </b> MPCR for global Club </br>
+            <br> <b>'homo_endowment' </b> Whether the local community has homogenous endowments </br>
+            """
+    ),
+    
+        dict(
+        name='Friday_1202_1215_145_PM_FC80_homo_1',
+        app_sequence=[
+        'PGSO_01_Introduction',
+        'PGSO_02_SocialPreferenceElicitation',
+        'PGSO_03ABA_Instructions_Part2A',
+        'PGSO_04ABA_Quiz_Part2A',
+        'PGSO_05ABA_PurePG_Part2A',
+        'PGSO_06ABA_Instructions_Part3BBB',
+        'PGSO_07ABA_Quiz_Part3BBB',
+        'PGSO_08ABA_ClubOpp_Par3BBB',
+        'PGSO_09ABA_PurePG_Part4A',
+        'PGSO_10_PayoffScreen',
+        'PGSO_11_Demographics',
+        'PGSO_12_FeedbackQuestions',
+        'PGSO_13_Feedback',
+        ],
+        num_demo_participants=16,
+        
+        multiplier = 2.4,
+        localPG_size = 4,
+        K = 2 ,
+        FC = 80,  #note: all earnings stored as integer, endowment=200 pnts for homo
+        homo_endowment = 1,
+        # m_l = 0.6,
+        # m_g = 0.6,
+        CutoffRoll=10,
+        use_browser_bots=False,
+
+        doc="""
+            
+            <br> <b>'localPG_size' </b> how many people in the local PG </br>
+            <br> <b>'K' </b> how many communities connect to form the club good </br>
+            <br> <b>'FC' </b> fixed cost to join the club good; 20 vs 100 </br>
+            <br> <b>'multiplier' </b> total multiplier = localPG_size * m_l = m_g (for now)  </br>
+            <br> <b>'m_l' </b> MPCR for local PG </br>
+            <br> <b>'m_g' </b> MPCR for global Club </br>
+            <br> <b>'homo_endowment' </b> Whether the local community has homogenous endowments </br>
+            """
+    ),
+    
+    
+    dict(
+        name='test_part_4',
+        app_sequence=[
+       'PGSO_09ABA_PurePG_Part4A',
+        ],
+        num_demo_participants=2,
+        
+        multiplier = 2.4,
+        localPG_size = 4,
+        K = 2 ,
+        FC = 20,  #note: all earnings stored as integer, endowment=200 pnts for homo
+        homo_endowment = 1,
+        # m_l = 0.6,
+        # m_g = 0.6,
+        CutoffRoll=10,
+    ),
+
+    dict(
+        name='test_part_3',
+        app_sequence=[
+       'PGSO_08ABA_ClubOpp_Par3BBB',
+        ],
+        num_demo_participants=2,
+        
+        multiplier = 2.4,
+        localPG_size = 4,
+        K = 2 ,
+        FC = 20,  #note: all earnings stored as integer, endowment=200 pnts for homo
+        homo_endowment = 1,
+        # m_l = 0.6,
+        # m_g = 0.6,
+        CutoffRoll=10,
+    ),
+    
+        dict(
+        name='test_part_2',
+        app_sequence=[
+       'PGSO_03ABA_Instructions_Part2A',
+        ],
+        num_demo_participants=2,
+        
+        multiplier = 2.4,
+        localPG_size = 4,
+        K = 2 ,
+        FC = 20,  #note: all earnings stored as integer, endowment=200 pnts for homo
+        homo_endowment = 1,
+        # m_l = 0.6,
+        # m_g = 0.6,
+        CutoffRoll=10,
+    ),
+
+    
 ]
 
 # if you set a property in SESSION_CONFIG_DEFAULTS, it will be inherited by all configs

@@ -555,42 +555,42 @@ class P02_Contribution(Page):
                 return 'Total allocation must be below your endowment.'
                 
                 
-class P03_ResultsWaitPage(WaitPage):
+class P03_ResultsWaitPage(Page):
     form_model = 'player'
     form_fields = ['button_c_w'] 
     
     js_vars = js_vars
     vars_for_template = vars_for_template
-    after_all_players_arrive = set_payoffs
+    # after_all_players_arrive = set_payoffs
 
-    # @staticmethod
-    # def is_displayed(player: Player):
-        # group = player.group
-        ## first time
-        # if not json_loads(group.wait_for_ids2):
-            # wait_for_ids2 = [p.id_in_subsession for p in group.get_players()]
-            # group.wait_for_ids2 = json_dumps(wait_for_ids2)
-        # return unarrived_players2(group)
+    @staticmethod
+    def is_displayed(player: Player):
+        group = player.group
+        # first time
+        if not json_loads(group.wait_for_ids2):
+            wait_for_ids2 = [p.id_in_subsession for p in group.get_players()]
+            group.wait_for_ids2 = json_dumps(wait_for_ids2)
+        return unarrived_players2(group)
 
-    # @staticmethod
-    # def live_method(player: Player, data):
-        # if data.get('type') == 'wait_page':
-            # return wait_page_live_method2(player, data)
+    @staticmethod
+    def live_method(player: Player, data):
+        if data.get('type') == 'wait_page':
+            return wait_page_live_method2(player, data)
 
-    # @staticmethod
-    # def error_message(player: Player, values):
-        # group = player.group
-        # if unarrived_players2(group):
-            # return "Wait page not finished"
+    @staticmethod
+    def error_message(player: Player, values):
+        group = player.group
+        if unarrived_players2(group):
+            return "Wait page not finished"
     
 
 
-    # @staticmethod
-    # def before_next_page(player: Player, timeout_happened):
-        # group = player.group
-        # if not group.did_aapa2:            
-            # set_payoffs(group)
-            # group.did_aapa2 = True
+    @staticmethod
+    def before_next_page(player: Player, timeout_happened):
+        group = player.group
+        if not group.did_aapa2:            
+            set_payoffs(group)
+            group.did_aapa2 = True
 
 
 

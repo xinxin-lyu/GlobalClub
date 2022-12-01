@@ -95,11 +95,13 @@
 	document.getElementById('example').style.display = "block";
 	if (js_vars.endow != -1) {
 		var myEndow = js_vars.endow;
+		
 		}
 	else {
 		var myEndow = randomChoice([10,30]);
+		document.getElementById('rndm_endow').innerHTML = myEndow;
 		}
-	document.getElementById('rndm_endow').innerHTML = myEndow;
+	
 	var local_pnts_o = Math.floor((80-myEndow) * Math.random());
 	var restt_o = 160 - 8*FC - local_pnts_o - myEndow;
 	var global_pnts_o = Math.floor( restt_o* Math.random());
