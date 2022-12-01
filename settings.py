@@ -192,14 +192,14 @@ SESSION_CONFIGS = [
     dict(
         name='test_part_4',
         app_sequence=[
-       'PGSO_09ABA_PurePG_Part4A',
+       'PGSO_06ABA_Instructions_Part3BBB',
         ],
         num_demo_participants=2,
         
         multiplier = 2.4,
         localPG_size = 4,
         K = 2 ,
-        FC = 20,  #note: all earnings stored as integer, endowment=200 pnts for homo
+        FC = 80,  #note: all earnings stored as integer, endowment=200 pnts for homo
         homo_endowment = 1,
         # m_l = 0.6,
         # m_g = 0.6,
@@ -209,7 +209,7 @@ SESSION_CONFIGS = [
     dict(
         name='test_part_3',
         app_sequence=[
-       'PGSO_08ABA_ClubOpp_Par3BBB',
+       'PGSO_05ABA_PurePG_Part2A',
         ],
         num_demo_participants=2,
         

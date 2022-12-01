@@ -95,8 +95,10 @@
 	document.getElementById('example').style.display = "block";
 	if (js_vars.endow != -1) {
 		var myEndow = js_vars.endow;
-		
 		}
+	else if (js_vars.homo==1) {
+		var myEndow = 20;
+	}
 	else {
 		var myEndow = randomChoice([10,30]);
 		document.getElementById('rndm_endow').innerHTML = myEndow;
@@ -120,10 +122,10 @@
 	document.getElementById('pay_not').innerHTML = "pay";
 	var rest = 	myEndow - FC;
 	document.getElementById('how_much_to_allocate').innerHTML = rest +" points to allocate among three accounts.";
-	var local_pnts = Math.floor(myEndow * Math.random());
-	var restt = myEndow - FC - local_pnts;
+	var local_pnts = Math.floor(rest * Math.random());
+	var restt = Math.max(myEndow - FC - local_pnts,0);
 	var global_pnts = Math.floor( restt* Math.random());
-	var prvt_pnts = myEndow - local_pnts - global_pnts;
+	var prvt_pnts = myEndow - FC - local_pnts - global_pnts;
 	document.getElementById('allocation_decision').innerHTML = "<mark_groupAcc>"+local_pnts +"</mark_groupAcc> and <mark_groupAcc2>" +global_pnts+ "</mark_groupAcc2> points to the group accounts, leaving " +prvt_pnts + " in the private account.";
 	
 	var earnings = Math.round((prvt_pnts + 0.6*(local_pnts+local_pnts_o) + 0.6*(global_pnts+global_pnts_o))*10)/10;
