@@ -1,4 +1,4 @@
-{% extends "PGSO_09_PayoffScreen/myPage.html" %}
+{% include 'PGSO_10_PayoffScreen/myPage.html' %}
 {% load staticfiles otree %}
 
 {% block title %}
@@ -7,7 +7,6 @@
 
 {% block scripts %}
 
-    <!-- define a script -->
     <script>
 
     </script>
@@ -22,7 +21,7 @@
          <div style="position:relative;left: 25%;width: 60%;background-color: #ffffff">
 		
 		<p align="justify">
-            You have completed part 3. Here is the summary of your total earnings today. 
+            You have completed part 4. Here is the summary of your total earnings today. 
         </p>
 		
 		<p align="justify">
@@ -80,7 +79,7 @@
 		
 		
 		<p align="justify">
-		In <strong> Part 2 and Part 3</strong>, you played {{ Matches }} matches and earned {{ MatchesPayoff }}. The exchange rate is: {{ PointsPerDollar }} points = $1. 
+		In <strong> Part 2 to Part 4</strong>, you earned {{ MatchesPayoff }}. The exchange rate is: {{ PointsPerDollar }} points = $1. 
 		</p>
 		
 		

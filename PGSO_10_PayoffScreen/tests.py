@@ -7,6 +7,6 @@ import time
 
 class PlayerBot(Bot):
 
-    def play_round(self):
+    def play_round(self):    
         yield (PaymentInfo)
-        time.sleep(10) 
+        time.sleep(100) 

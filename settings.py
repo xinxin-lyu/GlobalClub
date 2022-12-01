@@ -24,18 +24,18 @@ SESSION_CONFIGS = [
         name='Real_Experiment',
         app_sequence=[
         # 'PGSO_01_Introduction',
-        # 'PGSO_02_SocialPreferenceElicitation',
-        'PGSO_03ABA_Instructions_Part2A',
+        'PGSO_02_SocialPreferenceElicitation',
+        # 'PGSO_03ABA_Instructions_Part2A',
         # 'PGSO_04ABA_Quiz_Part2A',
         # 'PGSO_05ABA_PurePG_Part2A',
-        'PGSO_06ABA_Instructions_Part3BBB',
-        'PGSO_07ABA_Quiz_Part3BBB',
+        # 'PGSO_06ABA_Instructions_Part3BBB',
+        # 'PGSO_07ABA_Quiz_Part3BBB',
         # 'PGSO_08ABA_ClubOpp_Par3BBB',
-        # 'PGSO_09ABA_PurePG_Part4A',
-        # 'PGSO_10_PayoffScreen',
-        # 'PGSO_11_Demographics',
-        # 'PGSO_12_FeedbackQuestions',
-        # 'PGSO_13_Feedback',
+        'PGSO_09ABA_PurePG_Part4A',
+        'PGSO_10_PayoffScreen',
+        'PGSO_11_Demographics',
+        'PGSO_12_FeedbackQuestions',
+        'PGSO_13_Feedback',
         
         
         ],
@@ -68,7 +68,9 @@ SESSION_CONFIGS = [
     dict(
         name='my_public_goods_app1',
         app_sequence=[
-       'PGSO_08ABA_ClubOpp_Par3BBB',
+       # 'PGSO_08ABA_ClubOpp_Par3BBB',
+       'PGSO_10_PayoffScreen',
+
         # 'PGSO_11_Demographics',
         # 'PGSO_12_FeedbackQuestions',
         # 'PGSO_13_Feedback',

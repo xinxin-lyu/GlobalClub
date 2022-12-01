@@ -1,6 +1,6 @@
 
 {{ block title }}
-   Match {{ subsession.sg }}, Round {{ subsession.period }}
+  Round {{ subsession.period }}
 	<br>
 	Block End? {{ endblock }}
 {{ block content }}
@@ -27,16 +27,16 @@
 		<center>
 		
 		{{if subsession.is_sg_last_period}}
-		The match has ended within this block at round {{end_period}}.
+		This part has ended within this block at round {{end_period}}.
 		<br>
-		The match ends when the computer rolls a nummber greater than {{continuation_chance}}.
+		This part ends when the computer rolls a nummber greater than {{continuation_chance}}.
 		<br>
 		{{if end_period > 1}}
 		Hence, your choices up to round {{end_period}} are relevant for payment.
 		{{else}}
 		Hence, only your choices for round {{end_period}} are relevant for payment.
 		{{endif}}
-		<br> Your earnings and the dice roll before the match ends are:
+		<br> Your earnings and the dice roll before this part ends are:
 		<input type="hidden" id='button_history' name="button_b" />
 		<div class="inner">
 		<table id = "earningTable" >   

@@ -9,7 +9,7 @@ Payoff information.
 
 
 class Constants(BaseConstants):
-    name_in_url = 'DynamicPower_06_PayoffScreen'
+    name_in_url = 'PGSO_10_PayoffScreen'
     players_per_group = None
     num_rounds = 1
     
@@ -125,13 +125,13 @@ class PaymentInfo(Page):
         else :    
             others =  Constants.other1
             me = Constants.safeOption[player.participant.vars['SocialPreferenceQuestion']-10]
-        
-        x = float(player.participant.vars['pay_matters'] * player.session.config['real_world_currency_per_point'])
-        # print(x)
+        pnts_per_dollar = int(1.0 / player.session.config['real_world_currency_per_point']/10)
+        x = int(player.participant.vars['pay_matters']) / pnts_per_dollar * 10
+        print(x)
         return {
-            'MatchesPayoff': int(player.MatchesPayoff/10) ,
-            'TotalPayoff': round(x, 2),
-            'Matches': 4,
+            'MatchesPayoff': int(player.MatchesPayoff)/10 ,
+            'TotalPayoff': round(x)/100,
+            'Matches': 5,
             
             'Chosen_Task' : player.Chosen_Task, 
             # 'RiskAversionEarn' : player.participant.vars['RiskAversionEarn'],
@@ -152,7 +152,7 @@ class PaymentInfo(Page):
             'SocialPreferenceQuestion_optionAothers' : others ,
             'MoneyReceived' : round(float(player.ReceivedMoney), 2),
             
-            'PointsPerDollar': int(1.0 / player.session.config['real_world_currency_per_point']/10),
+            'PointsPerDollar': pnts_per_dollar,
 
             
             
