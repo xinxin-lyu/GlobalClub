@@ -31,8 +31,9 @@ class Player(BasePlayer):
 class ThankYou(Page):
     @staticmethod
     def vars_for_template(player: Player):
-        x = float(player.participant.vars['pay_matters'] * player.session.config['real_world_currency_per_point'])
-        return {'earningsTotal': round(x, 2)}
+        pnts_per_dollar = int(1.0 / player.session.config['real_world_currency_per_point']/10)
+        x = int(player.participant.vars['pay_matters']) / pnts_per_dollar * 10
+        return {'earningsTotal':round(x)/100 }
 
 
 page_sequence = [
