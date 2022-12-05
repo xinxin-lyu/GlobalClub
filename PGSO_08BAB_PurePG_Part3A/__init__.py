@@ -7,7 +7,7 @@ from json import dumps as json_dumps, loads as json_loads
 doc = '''This is for the real experiment, PG only
     Block random termination still;
     Only 1 match;
-    A1 = 7
+    A2 = 8
     [7, 6, 18, 17, 13, 8, 12, 7]
     '''
         
@@ -52,7 +52,7 @@ class C(BaseConstants):
     # These are the payoff relevants rounds; 
     # Note: for my current experiment design, there are only 3 repeated games/matches (ABA or BAA)
     # Note: for pilot, only 3 matches, but with different fixed cost
-    COUNT_ROUNDS_PER_SG = [7]
+    COUNT_ROUNDS_PER_SG = [8]
     # The below line should not matter for this app, but is needed to make the program work
     GroupMatch = [[[1,2],[3,4]], [[1,3],[2,4]], [[1,2],[3,4]]]
     # number of supergames to be played

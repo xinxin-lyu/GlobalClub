@@ -3,7 +3,7 @@ import numpy as np
 
 author = 'Xinxin Lyu'
 doc = """
-Instruction for A1 (part 2)
+Instruction for A2 (part 3)
 """
 
 
