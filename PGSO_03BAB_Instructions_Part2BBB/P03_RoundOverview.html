@@ -1,0 +1,83 @@
+{% extends "otree/Page.html" %}
+{% load staticfiles otree %}
+
+{% block app_styles %}
+    {% include 'PGSO_08ABA_ClubOpp_Par3BBB/commonCSS.html' %}
+{% endblock %}
+
+{% block scripts %}
+    {% include 'PGSO_08ABA_ClubOpp_Par3BBB/commonJS.html' %}
+	<script>
+	setTimeout(
+		function () {
+			alert("Please click 'Next' when you are done reading this page.");
+		},
+		120*1000 // 120 seconds
+	);
+	</script>
+
+{% endblock %}
+
+{% block title %}
+    Round Overview 
+
+{% endblock %}
+
+{% block content %}
+
+    <br><br>
+
+    <div class="card-body" style="text-align: left; padding-left: 10%;padding-right: 10%;font-size: 18px;">
+	<div style="position:relative;left: 10%;width: 80%;background-color: #ffffff">
+	<u>Endowment </u>
+	{{ if HOMO }}
+	<p> At the beginning of each round, you receive 20 points and the other three participants in your group each receive 20 points. </p>
+	{{ else  }}
+	<p> At the beginning of each round, 
+		two of your group members will receive 10 points and the other two will receive 30 points. 
+		Who receives how much is randomly determined. 
+		However, the endowments stay the same in this part.
+		That means, if you receive 10 points in the first round,
+		you will continue receiving 10 points in each round.  </p>
+	{{ endif }}
+
+	<p> You will see the endowments of the other group members you are paired with.  </p>
+
+	<u> Decision Task </u>
+	
+	<p> Each round has two decision stages. </p>
+	
+	<p> In stage 1, you need to decide whether to pay a fee of {{FC}} points and gain access to <mark_groupAcc2> Group Account #2</mark_groupAcc2>. </p>
+	
+	<p> In stage 2, you will know who else paid the fee and gained the access to <mark_groupAcc2> Group Account #2</mark_groupAcc2>.
+	
+	<ul>
+	<li> If you paid the fee, you can allocate the rest of your endowment among three accounts:
+		<br> your Private Account, <mark_groupAcc> Group Account </mark_groupAcc>, and <mark_groupAcc2> Group Account #2</mark_groupAcc2>. </li>
+	<li> If you didn’t pay the fee, you will allocate your endowment between 
+		your Private Account and the <mark_groupAcc>Group Account</mark_groupAcc> . </li>
+	
+	</ul>
+	<p> Everyone in your group and the other group has a Private Account. 
+	 Your group of four has a <mark_groupAcc> Group Account </mark_groupAcc>. 
+	 Everyone in your group 
+		and the other group can pay the fee and access to <mark_groupAcc2>Group Account #2</mark_groupAcc2>.</p>
+	
+	<p> Each point in the Private Account yields a return of <strong style="color: red"> 1 point </strong> to YOU in that round. 
+
+	<p> Each point in the Group Account yields a return of <strong style="color: red"> 0.6 point </strong> to EVERYONE <strong>in the group</strong>. 
+		(Note: everyone in your group can allocate points to the <mark_groupAcc>Group Account</mark_groupAcc>.) </p>
+		
+	<p> Each point in the <mark_groupAcc2>Group Account #2</mark_groupAcc2> yields a return of <strong style="color: red"> 0.6 point </strong> to EVERYONE <strong>who paid the fee</strong>. 
+		(Note: everyone who paid the fee can allocate points to the <mark_groupAcc2>Group Account #2</mark_groupAcc2>.) </p>
+
+
+
+        <p style="text-align: center"><br/><br/>
+            <button class="otree-btn-next btn btn-primary" id="NextButton" style="display:inline-block;">Next</button>
+        </p>
+
+    </div>
+	</div> 
+
+{% endblock %}

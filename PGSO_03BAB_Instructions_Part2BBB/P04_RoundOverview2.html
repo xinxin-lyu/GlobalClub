@@ -21,10 +21,12 @@
 			1 * Number of points in your Private Account
 			<br> +
 			<br> 0.6 * Number of points in <mark_groupAcc>Group Account</mark_groupAcc>
+			<br> + 
+			<br> if you paid the fee:  0.6 * Number of points in <mark_groupAcc2>Group Account #2</mark_groupAcc2>, 
 			</strong> </center>
 		</p>
 		
-	<p>To see an example, click the 'Example' button below. You will need to see 5 examples.  </p>
+	<p>To see an example, click the 'Example' button below. You will need to see 10 examples.  </p>
 
 		<p style="text-align: center"> 
 		<button type="button" id="ShowExample" class="otree-btn-next btn btn-primary" 
@@ -39,26 +41,29 @@
 				{{ else }} your endowment in each round is {{myEndow}} points. {{ endif }}
 	{{ endif }} </p>
 	
-	<p> You have <span id='how_much_to_allocate'> </span>  </p>
+	<p> Suppose you decide to <span id='pay_not'> </span> the fee. 
+	You have <span id='how_much_to_allocate'> </span>  </p>
 	<p> Suppose you allocate  <span id='allocation_decision'> </span>  </p>
-	<p> Further suppose other participants allocate <span id='allocation_decision_o'> </span> to the group account. </p>
+	<p> Further suppose other participants allocate <span id='allocation_decision_o'> </span> to the two group accounts. </p>
 	<p> Your earnings = <span id='earnings'> </span> </p>
 	</div>
 
 	
 	<p> At the end of each round, your earnings for the round will be recorded. 
 		Your payment for part 2 will be determined by the sum of the points 
-		that you earn in all rounds before the part ends with a conversion rate of: {{PointsPerDollar}} points = $1. 
+		that you earn in all three matches with a conversion rate of: {{PointsPerDollar}} points = $1. 
 	</p>
 		
 
 	<u> Information </u>
 	
-	<p> You will be able to review your <mark_groupAcc> Group Account </mark_groupAcc> 
-	information for all previous rounds.</p>
+	<p> You will be able to review both <mark_groupAcc> Group Account </mark_groupAcc> and <mark_groupAcc2>Group Account #2</mark_groupAcc2> 
+	information for all previous rounds within a match.</p>
 
 	<p> To achieve this, you need to click the button to review last round information first: 
 	<button type="button" class="button_infor_l  btn " readonly> Group Account</button> 
+	<button type="button" class="button_infor_g  btn" readonly> Group Account #2 </button></p> 
+	<!-- <img style="max-width: 100%" class="center" src="{{ static 'Instruction/LastRoundInfor_LandG_Small.png' }}"/> -->
 	
 	<p> You will see the group member table is updated with your previous round allocation and the group total account. 
 	You may click the relevant buttons to review each member’s allocation or the full history. </p>
@@ -103,6 +108,8 @@
 	var restt_o = 160 - 8*FC - local_pnts_o - myEndow;
 	var global_pnts_o = Math.floor( restt_o* Math.random());
 	
+	if (Math.round(Math.random())) {
+	document.getElementById('pay_not').innerHTML = "not pay";
 	document.getElementById('how_much_to_allocate').innerHTML = myEndow +" points to allocate between two accounts.";
 	var local_pnts = Math.floor(myEndow * Math.random());
 	var prvt_pnts = myEndow - local_pnts;
@@ -110,14 +117,31 @@
 	var earnings = Math.round((prvt_pnts + 0.6*(local_pnts+local_pnts_o) )*10)/10;
 	document.getElementById('earnings').innerHTML = "1 * "+prvt_pnts+" + 0.6 * ("+local_pnts+" + "+local_pnts_o+" )="+earnings;
 
+	}
+	else {
+	document.getElementById('pay_not').innerHTML = "pay";
+	var rest = 	myEndow - FC;
+	document.getElementById('how_much_to_allocate').innerHTML = rest +" points to allocate among three accounts.";
+	var local_pnts = Math.floor(rest * Math.random());
+	var restt = Math.max(myEndow - FC - local_pnts,0);
+	var global_pnts = Math.floor( restt* Math.random());
+	var prvt_pnts = myEndow - FC - local_pnts - global_pnts;
+	document.getElementById('allocation_decision').innerHTML = "<mark_groupAcc>"+local_pnts +"</mark_groupAcc> and <mark_groupAcc2>" +global_pnts+ "</mark_groupAcc2> points to the group accounts, leaving " +prvt_pnts + " in the private account.";
+	
+	var earnings = Math.round((prvt_pnts + 0.6*(local_pnts+local_pnts_o) + 0.6*(global_pnts+global_pnts_o))*10)/10;
+	document.getElementById('earnings').innerHTML = "1 * "+prvt_pnts+" + 0.6 * ("+local_pnts+" + "+local_pnts_o+" ) + 0.6 * ("+global_pnts+" + "+global_pnts_o+")="+earnings;
+	
+	
+	}
+	
 
-	document.getElementById('allocation_decision_o').innerHTML =  "<mark_groupAcc>"+local_pnts_o+"</mark_groupAcc> points"
+	document.getElementById('allocation_decision_o').innerHTML =  "<mark_groupAcc>"+local_pnts_o+"</mark_groupAcc> and <mark_groupAcc2>"+global_pnts_o+"</mark_groupAcc2>  points"
 
 	updateText('ShowExample','Example #'+(MyVariables.match+1).toFixed(0));
 	MyVariables.match++;
 	console.log(MyVariables)
 
-	if (MyVariables.match==5  ) {
+	if (MyVariables.match==10  ) {
 				ele.disabled = true;
 				document.getElementById('NextButton').style.display="inline-block";
 				

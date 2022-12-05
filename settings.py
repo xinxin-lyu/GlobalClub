@@ -21,6 +21,49 @@ ROOMS = [
 SESSION_CONFIGS = [
 
     dict(
+        name='Testing',
+        display_name="Testing for BAB design",
+        app_sequence=[
+        # 'PGSO_01_Introduction',
+        # 'PGSO_02_SocialPreferenceElicitation',
+        'PGSO_03BAB_Instructions_Part2BBB',
+        'PGSO_04BAB_Quiz_Part2BBB',
+        'PGSO_05BAB_ClubOpp_Par2BBB',
+        'PGSO_06BAB_Instructions_Part3A',
+        'PGSO_07BAB_Quiz_Part3A',
+        'PGSO_08BAB_PurePG_Part3A',
+        'PGSO_09BAB_PurePG_Part4B',
+        'PGSO_10_PayoffScreen',
+        'PGSO_11_Demographics',
+        'PGSO_12_FeedbackQuestions',
+        'PGSO_13_Feedback',
+        ],
+        num_demo_participants=16,
+        
+        multiplier = 2.4,
+        localPG_size = 4,
+        K = 2 ,
+        FC = 20,  #note: all earnings stored as integer, endowment=200 pnts for homo
+        homo_endowment = 0,
+        # m_l = 0.6,
+        # m_g = 0.6,
+        CutoffRoll=10,
+        use_browser_bots=False,
+
+        doc="""
+            
+            <br> <b>'localPG_size' </b> how many people in the local PG </br>
+            <br> <b>'K' </b> how many communities connect to form the club good </br>
+            <br> <b>'FC' </b> fixed cost to join the club good; 20 vs 100 </br>
+            <br> <b>'multiplier' </b> total multiplier = localPG_size * m_l = m_g (for now)  </br>
+            <br> <b>'m_l' </b> MPCR for local PG </br>
+            <br> <b>'m_g' </b> MPCR for global Club </br>
+            <br> <b>'homo_endowment' </b> Whether the local community has homogenous endowments </br>
+            """
+    ),
+
+
+    dict(
         name='Thurseday_1201_12_130_PM_FC20_homo_0',
         app_sequence=[
         'PGSO_01_Introduction',

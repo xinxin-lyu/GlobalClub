@@ -1,0 +1,48 @@
+{% extends "otree/Page.html" %}
+{% load staticfiles otree %}
+
+{% block app_styles %}
+    {% include 'PGSO_08ABA_ClubOpp_Par3BBB/commonCSS.html' %}
+{% endblock %}
+
+{% block scripts %}
+    {% include 'PGSO_08ABA_ClubOpp_Par3BBB/commonJS.html' %}
+
+{% endblock %}
+
+
+
+
+{% block title %}
+    Quiz
+{% endblock %}
+
+{% block content %}
+
+    <div class="card-body" style="text-align: left">
+			<div style="position:relative;left: 10%;width: 80%;background-color: #ffffff">
+
+	<!-- <p><strong style="color: blue">Question 9:</strong> -->
+	<p><strong style="color: blue">Question 7:</strong>
+
+		(True or False)
+		If there are 6 people in Group Account #2, each point in the Group Account #2 will yield 0.6 to each of the 6 people.
+        <p style="text-align: center">
+                <button class="otree-btn-next btn btn-primary" id="startMatchButton" type="button"
+				 onclick="correctAnswer('This is correct.')">
+           
+				True </button>
+            <button class="otree-btn-next btn btn-primary" id="startMatchButton" type="button"
+            onclick="incorrectAnswer('This is incorrect. Please raise your hand if you have questions.')">
+				False </button>
+                       
+            </p>
+
+        <p style="text-align: center; color: red;" id="quizMessage">  	</p>
+    </div>	
+	 </div>
+	<center>
+<button class="otree-btn-next btn btn-primary" id="NextButton" style="display:none;">Next</button>
+    <input type="hidden" name="quizHistory7" value="," id="id_testingHistory"/>
+	</center> 
+{% endblock %}

@@ -1,0 +1,42 @@
+{% extends "otree/Page.html" %}
+{% load staticfiles otree %}
+
+
+{% block scripts %}
+
+{% endblock %}
+
+
+{% block app_styles %}
+
+    {% include 'PGSO_05ABA_PurePG_Part2A/commonCSS.html' %}
+
+{% endblock %}
+
+{% block title %}
+    Reminders
+{% endblock %}
+
+{% block content %}
+
+    <p>
+	<div style="position:relative;left: 20%;width: 60%;background-color: #ffffff">
+
+        <ol style="text-align: left">
+            <li> Your group members remain the same as in part 2 and throughout part 3. Each round, you receive the same endowment as before.</li>
+			
+			<li> Each participant must decide how to allocate their points between a Private Account
+				and a <mark_groupAcc>Group Account</mark_groupAcc>. </li>
+				
+			<li> Each point allocated in your Private Account gives you <strong style="color: red"> 1 point </strong> . </li>
+			<li> Each point allocated in the <mark_groupAcc>Group Account</mark_groupAcc> gives every member <strong style="color: red"> 0.6 point </strong> .  </li>
+			
+        </ol>
+
+    </p>
+            <p style="text-align: center"><br/>
+                <button class="otree-btn-next btn btn-primary" id="NextButton" style="display:inline-block;">Begin Experiment</button>
+            </p>
+</div>
+
+{% endblock %}

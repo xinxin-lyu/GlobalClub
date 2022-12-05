@@ -1,0 +1,159 @@
+{{ extends 'global/Page.html' }}
+{{ block title }}
+
+    Match {{ subsession.sg }}, Round {{ subsession.period }},
+
+Allocation{{ endblock }}
+
+{{ block content }}
+
+
+
+ <div class="row" 	style=" margin-right:0px;margin-left:0px; ">
+    <div class="col-6"  > 
+	{% include 'PGSO_08ABA_ClubOpp_Par3BBB/commonHTML_LocalInfor.html' %}
+
+	<br> 
+	
+			<center>
+	In this round,
+	<br> You {{ if player.join_club }} paid {{ FC }} points and have access to Group Account #2. 
+	{{ else }} don't have access to Group Account #2. {{  endif }}
+	
+	
+	<br> You have <strong> {{ endow }} </strong>  points.
+	
+	{{ if player.subsession.period != 1}} 
+	<br> In the last round: 
+		<span id="ShowLocalPrevious"> <button type="button"   class="button_infor_l btn " onclick="ShowPrevious('local', 'total')" > Group Account </button> </span>
+		<span id="ShowGlobalPrevious" ><button type="button"   class="button_infor_g btn " onclick="ShowPrevious('global', 'total')" > Group Account #2 </button></span>
+	{{ endif }}
+	
+	<input type="hidden" id='button_history' name="button_c" />
+
+	
+	<br> Please decide how to allocate your points in this round: 
+
+<!-- {% formfields %} -->
+ <!-- <div class="row" 	style="margin-right:400px;margin-left:400px; "> -->
+ <table class="table table_belief" style="width:500px;"> 
+<tr> <th> Private Account: </th> <th> <input type="number"  id='privateAcc' readonly > </th> </tr>
+<tr style="background-color:lightblue;"> <th > Group Account: </th> 
+	<th> <input id="contribution_local" name="contribution_local"   type="number" min="0"  oninput="Allocation(this)"  /> 
+	<!-- value=Number(js_vars.E_l[0]) -->
+	</th> </tr>
+{{ if player.join_club and player.group.global_formed }}
+<tr style="background-color:lightgreen;"> <th> Group Account #2: </th> 
+<th> <input  id="contribution_global" name="contribution_global"   type="number"   min="0"  oninput="Allocation(this)"  /> </th></tr>
+{{ formfield_errors 'contribution_global' }} 
+
+<!-- value=null -->
+{{ endif }}
+</table>
+<p id="contribution_local_e" style="color:red"> 
+<p id="contribution_global_e" style="color:red"> 
+<p id = "next_btn" style="visibility:hidden" >  {% next_button %} </p>
+{{ formfield_errors 'contribution_local' }} 
+
+</center>
+
+	</div>
+	
+
+	<div class="col-6" style="opacity: 70%;" id="ClubGoodColor" > 
+		{% include 'PGSO_08ABA_ClubOpp_Par3BBB/commonHTML_GlobalInfor.html' %}
+
+	</div>	
+
+</div>
+
+ <div class="row" 	style="margin-right:0px;margin-left:0px; ">
+ 
+
+
+ </div>
+ 
+		
+{{ endblock }}
+
+{% block scripts %}
+
+    {% include 'PGSO_08ABA_ClubOpp_Par3BBB/commonJS.html' %}
+	<script>
+	
+	setTimeout(
+		function () {
+			alert("Please make your decision when you are ready.");
+		},
+		60*1000 // 60 seconds
+	);
+
+	<!-- To calculate the endowment allocation  -->
+	document.getElementById('privateAcc').value = js_vars.E_l[0];
+	
+	function Allocation(ele) {
+		
+	var prvtAcc = document.getElementById("privateAcc");
+	if (ele.id.includes("local") ) {
+	var grpAcc =  document.getElementById("contribution_global");}
+	else if (ele.id.includes("global") ) {
+	var grpAcc =  document.getElementById("contribution_local");}
+	
+	<!-- If I joined the club, I need to allocate three accounts -->
+	<!-- 1) whether the ele.value is within range;  -->
+	var myEndow = js_vars.E_l[0];
+	if ( ele.value >= 0 && ele.value <= myEndow ) {
+		if ( js_vars.MeJoin ) {
+			<!-- 2) the other account has a specified value -->
+			if (grpAcc.value != null) {
+				var tot = Number(grpAcc.value) + Number(ele.value);
+				if ( tot > myEndow  ) {
+				var error = document.getElementById(ele.id+"_e");
+					error.innerHTML = "Your total allocation must be less than " + myEndow +"."
+					ele.focus()
+					return false
+				}
+
+				prvtAcc.value = myEndow - ele.value - grpAcc.value ; 
+				document.getElementById("next_btn").style.visibility="visible";
+			}
+		
+		}
+		else {
+		prvtAcc.value = myEndow - ele.value;
+		document.getElementById("next_btn").style.visibility="visible";
+		}
+		var error = document.getElementById(ele.id+"_e");
+
+		error.innerHTML = ""
+	}
+	else {
+		var error = document.getElementById(ele.id+"_e");
+		error.innerHTML = "Your allocation must be an integer between 0 and " + myEndow +"."
+		ele.focus()
+		return false
+	}
+
+	}
+	
+
+
+	
+	
+	RandomButton('individualLocal','local');
+	
+
+	ShowTable_Local(1);
+	ShowTable_Global(1);
+
+	</script>
+{{ endblock }}
+
+
+{% block app_styles %}
+	
+    {% include 'PGSO_08ABA_ClubOpp_Par3BBB/commonCSS.html' %}
+	
+	
+	
+{% endblock %}

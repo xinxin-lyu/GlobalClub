@@ -1,0 +1,64 @@
+
+{{ block title }}
+
+   Round {{ subsession.period }}
+	<br>
+	 {{ endblock }}
+
+{{ block content }}
+
+ <div class="row" 	style=" margin-right:0px;margin-left:0px; ">
+     <div class="col-6"  > 
+
+	{% include 'PGSO_05ABA_PurePG_Part2A/commonHTML_LocalInfor.html' %}
+  	</div>
+
+	
+	
+</div>
+
+<div class="container">
+    <div class="card">
+
+        <div class="card-body">
+            <p>Waiting for others to make the allocations. </p>
+		{{ if player.subsession.period != 1}} 
+		<br> You can review the last round information: 
+			<span id="ShowLocalPrevious"> <button type="button"   class="button_infor_l btn " onclick="ShowPrevious('local', 'total')" > Group </button> </span>
+			<!-- <span id="ShowGlobalPrevious" ><button type="button"   class="button_infor_g btn " onclick="ShowPrevious('global', 'total')" > Second Group </button></span> -->
+		{{ endif }}
+		
+			<input type="hidden" id='button_history' name="button_c_w" />
+            <div class="progress">
+                <div class="progress-bar progress-bar-striped progress-bar-animated" style="width: 100%"></div>
+            </div>
+        </div>
+    </div>
+</div>
+{{ endblock }}
+{% block scripts %}
+ {% include 'PGSO_05ABA_PurePG_Part2A/commonJS.html' %}
+ 
+<script>
+    function liveRecv(data) {
+        console.log('data', data)
+        if (data.finished) {
+            document.getElementById("form").submit();
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", (event) => {
+        liveSend({'type': 'wait_page'});
+    });
+	
+	RandomButton('individualLocal','local');
+	ShowTable_Local();
+	<!-- ShowTable_Global(); -->
+	
+
+</script>
+{{ endblock }}
+
+{% block app_styles %}
+    {% include 'PGSO_05ABA_PurePG_Part2A/commonCSS.html' %}
+{% endblock %}

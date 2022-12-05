@@ -1,0 +1,149 @@
+
+{{ block title }}
+   Match {{ subsession.sg }}, Round {{ subsession.period }}
+	<br>
+	Block End? {{ endblock }}
+{{ block content }}
+
+
+
+ <div class="row" 	style=" margin-right:0px;margin-left:0px; ">
+    <div class="col-6"  > 
+		<div class="card-body">
+		<div style="background-color: lightblue">
+		<center> Your group members
+			<br> You and other 3 participants are in the same group with the following endowments. 
+				 
+			<br> Every token invested in this group account will give <span style="color:red; font-weight: bold;">{{ local_multiplier }} </span> to every member in the group.
+			</div>
+			<div id = "InformationTable_local" style="max-width: 800px"> </div>
+
+			<p id="individualLocal" style="visibility:hidden" >		</p>
+			<p id="MoreLocal" style="visibility:hidden" >  You can see the full history in this match by clicking  
+			<button type="button" id="More_l"  class="button_infor_l  btn " onclick="ShowAllHistory('local',1)" > More </button>  </p>
+		</center>
+		</div>	
+	<br> 
+		<center>
+		
+		{{if subsession.is_sg_last_period}}
+		The match has ended within this block at round {{end_period}}.
+		<br>
+		The match ends when the computer rolls a nummber greater than {{continuation_chance}}.
+		<br>
+		{{if end_period > 1}}
+		Hence, your choices up to round {{end_period}} are relevant for payment.
+		{{else}}
+		Hence, only your choices for round {{end_period}} are relevant for payment.
+		{{endif}}
+		<br> Your earnings and the dice roll before the match ends are:
+		<input type="hidden" id='button_history' name="button_b" />
+		<div class="inner">
+		<table id = "earningTable" >   
+		
+        <tr>
+            <th> Round </th>
+			{{ for field in block_history }}
+            <td> {{ field.round_number }}</td>
+            {{ endfor }}
+        </tr>
+		<tr>
+            <th> Earned </th>
+			{{ for field in block_history }}
+            <td> {{ field.earning }}</td>
+            {{ endfor }}
+            
+        </tr>
+			
+		<tr>
+            <th>Dice roll </th>
+			{{ for field in block_history }}
+            <td> {{ field.dieroll }}</td>
+            {{ endfor }}
+        </tr>
+		</table>
+		</div>
+		{{else}}
+			<p>The match has not ended in this block.
+				<br> You will play another {{C.BLOCK_SIZE}} rounds.
+			</p>
+		{{endif}}
+		
+		
+		
+		<br> You can review the history information: 
+		<span id="ShowLocalPrevious">
+		<button type="button"   class="button_infor_l  btn " onclick="ShowPrevious('local', 'total')" > Show </button> </span>
+		<span id="ShowGlobalPrevious" ><button type="button"   class="button_infor_g  btn" onclick="ShowPrevious('global', 'total')" > Show </button></span>
+		<input type="hidden" id='button_history' name="button_b" />
+
+		<br>
+		{{ next_button }}
+		</center>
+		
+	</div>
+	
+	<div class="col-6" style="opacity: 70%;" id="ClubGoodColor" > 
+		<div class="card-body" >
+		<div style="background-color: lightgreen; ">
+		<center> Potential members in the second group 
+		<br> Members in your and another group can form a second group account.
+		<br>  If formed, every token invested in this group account will give <span style="color:red; font-weight: bold;"> {{ local_multiplier }} </span> to every member who joins this group.
+		</div>
+		
+		<div  id = "InformationTable_global" style="max-width: 800px"> </div>
+		
+		
+		 <!-- Note: for future design, if only club members can see detailed contribution; if formed_g and joined  -->
+		 <!-- Since you joined the club in last round:  -->
+		 <!-- {{ if formed_g }} -->
+		 
+		 <!-- {{ endif }} -->
+		 
+		 <p id="individualGlobal" style="visibility:hidden" >		</p>
+		<p id="MoreGlobal" style="visibility:hidden" >  You can see the full history in this match by clicking  
+		<button type="button" id="More_g"  class="button_infor_g  btn" onclick="ShowAllHistory('global',1)" > More </button>  </p>
+		
+		 </center>
+		</div>
+
+	</div>	
+</div>
+
+
+	
+
+{{ endblock }}
+
+
+{% block scripts %}
+
+    {% include 'PGSO_08ABA_ClubOpp_Par3BBB/commonJS.html' %}
+	<script>
+
+
+	
+	
+	RandomButton('individualLocal','local');
+	
+
+	ShowTable_Local();
+	ShowTable_Global();
+	
+	<!-- var ShowAllHistoryModified = ShowAllHistory.bind(this, 'local', 1); -->
+	<!-- document.getElementById("More_l").onclick = ShowAllHistoryModified; -->
+	<!-- var ShowAllHistoryModified = ShowAllHistory.bind(this, 'global', 1); -->
+	<!-- document.getElementById("More_g").onclick = ShowAllHistoryModified; -->
+	</script>
+{{ endblock }}
+
+
+{% block app_styles %}
+	
+
+    {% include 'PGSO_08ABA_ClubOpp_Par3BBB/commonCSS.html' %}
+	
+	
+	
+{% endblock %}
+
